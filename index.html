@@ -325,7 +325,6 @@
             </h3>
           </div>
 
-          <!-- Dynamic 2-Split Comparison Photo Zone -->
           <div class="grid grid-cols-2 gap-3 my-3 flex-1">
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200 flex flex-col" onclick="handlePhotoClick(2, 'img-2a')">
               <img id="img-2a" src="" onerror="handleImageError(this)" class="w-full h-full object-cover">
@@ -641,13 +640,19 @@
       </div>
       
       <div class="space-y-3 text-xs text-neutral-300 leading-relaxed">
-        <p>Gemini API Key를 입력하시면 "AI로 생성" 버튼 클릭 시 구글의 최신 AI 모델이 실시간으로 맞춤 가이드를 작성합니다.</p>
+        <p>Gemini API Key를 입력하시면, 선택하신 카테고리와 주제를 기반으로 Gemini AI가 실시간으로 가이드를 직접 작성합니다.</p>
         <div>
           <label class="block text-xs text-neutral-400 mb-1">Gemini API Key (AIza...):</label>
           <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." 
                  class="w-full bg-black/50 border border-white/20 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
         </div>
-        <p class="text-[11px] text-neutral-400">※ 입력하신 키는 개인 브라우저(localStorage)에만 안전하게 저장됩니다.</p>
+        <div class="flex items-center justify-between pt-1">
+          <p class="text-[11px] text-neutral-400">※ 입력하신 키는 개인 브라우저에만 안전하게 저장됩니다.</p>
+          <button type="button" onclick="testApiKeyConnection()" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-neutral-200 text-[11px] font-medium transition">
+            🔍 연결 테스트
+          </button>
+        </div>
+        <p id="apiTestStatus" class="text-[11px] text-studio-accent hidden"></p>
       </div>
 
       <div class="flex justify-end gap-2 pt-2">
@@ -1360,6 +1365,55 @@
       required: [...CARD_KEYS, 'tips', 'chips']
     };
 
+    async function discoverValidModelName(apiKey, signal) {
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, { signal });
+        if (res.ok) {
+          const data = await res.json();
+          const validModels = (data.models || []).filter(m => 
+            Array.isArray(m.supportedGenerationMethods) && 
+            m.supportedGenerationMethods.includes('generateContent')
+          );
+          if (validModels.length > 0) {
+            // Priority: Flash models with 2.5, 3, or flash in name
+            const best = validModels.find(m => m.name.includes('flash') && (m.name.includes('2.5') || m.name.includes('3')))
+                      || validModels.find(m => m.name.includes('flash'))
+                      || validModels[0];
+            return best.name; // Full resource name e.g. "models/gemini-2.5-flash"
+          }
+        }
+      } catch (err) {
+        console.warn('Auto discovery ListModels warning:', err);
+      }
+      return null;
+    }
+
+    async function testApiKeyConnection() {
+      const key = document.getElementById('geminiApiKeyInput').value.trim();
+      const statusEl = document.getElementById('apiTestStatus');
+      statusEl.classList.remove('hidden');
+      if (!key) {
+        statusEl.innerText = '❌ API 키를 먼저 입력해 주세요.';
+        statusEl.className = 'text-[11px] text-red-400';
+        return;
+      }
+      statusEl.innerText = '⏳ 구글 서버에 모델 목록 확인 중...';
+      statusEl.className = 'text-[11px] text-neutral-300';
+      try {
+        const modelName = await discoverValidModelName(key);
+        if (modelName) {
+          statusEl.innerText = `✅ 정상 연결 확인! 사용 가능한 모델: ${modelName}`;
+          statusEl.className = 'text-[11px] text-green-400';
+        } else {
+          statusEl.innerText = '⚠ API 키는 유효하나 generateContent 지원 모델을 조회하지 못했습니다.';
+          statusEl.className = 'text-[11px] text-amber-400';
+        }
+      } catch (e) {
+        statusEl.innerText = '❌ 연결 실패: ' + e.message;
+        statusEl.className = 'text-[11px] text-red-400';
+      }
+    }
+
     let aiBusy = false;
     async function generateWithAI() {
       if (aiBusy) return;
@@ -1388,66 +1442,80 @@ topic에는 전체 주제, tag에는 "${catData.label.toUpperCase()}", subTag에
 전화번호는 절대 적지 마세요. 한국어로 작성하세요.`;
 
       const ov = document.getElementById('loadingOverlay');
-      document.getElementById('loadingOverlayText').innerText = 'AI가 가이드를 작성 중입니다...';
+      document.getElementById('loadingOverlayText').innerText = 'AI가 내 계정 모델을 조회하여 가이드를 작성 중입니다...';
       ov.classList.add('active'); 
       aiBusy = true;
 
-      // Google models with fallback sequence (Primary latest: gemini-3.8-flash, backup: 2.0/1.5)
-      const modelsToTry = ['gemini-3.8-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
-      let lastErrorMessage = '';
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 25000);
       let success = false;
+      let lastErrorMessage = '';
 
-      for (const model of modelsToTry) {
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 20000);
-        try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            signal: ctrl.signal,
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { responseMimeType: 'application/json', responseSchema: CARD_SCHEMA }
-            })
-          });
-          clearTimeout(timer);
+      try {
+        // Step 1: Discover valid model dynamically from user's account
+        let chosenModel = await discoverValidModelName(apiKey, ctrl.signal);
+        
+        // Step 2: Candidate fallback models
+        const candidateModels = chosenModel 
+          ? [chosenModel] 
+          : ['models/gemini-2.5-flash', 'models/gemini-2.0-flash', 'models/gemini-flash-latest'];
 
-          const data = await res.json();
-          if (!res.ok) {
-            lastErrorMessage = data?.error?.message || `오류 (${res.status})`;
-            continue; // Try next model
+        for (const modelPath of candidateModels) {
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/${modelPath}:generateContent?key=${apiKey}`;
+          try {
+            const res = await fetch(endpoint, {
+              method: 'POST', 
+              headers: { 'Content-Type': 'application/json' }, 
+              signal: ctrl.signal,
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { 
+                  responseMimeType: 'application/json', 
+                  responseSchema: CARD_SCHEMA 
+                }
+              })
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+              lastErrorMessage = data?.error?.message || `오류 (${res.status})`;
+              continue;
+            }
+
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!text) {
+              lastErrorMessage = 'AI 응답 본문 부재';
+              continue;
+            }
+
+            const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+            const err = validateCard(parsed);
+            if (err) {
+              lastErrorMessage = err;
+              continue;
+            }
+
+            renderCardnewsToDOM(parsed, themeObj.photoKey);
+            applyBrandText();
+            showCustomToast('🎉 AI 가이드가 성공적으로 생성되었습니다!');
+            success = true;
+            break;
+          } catch (fetchErr) {
+            lastErrorMessage = fetchErr.name === 'AbortError' ? '시간 초과(25초)' : fetchErr.message;
           }
-
-          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (!text) {
-            lastErrorMessage = 'AI 응답 본문 부재';
-            continue;
-          }
-
-          const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
-          const err = validateCard(parsed);
-          if (err) {
-            lastErrorMessage = err;
-            continue;
-          }
-
-          renderCardnewsToDOM(parsed, themeObj.photoKey);
-          applyBrandText();
-          showCustomToast('🎉 AI 가이드가 성공적으로 생성되었습니다!');
-          success = true;
-          break;
-        } catch (e) {
-          clearTimeout(timer);
-          lastErrorMessage = e.name === 'AbortError' ? '시간 초과(20초)' : e.message;
         }
+      } catch (globalErr) {
+        lastErrorMessage = globalErr.message;
+      } finally {
+        clearTimeout(timer);
+        dismissLoadingOverlay(); 
+        aiBusy = false;
       }
 
       if (!success) {
-        showCustomToast('⚠ ' + (lastErrorMessage || '생성 실패. 잠시 후 다시 시도해 주세요.'));
+        showCustomToast('⚠ ' + (lastErrorMessage || '생성 실패. 기본 가이드로 표시합니다.'));
+        applyCardnewsGeneration(); // Fail-safe to avoid empty screen
       }
-
-      dismissLoadingOverlay(); 
-      aiBusy = false;
     }
 
     function validateCard(d) {
@@ -1703,6 +1771,7 @@ topic에는 전체 주제, tag에는 "${catData.label.toUpperCase()}", subTag에
 
     function openApiModal() {
       document.getElementById('geminiApiKeyInput').value = localStorage.getItem('bastudio_gemini_key') || '';
+      document.getElementById('apiTestStatus').classList.add('hidden');
       document.getElementById('apiModal').classList.remove('hidden');
     }
     function closeApiModal() { document.getElementById('apiModal').classList.add('hidden'); }
