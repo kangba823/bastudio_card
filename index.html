@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BA STUDIO | 비에이스튜디오 인테리어 가이드 카드뉴스 생성기</title>
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Cormorant Garamond & Noto Sans KR -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- html2canvas & JSZip for High-Res Slide Export -->
+  <!-- html2canvas, JSZip, FileSaver for High-Res 8-Slide ZIP export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -27,6 +27,7 @@
               charcoal: '#1E1E1E',
               dark: '#141414',
               accent: '#B08968',
+              accentHover: '#987252',
               muted: '#8E8882',
             }
           },
@@ -52,22 +53,22 @@
       word-break: keep-all;
       overflow-wrap: break-word;
     }
-    /* Photo zone highlight for manual replacement */
+    /* Photo zone interactions */
     .photo-zone {
       position: relative;
       cursor: pointer;
       transition: transform 0.2s ease;
     }
     .photo-zone:hover::after {
-      content: '📷 사진 클릭하여 교체';
+      content: '📷 클릭하여 내 사진 교체';
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.55);
       backdrop-filter: blur(2px);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
+      color: #ffffff;
       font-size: 13px;
       font-weight: 600;
       z-index: 20;
@@ -83,7 +84,7 @@
     .guide-active .guide-tag {
       display: flex;
     }
-    /* Scrollbar */
+    /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -98,56 +99,63 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #B08968;
     }
+    /* Loading overlay */
+    #loadingOverlay {
+      display: none;
+    }
+    #loadingOverlay.active {
+      display: flex;
+    }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased">
+<body class="min-h-screen flex flex-col antialiased select-none">
 
   <!-- Top Navigation Header -->
-  <header class="border-b border-white/10 bg-[#171717] px-5 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40">
+  <header class="border-b border-white/10 bg-[#171717] px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40">
     <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-full bg-studio-accent/20 border border-studio-accent flex items-center justify-center text-studio-accent font-serif text-xl font-bold">
+      <div class="w-8 h-8 rounded-full bg-studio-accent/20 border border-studio-accent flex items-center justify-center text-studio-accent font-serif text-lg font-bold">
         B
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="brand-logo text-lg font-bold tracking-widest text-white uppercase">BA STUDIO</h1>
-          <span class="text-[11px] px-2 py-0.5 rounded bg-white/10 text-neutral-300 font-medium">비에이스튜디오</span>
+          <h1 class="brand-logo text-base sm:text-lg font-bold tracking-widest text-white uppercase">BA STUDIO</h1>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-white/10 text-neutral-300 font-medium">비에이스튜디오</span>
         </div>
-        <p class="text-[11px] text-studio-muted">Interior & Space Design | 8장 가이드 카드뉴스 AI 스튜디오</p>
+        <p class="text-[10px] text-studio-muted">Interior & Space Design | 8장 가이드 카드뉴스 AI 스튜디오</p>
       </div>
     </div>
 
     <!-- Action Tools -->
     <div class="flex items-center flex-wrap gap-2 text-xs">
-      <!-- Guide Toggle -->
-      <button id="toggleGuideBtn" class="px-3 py-1.5 rounded border border-white/20 text-neutral-300 bg-white/5 hover:bg-white/10 flex items-center gap-1.5 transition">
+      <!-- Photo Guide Toggle -->
+      <button id="toggleGuideBtn" class="px-2.5 py-1.5 rounded border border-white/20 text-neutral-300 bg-white/5 hover:bg-white/10 flex items-center gap-1.5 transition">
         <span class="w-2 h-2 rounded-full bg-studio-accent"></span>
         <span id="guideStatusText">사진 위치 가이드: OFF</span>
       </button>
 
       <!-- Aspect Ratio Switcher -->
       <div class="bg-black/50 rounded p-0.5 border border-white/10 flex">
-        <button id="ratio1to1" class="px-2.5 py-1.5 rounded text-neutral-400 hover:text-white font-medium">1:1 정방형</button>
-        <button id="ratio4to5" class="px-2.5 py-1.5 rounded bg-studio-accent text-white font-semibold shadow">4:5 세로형</button>
+        <button id="ratio1to1" class="px-2.5 py-1 rounded text-neutral-400 hover:text-white font-medium text-[11px]">1:1 정방형</button>
+        <button id="ratio4to5" class="px-2.5 py-1 rounded bg-studio-accent text-white font-semibold text-[11px] shadow">4:5 세로형</button>
       </div>
 
       <!-- Settings: AI Studio JSON Import -->
       <button onclick="openJsonModal()" class="px-3 py-1.5 rounded border border-white/20 text-neutral-200 bg-white/5 hover:bg-white/15 font-medium flex items-center gap-1.5 transition">
-        <span>📥</span> AI 스튜디오 JSON 붙여넣기
+        <span>📥</span> JSON 붙여넣기
       </button>
 
-      <!-- Settings: API Key -->
+      <!-- Settings: Gemini API Key -->
       <button onclick="openApiModal()" class="px-3 py-1.5 rounded border border-studio-accent/60 text-studio-accent bg-studio-accent/10 hover:bg-studio-accent/20 font-medium flex items-center gap-1.5 transition">
-        <span>⚙️</span> API 직접 연결
+        <span>⚙️</span> API 설정
       </button>
 
       <!-- Copy Instagram Caption -->
-      <button onclick="copyInstagramCaption()" class="px-3.5 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white font-medium flex items-center gap-1.5 transition">
+      <button onclick="copyInstagramCaption()" class="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white font-medium flex items-center gap-1.5 transition">
         <span>📋</span> 인스타 본문 복사
       </button>
 
       <!-- Batch Download 8 Slides ZIP -->
-      <button id="exportAllBtn" onclick="exportAllSlidesZip()" class="px-4 py-1.5 rounded bg-studio-accent hover:bg-studio-accent/90 text-white font-semibold flex items-center gap-1.5 shadow transition">
+      <button id="exportAllBtn" onclick="exportAllSlidesZip()" class="px-3.5 py-1.5 rounded bg-studio-accent hover:bg-studio-accentHover text-white font-semibold flex items-center gap-1.5 shadow transition">
         <span>💾</span> 8장 전체 다운로드 (ZIP)
       </button>
     </div>
@@ -157,74 +165,75 @@
   <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
 
     <!-- Left Sidebar: AI Topic Generator & Slide Deck Navigation -->
-    <aside class="w-full lg:w-96 border-b lg:border-b-0 lg:border-r border-white/10 bg-[#161616] p-4 flex flex-col gap-4 overflow-y-auto max-h-[45vh] lg:max-h-[calc(100vh-65px)]">
+    <aside class="w-full lg:w-96 border-b lg:border-b-0 lg:border-r border-white/10 bg-[#161616] p-4 flex flex-col gap-4 overflow-y-auto max-h-[50vh] lg:max-h-[calc(100vh-58px)]">
 
       <!-- AI Topic Section -->
       <div class="bg-[#1F1F1F] p-3.5 rounded-xl border border-white/10 space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-1.5">
             <span class="text-sm">✨</span>
-            <h3 class="text-xs font-bold text-white uppercase tracking-wider">인테리어 주제 생성 & 선택</h3>
+            <h3 class="text-xs font-bold text-white uppercase tracking-wider">인테리어 추천 주제</h3>
           </div>
-          <button onclick="refreshRecommendedTopics()" class="text-[11px] text-studio-accent hover:underline flex items-center gap-1">
-            <span>🎲</span> 주제 새로고침
+          <button onclick="refreshRecommendedTopics()" class="text-xs text-studio-accent hover:text-white font-medium flex items-center gap-1 transition px-2 py-0.5 rounded bg-studio-accent/10 border border-studio-accent/20">
+            <span>🎲</span> 새 주제 5개 뽑기
           </button>
         </div>
 
-        <!-- 5 Recommended Topic Buttons -->
+        <!-- 5 Recommended Topic Buttons (Interactive & Always Fresh) -->
         <div class="space-y-1.5" id="topicButtonsList">
-          <!-- Populated by JS -->
+          <!-- Populated dynamically by JavaScript -->
         </div>
 
         <!-- Custom Topic Input -->
         <div class="pt-2 border-t border-white/10 space-y-2">
-          <label class="text-[11px] text-neutral-400 block">직접 주제 또는 키워드 입력:</label>
+          <label class="text-xs text-neutral-300 font-medium block">직접 주제 또는 원하는 키워드 입력:</label>
           <div class="flex gap-2">
             <input type="text" id="customTopicInput" placeholder="예: 30평대 아파트 조명 팁, 성수동 브런치 카페" 
-                   class="flex-1 bg-black/40 border border-white/20 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-studio-accent placeholder-neutral-500">
-            <button id="generateBtn" onclick="handleGenerateContent()" class="px-3.5 py-2 bg-studio-accent hover:bg-studio-accent/90 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shrink-0 transition">
+                   class="flex-1 bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-studio-accent placeholder-neutral-500">
+            <button id="generateBtn" onclick="handleGenerateContent()" class="px-3.5 py-2 bg-studio-accent hover:bg-studio-accentHover text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shrink-0 shadow transition">
               <span id="genBtnIcon">✨</span>
               <span id="genBtnText">AI 글 생성</span>
             </button>
           </div>
         </div>
 
-        <div id="aiStatusBadge" class="text-[11px] text-neutral-400 flex items-center justify-between pt-1">
-          <span id="currentTopicLabel">적용 중: 3000K 호텔 감성 조명 가이드</span>
-          <span id="apiStatusTag" class="text-[10px] text-studio-accent bg-studio-accent/15 px-2 py-0.5 rounded">스마트 엔진 준비됨</span>
+        <!-- Engine Status -->
+        <div id="aiStatusBadge" class="text-[11px] text-neutral-400 flex items-center justify-between pt-1 border-t border-white/5">
+          <span id="currentTopicLabel" class="truncate max-w-[200px] text-neutral-300">적용 중: 3000K 호텔 감성 조명 공식</span>
+          <span id="apiStatusTag" class="text-[10px] text-studio-accent bg-studio-accent/15 px-2 py-0.5 rounded border border-studio-accent/30 font-medium">스마트 엔진 준비됨</span>
         </div>
       </div>
 
       <!-- Slide Deck Navigation (8 Slides) -->
       <div class="space-y-2">
         <div class="flex justify-between items-center px-1">
-          <h3 class="text-xs font-bold text-neutral-400 uppercase tracking-wider">슬라이드 구성 (총 8장)</h3>
+          <h3 class="text-xs font-bold text-neutral-300 uppercase tracking-wider">슬라이드 구성 (총 8장)</h3>
           <span class="text-[11px] text-studio-accent">클릭하여 슬라이드 이동</span>
         </div>
 
         <nav class="space-y-1.5" id="slideNav">
-          <!-- 8 Slide Navigation Items (Generated by script for cleaner code) -->
+          <!-- 8 Slide Navigation Items (Generated by script) -->
         </nav>
       </div>
 
-      <!-- Information & Shooting Guide -->
+      <!-- Operations Guide -->
       <div class="mt-auto border-t border-white/10 pt-3 text-xs text-neutral-400 space-y-2">
         <p class="font-semibold text-studio-cream flex items-center gap-1.5">
-          <span>💡</span> 비에이스튜디오 카드뉴스 운영 꿀팁
+          <span>💡</span> 비에이스튜디오 카드뉴스 운영 팁
         </p>
-        <ul class="space-y-1 text-[11px] text-neutral-400 pl-3 list-disc">
-          <li><strong>자료 사진:</strong> 슬라이드 사진을 클릭하면 내 컴퓨터 사진이나 새 URL로 즉시 변경됩니다.</li>
-          <li><strong>텍스트 편집:</strong> 슬라이드 위 글씨는 마우스로 클릭하여 자유롭게 직접 수정할 수 있습니다.</li>
-          <li><strong>인스타 업로드:</strong> 상단 [인스타 본문 복사]를 누르면 해시태그까지 1초 만에 복사됩니다.</li>
+        <ul class="space-y-1 text-[11px] text-neutral-400 pl-3 list-disc leading-relaxed">
+          <li><strong>사진 교체:</strong> 화면 속 사진을 클릭하면 내 컴퓨터 파일로 즉시 바뀝니다.</li>
+          <li><strong>문구 직접 수정:</strong> 슬라이드 위 글씨는 마우스로 클릭하여 바로 편집 가능합니다.</li>
+          <li><strong>인스타 업로드:</strong> 상단 [인스타 본문 복사]를 누르고 [8장 전체 다운로드]하면 3분 만에 피드 업로드 준비 완료!</li>
         </ul>
       </div>
     </aside>
 
     <!-- Center Preview Stage -->
-    <section class="flex-1 bg-[#0d0d0d] flex items-center justify-center p-4 lg:p-8 overflow-auto">
+    <section class="flex-1 bg-[#0a0a0a] flex items-center justify-center p-4 lg:p-8 overflow-auto">
       
       <!-- Slide Viewport (540x675 for 4:5, 540x540 for 1:1) -->
-      <div id="slideViewport" class="relative transition-all duration-300 shadow-2xl rounded-lg overflow-hidden bg-white text-neutral-900 w-[540px] h-[675px]">
+      <div id="slideViewport" class="relative transition-all duration-300 shadow-2xl rounded-lg overflow-hidden bg-white text-neutral-900 w-[540px] h-[675px] shrink-0">
         
         <!-- ========================================== -->
         <!-- SLIDE 1: COVER (표지 & 타이틀) -->
@@ -232,7 +241,7 @@
         <div id="slide-1" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-cream">
           <div class="photo-zone absolute inset-0 z-0 overflow-hidden" onclick="handlePhotoClick(1, 'img-1')">
             <img id="img-1" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/35"></div>
             <div class="guide-tag absolute top-4 right-4 bg-black/80 backdrop-blur border border-studio-accent text-studio-accent text-[11px] px-3 py-1 rounded-full items-center gap-1.5 pointer-events-none">
               [권장: 시선을 사로잡는 메인 공간 전경 컷]
             </div>
@@ -242,31 +251,31 @@
           <div class="relative z-10 flex items-center justify-between text-white border-b border-white/20 pb-3">
             <div class="flex items-center gap-2">
               <span class="brand-logo text-xl font-bold tracking-widest uppercase">BA STUDIO</span>
-              <span id="slide1Tag" class="text-[10px] tracking-wider uppercase bg-studio-accent px-2 py-0.5 rounded text-white font-medium">DESIGN GUIDE</span>
+              <span id="slide1Tag" class="text-[11px] tracking-wider uppercase bg-studio-accent px-2 py-0.5 rounded text-white font-medium">DESIGN GUIDE</span>
             </div>
-            <span class="text-xs text-white/80 font-mono">01 / 08</span>
+            <span class="text-xs text-white/80 font-mono tracking-widest">01 / 08</span>
           </div>
 
-          <!-- Title Area -->
+          <!-- Title Area (Mobile Scaled Up for Legibility) -->
           <div class="relative z-10 text-white space-y-3 pb-2">
             <div class="inline-block px-3 py-1 bg-white/20 backdrop-blur rounded text-xs font-semibold tracking-wider uppercase text-white">
               <span id="slide1SubTag">INTERIOR SOLUTION</span>
             </div>
-            <h2 id="slide1Title" contenteditable="true" class="break-keep text-2xl sm:text-3xl font-extrabold leading-tight text-white drop-shadow-lg">
+            <h2 id="slide1Title" contenteditable="true" class="break-keep text-2xl sm:text-3xl font-extrabold leading-snug text-white drop-shadow-md">
               비싼 가구 없이 5성급 호텔 분위기 내는 조명 공식
             </h2>
             <p id="slide1Desc" contenteditable="true" class="break-keep text-sm text-neutral-200 font-light leading-relaxed max-w-md drop-shadow">
               형광등 하나로 집 분위기를 망치고 계신가요? 디자이너가 알려주는 실패 없는 3000K 조명 배치 팁을 공개합니다.
             </p>
-            <div class="pt-3 flex items-center justify-between text-[11px] tracking-wider text-neutral-300 border-t border-white/20">
+            <div class="pt-3 flex items-center justify-between text-xs tracking-wider text-neutral-300 border-t border-white/20">
               <span>비에이스튜디오 (@bastudio_seoul)</span>
-              <span>SWIPE NEXT →</span>
+              <span class="font-medium">SWIPE NEXT →</span>
             </div>
           </div>
         </div>
 
         <!-- ========================================== -->
-        <!-- SLIDE 2: PROBLEM (흔한 실수 & 고민) -->
+        <!-- SLIDE 2: PROBLEM (흔한 실수 & 고민 진단) -->
         <!-- ========================================== -->
         <div id="slide-2" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-cream hidden">
           <div class="flex items-center justify-between border-b border-neutral-300 pb-3">
@@ -285,25 +294,25 @@
           <div class="grid grid-cols-2 gap-3 my-3 flex-1">
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200 flex flex-col" onclick="handlePhotoClick(2, 'img-2a')">
               <img id="img-2a" src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
-              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-[11px] font-medium text-center">
+              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs font-medium text-center break-keep">
                 흔한 실수: 눈부신 천장등 하나만 켜기
               </div>
             </div>
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200 flex flex-col" onclick="handlePhotoClick(2, 'img-2b')">
               <img id="img-2b" src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
-              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-[11px] font-medium text-center">
+              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs font-medium text-center break-keep">
                 이상적인 무드: 시선보다 낮은 간접 조명
               </div>
             </div>
           </div>
 
-          <div class="bg-studio-stone/80 p-3 rounded-lg border border-neutral-200 text-xs text-neutral-700 leading-relaxed break-keep">
-            <span class="font-bold text-neutral-900">디자이너의 진단:</span> <span id="slide2Desc" contenteditable="true">많은 분들이 가구에만 신경 쓰고 정작 공간의 인상을 결정하는 '빛의 높낮이와 색감'을 놓치고 있습니다. 천장 한가운데 달린 메인등 하나만 끄셔도 공간의 깊이가 완전히 달라집니다.</span>
+          <div class="bg-studio-stone/90 p-3.5 rounded-lg border border-neutral-300 text-xs sm:text-sm text-neutral-700 leading-relaxed break-keep">
+            <span class="font-bold text-neutral-900">디자이너의 진단:</span> <span id="slide2Desc" contenteditable="true">많은 분들이 가구에만 신경 쓰고 공간의 인상을 결정하는 '빛의 높낮이와 색감'을 놓치고 있습니다. 천장 한가운데 달린 메인등 하나만 끄셔도 공간의 깊이가 달라집니다.</span>
           </div>
 
-          <div class="text-[11px] text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
+          <div class="text-xs text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
             <span>BA STUDIO INTERIOR GUIDE</span>
-            <span>2 / 8</span>
+            <span class="font-mono">02 / 08</span>
           </div>
         </div>
 
@@ -328,34 +337,34 @@
               <h3 id="slide3Title" contenteditable="true" class="break-keep text-lg font-bold text-neutral-900">
                 “호텔 같은 무드의 시작: 3000K 전구색 통일”
               </h3>
-              <p id="slide3Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-1 leading-relaxed">
+              <p id="slide3Desc" contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
                 파랗고 차가운 형광등빛 대신, 노을처럼 따뜻하고 편안한 전구색(3000K)을 공간 전체의 기준 조명으로 통일하세요. 눈의 피로감이 줄고 공간에 온기가 돕니다.
               </p>
             </div>
 
             <!-- Material Color Chips -->
             <div class="bg-white p-3 rounded-lg flex items-center justify-between border border-neutral-200 shadow-sm">
-              <span class="text-[11px] font-bold text-neutral-600 uppercase">추천 톤 조합</span>
+              <span class="text-xs font-bold text-neutral-600 uppercase tracking-wider">추천 톤 조합</span>
               <div class="flex items-center gap-3">
                 <div class="flex items-center gap-1.5">
-                  <span id="chip1Color" class="w-3.5 h-3.5 rounded-full bg-[#EADCC9] border border-black/10 shadow-inner"></span>
-                  <span id="chip1Text" class="text-[11px] text-neutral-700">Warm 3000K</span>
+                  <span id="chip1Color" class="w-4 h-4 rounded-full bg-[#EADCC9] border border-black/10 shadow-inner"></span>
+                  <span id="chip1Text" class="text-xs font-medium text-neutral-700">Warm 3000K</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <span id="chip2Color" class="w-3.5 h-3.5 rounded-full bg-[#D1C7BD] border border-black/10 shadow-inner"></span>
-                  <span id="chip2Text" class="text-[11px] text-neutral-700">Soft Crema</span>
+                  <span id="chip2Color" class="w-4 h-4 rounded-full bg-[#D1C7BD] border border-black/10 shadow-inner"></span>
+                  <span id="chip2Text" class="text-xs font-medium text-neutral-700">Soft Crema</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <span id="chip3Color" class="w-3.5 h-3.5 rounded-full bg-[#A89886] border border-black/10 shadow-inner"></span>
-                  <span id="chip3Text" class="text-[11px] text-neutral-700">Natural Oak</span>
+                  <span id="chip3Color" class="w-4 h-4 rounded-full bg-[#A89886] border border-black/10 shadow-inner"></span>
+                  <span id="chip3Text" class="text-xs font-medium text-neutral-700">Natural Oak</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="text-[11px] text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
+          <div class="text-xs text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
             <span>ATMOSPHERE ESSENTIALS</span>
-            <span>3 / 8</span>
+            <span class="font-mono">03 / 08</span>
           </div>
         </div>
 
@@ -372,22 +381,22 @@
             <h3 id="slide4Title" contenteditable="true" class="break-keep text-xl font-bold text-neutral-900 leading-snug">
               빛을 벽과 바닥에 튕겨주세요: 간접 조명의 마법
             </h3>
-            <p id="slide4Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-1 leading-relaxed">
+            <p id="slide4Desc" contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
               조명이 눈에 직접 닿으면 눈이 부시고 피로해집니다. 커튼 박스나 선반 뒤에 숨겨진 은은한 빛이 벽면을 타고 흐르도록 연출하세요.
             </p>
           </div>
 
           <div class="photo-zone relative flex-1 my-3 rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(4, 'img-4')">
             <img id="img-4" src="https://images.unsplash.com/photo-1540518614846-7ede433c4ef4?auto=format&fit=crop&w=1000&q=80" class="w-full h-full object-cover">
-            <div class="absolute bottom-3 left-3 bg-white/95 backdrop-blur px-3 py-2 rounded-lg shadow-md border border-black/5 text-neutral-800 max-w-[260px]">
+            <div class="absolute bottom-3 left-3 bg-white/95 backdrop-blur px-3 py-2 rounded-lg shadow-md border border-black/5 text-neutral-800 max-w-[280px]">
               <span class="text-[10px] uppercase tracking-wider text-studio-accent font-bold block">Key Point</span>
               <p id="slide4Point" class="text-xs font-medium break-keep">커튼 박스 간접등 하나만 켜도 저녁 시간 거실 무드가 180도 달라집니다.</p>
             </div>
           </div>
 
-          <div class="text-[11px] text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
+          <div class="text-xs text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
             <span>INDIRECT LIGHTING GUIDE</span>
-            <span>4 / 8</span>
+            <span class="font-mono">04 / 08</span>
           </div>
         </div>
 
@@ -404,22 +413,22 @@
             <h3 id="slide5Title" contenteditable="true" class="break-keep text-xl font-bold text-neutral-900 leading-snug">
               빛의 높낮이를 분산하는 '3단 배치 공식'
             </h3>
-            <p id="slide5Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-1 leading-relaxed">
+            <p id="slide5Desc" contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
               호텔 로비나 고급 카페는 천장만 밝지 않습니다. 높은 조명, 허리 높이 플로어 스탠드, 바닥 단스탠드로 높낮이를 나눠보세요.
             </p>
           </div>
 
           <div class="photo-zone relative flex-1 my-3 rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(5, 'img-5')">
             <img id="img-5" src="https://images.unsplash.com/photo-1517991104123-1d56a6e81ed9?auto=format&fit=crop&w=1000&q=80" class="w-full h-full object-cover">
-            <div class="absolute bottom-3 right-3 bg-black/80 backdrop-blur text-white px-3 py-2 rounded-lg text-xs break-keep max-w-[240px]">
+            <div class="absolute bottom-3 right-3 bg-black/85 backdrop-blur text-white px-3 py-2 rounded-lg text-xs break-keep max-w-[260px]">
               <span class="text-studio-accent font-bold block text-[10px]">DESIGN ADVICE</span>
               소파 옆 코너에 장스탠드를 두면 죽은 공간이 가장 머물고 싶은 자리가 됩니다.
             </div>
           </div>
 
-          <div class="text-[11px] text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
+          <div class="text-xs text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
             <span>LAYERED LIGHTING SOLUTION</span>
-            <span>5 / 8</span>
+            <span class="font-mono">05 / 08</span>
           </div>
         </div>
 
@@ -436,7 +445,7 @@
             <h3 id="slide6Title" contenteditable="true" class="break-keep text-xl font-bold text-neutral-900 leading-snug">
               절대 피해야 할 실수: 색온도 섞지 않기
             </h3>
-            <p id="slide6Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-1 leading-relaxed">
+            <p id="slide6Desc" contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
               하얀 형광등(주광색)과 노란 무드등(전구색)을 한 공간에서 동시에 켜면 공간이 산만하고 촌스러워집니다. 하나로 통일해 주세요.
             </p>
           </div>
@@ -444,26 +453,26 @@
           <div class="grid grid-cols-2 gap-3 my-2 flex-1">
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(6, 'img-6a')">
               <img id="img-6a" src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
-              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-[10px] text-center font-medium">
+              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs text-center font-medium break-keep">
                 마감재의 결이 살아나는 따뜻한 빛
               </div>
             </div>
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(6, 'img-6b')">
               <img id="img-6b" src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
-              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-[10px] text-center font-medium">
+              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs text-center font-medium break-keep">
                 식탁 펜던트는 3000K 전구색 필수
               </div>
             </div>
           </div>
 
-          <div class="bg-white p-2.5 rounded-lg border border-neutral-200 text-xs text-neutral-700 flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-studio-accent shrink-0"></span>
-            <span id="slide6Note" contenteditable="true" class="break-keep">식탁 위 펜던트 조명은 음식 색감을 가장 먹음직스럽게 돋보이게 만듭니다.</span>
+          <div class="bg-white p-3 rounded-lg border border-neutral-200 text-xs sm:text-sm text-neutral-700 flex items-center gap-2.5 shadow-sm">
+            <span class="w-2.5 h-2.5 rounded-full bg-studio-accent shrink-0"></span>
+            <span id="slide6Note" contenteditable="true" class="break-keep font-medium">식탁 위 펜던트 조명은 음식 색감을 가장 먹음직스럽게 돋보이게 만듭니다.</span>
           </div>
 
-          <div class="text-[11px] text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
+          <div class="text-xs text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
             <span>LIGHTING DONTS & DOS</span>
-            <span>6 / 8</span>
+            <span class="font-mono">06 / 08</span>
           </div>
         </div>
 
@@ -477,7 +486,7 @@
           </div>
 
           <div class="text-center my-1">
-            <span class="text-[11px] font-bold text-studio-accent uppercase tracking-widest">Saved for Inspiration</span>
+            <span class="text-xs font-bold text-studio-accent uppercase tracking-widest">Saved for Inspiration</span>
             <h3 id="slide7Title" contenteditable="true" class="break-keep text-xl font-bold text-neutral-900 mt-1">
               실패 없는 호텔 감성 조명 3원칙
             </h3>
@@ -485,40 +494,40 @@
           </div>
 
           <!-- 3 Steps Cards -->
-          <div class="space-y-2.5 my-auto">
-            <div class="p-3 bg-white rounded-lg border border-neutral-200 shadow-sm flex items-start gap-3">
+          <div class="space-y-3 my-auto">
+            <div class="p-3.5 bg-white rounded-lg border border-neutral-200 shadow-sm flex items-start gap-3">
               <span class="w-7 h-7 rounded-full bg-studio-stone text-studio-accent font-bold text-xs flex items-center justify-center shrink-0">01</span>
               <div>
-                <h4 id="tip1Title" contenteditable="true" class="text-xs font-bold text-neutral-900">형광등 끄고 3000K 전구색으로 통일하기</h4>
-                <p id="tip1Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-0.5 leading-snug">눈이 편안하고 공간 전체에 따뜻한 노을빛 온기를 채워줍니다.</p>
+                <h4 id="tip1Title" contenteditable="true" class="text-xs sm:text-sm font-bold text-neutral-900">형광등 끄고 3000K 전구색으로 통일하기</h4>
+                <p id="tip1Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-1 leading-snug">눈이 편안하고 공간 전체에 따뜻한 노을빛 온기를 채워줍니다.</p>
               </div>
             </div>
 
-            <div class="p-3 bg-white rounded-lg border border-neutral-200 shadow-sm flex items-start gap-3">
+            <div class="p-3.5 bg-white rounded-lg border border-neutral-200 shadow-sm flex items-start gap-3">
               <span class="w-7 h-7 rounded-full bg-studio-stone text-studio-accent font-bold text-xs flex items-center justify-center shrink-0">02</span>
               <div>
-                <h4 id="tip2Title" contenteditable="true" class="text-xs font-bold text-neutral-900">시선보다 낮은 플로어 램프 활용하기</h4>
-                <p id="tip2Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-0.5 leading-snug">빛의 높낮이를 분산시켜 밋밋했던 방에 입체적인 깊이감을 만듭니다.</p>
+                <h4 id="tip2Title" contenteditable="true" class="text-xs sm:text-sm font-bold text-neutral-900">시선보다 낮은 플로어 램프 활용하기</h4>
+                <p id="tip2Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-1 leading-snug">빛의 높낮이를 분산시켜 밋밋했던 방에 입체적인 깊이감을 만듭니다.</p>
               </div>
             </div>
 
-            <div class="p-3 bg-white rounded-lg border border-neutral-200 shadow-sm flex items-start gap-3">
+            <div class="p-3.5 bg-white rounded-lg border border-neutral-200 shadow-sm flex items-start gap-3">
               <span class="w-7 h-7 rounded-full bg-studio-stone text-studio-accent font-bold text-xs flex items-center justify-center shrink-0">03</span>
               <div>
-                <h4 id="tip3Title" contenteditable="true" class="text-xs font-bold text-neutral-900">벽면과 커튼에 빛을 은은하게 튕기기</h4>
-                <p id="tip3Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-0.5 leading-snug">눈부심 없이 호텔 객실처럼 아늑하고 편안한 분위기를 완성합니다.</p>
+                <h4 id="tip3Title" contenteditable="true" class="text-xs sm:text-sm font-bold text-neutral-900">벽면과 커튼에 빛을 은은하게 튕기기</h4>
+                <p id="tip3Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-1 leading-snug">눈부심 없이 호텔 객실처럼 아늑하고 편안한 분위기를 완성합니다.</p>
               </div>
             </div>
           </div>
 
-          <div class="text-[11px] text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
+          <div class="text-xs text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
             <span>📌 잊지 않게 저장해두고 활용해 보세요</span>
-            <span>7 / 8</span>
+            <span class="font-mono">07 / 08</span>
           </div>
         </div>
 
         <!-- ========================================== -->
-        <!-- SLIDE 8: OUTRO (상담 신청 및 계정 안내) -->
+        <!-- SLIDE 8: OUTRO (상담 신청 및 공식 계정) -->
         <!-- ========================================== -->
         <div id="slide-8" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-charcoal text-white hidden">
           <div class="photo-zone absolute inset-0 z-0 overflow-hidden" onclick="handlePhotoClick(8, 'img-8')">
@@ -533,29 +542,29 @@
             <span class="text-xs tracking-widest text-studio-accent uppercase font-sans mt-1 inline-block">비에이스튜디오 | Architecture & Space Design</span>
           </div>
 
-          <div class="relative z-10 text-center space-y-3 px-4">
+          <div class="relative z-10 text-center space-y-4 px-4 my-auto">
             <h3 contenteditable="true" class="break-keep text-xl sm:text-2xl font-bold leading-relaxed text-white">
               머물수록 가치가 느껴지는 공간,<br>
               <span class="text-studio-accent">비에이스튜디오</span>와 함께 완성하세요.
             </h3>
-            <p contenteditable="true" class="break-keep text-xs text-neutral-300 leading-relaxed max-w-sm mx-auto">
+            <p contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-300 leading-relaxed max-w-sm mx-auto">
               주거와 상업 공간의 본질을 고민하고, 고객의 일상과 취향에 맞춘 1:1 맞춤 공간 디자인을 제안합니다.
             </p>
 
-            <div class="pt-3 flex flex-col items-center gap-2.5">
-              <div class="px-6 py-3 rounded-full bg-studio-accent text-white font-semibold text-xs tracking-wider uppercase shadow-xl hover:bg-studio-accent/90 cursor-pointer transition">
+            <div class="pt-2 flex flex-col items-center gap-3">
+              <div class="px-6 py-3 rounded-full bg-studio-accent text-white font-semibold text-xs tracking-wider uppercase shadow-xl hover:bg-studio-accentHover cursor-pointer transition">
                 프로필 링크에서 공간 상담 신청하기 →
               </div>
               <div class="flex items-center gap-2 text-xs text-neutral-300 pt-1 font-medium">
                 <span>공식 인스타그램</span>
-                <span class="text-white font-bold bg-white/10 px-2 py-0.5 rounded">@bastudio_seoul</span>
+                <span class="text-white font-bold bg-white/10 px-2 py-0.5 rounded font-mono">@bastudio_seoul</span>
               </div>
             </div>
           </div>
 
           <div class="relative z-10 flex items-center justify-between text-xs text-neutral-300 border-t border-white/20 pt-3">
             <span>주거 및 상업 공간 디자인 문의 환영</span>
-            <span class="text-xs text-neutral-400 font-mono">8 / 8</span>
+            <span class="text-xs text-neutral-400 font-mono">08 / 08</span>
           </div>
         </div>
 
@@ -566,6 +575,12 @@
 
   <!-- Hidden Image File Input -->
   <input type="file" id="imageFileInput" accept="image/*" class="hidden">
+
+  <!-- Loading Overlay for Generation or ZIP Export -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 items-center justify-center flex-col gap-4 text-white">
+    <div class="w-12 h-12 border-4 border-studio-accent/30 border-t-studio-accent rounded-full animate-spin"></div>
+    <p id="loadingOverlayText" class="text-sm font-semibold tracking-wide">비에이스튜디오 가이드 생성 중...</p>
+  </div>
 
   <!-- AI Studio JSON Direct Import Modal -->
   <div id="jsonModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
@@ -578,18 +593,18 @@
       </div>
       
       <div class="space-y-2 text-xs text-neutral-300 leading-relaxed">
-        <p>구글 AI 스튜디오(Google AI Studio)에서 생성된 <strong>JSON 전체 내용</strong>을 아래에 붙여넣기(Ctrl+V) 하시면 8장 슬라이드와 사진, 팁이 0.1초 만에 일괄 적용됩니다.</p>
+        <p>Google AI Studio에서 생성된 <strong>JSON 전체 텍스트</strong>를 아래에 붙여넣으시면 8장 슬라이드에 즉각 반영됩니다.</p>
         <textarea id="jsonDirectInput" rows="10" placeholder='{\n  "topic": "...",\n  "title": "...",\n  "desc": "..."\n}'
                   class="w-full bg-black/60 border border-white/20 rounded-lg p-3 text-xs text-neutral-200 focus:outline-none focus:border-studio-accent font-mono resize-none"></textarea>
       </div>
 
       <div class="flex justify-between items-center pt-2">
-        <button onclick="copyAiStudioPromptTemplate()" class="text-[11px] text-studio-accent hover:underline flex items-center gap-1">
+        <button onclick="copyAiStudioPromptTemplate()" class="text-xs text-studio-accent hover:underline flex items-center gap-1">
           <span>📋</span> AI 스튜디오용 프롬프트 복사
         </button>
         <div class="flex gap-2">
           <button onclick="closeJsonModal()" class="px-3 py-1.5 rounded text-xs text-neutral-400 hover:text-white">닫기</button>
-          <button onclick="applyDirectJson()" class="px-4 py-1.5 rounded text-xs bg-studio-accent text-white font-medium hover:bg-studio-accent/90">슬라이드에 즉시 적용</button>
+          <button onclick="applyDirectJson()" class="px-4 py-1.5 rounded text-xs bg-studio-accent text-white font-medium hover:bg-studio-accentHover">슬라이드에 즉시 적용</button>
         </div>
       </div>
     </div>
@@ -608,16 +623,16 @@
       <div class="space-y-3 text-xs text-neutral-300 leading-relaxed">
         <p>Google AI Studio에서 무료로 발급받은 <strong>Gemini API Key</strong>를 입력해 두시면, 버튼 클릭 시 실제 AI가 새로운 가이드 8장을 실시간으로 자동 작성합니다.</p>
         <div>
-          <label class="block text-[11px] text-neutral-400 mb-1">Gemini API Key (AIza...):</label>
+          <label class="block text-xs text-neutral-400 mb-1">Gemini API Key (AIza...):</label>
           <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." 
                  class="w-full bg-black/50 border border-white/20 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
         </div>
-        <p class="text-[11px] text-neutral-500">※ 입력된 키는 외부 서버로 전송되지 않고 브라우저에만 안전하게 저장됩니다. 키가 없어도 내장된 20여 종의 인테리어 지능형 템플릿으로 무제한 생성이 가능합니다.</p>
+        <p class="text-[11px] text-neutral-400 leading-normal">※ API 키가 없어도 비에이스튜디오 스마트 엔진(30종 프리셋 풀)으로 100% 무제한 생성이 가능합니다.</p>
       </div>
 
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeApiModal()" class="px-3 py-1.5 rounded text-xs text-neutral-400 hover:text-white">취소</button>
-        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded text-xs bg-studio-accent text-white font-medium hover:bg-studio-accent/90">저장하기</button>
+        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded text-xs bg-studio-accent text-white font-medium hover:bg-studio-accentHover">저장하기</button>
       </div>
     </div>
   </div>
@@ -633,17 +648,88 @@
       { id: 1, title: '표지 & 핵심 타이틀', tag: '대표 1컷', en: 'COVER' },
       { id: 2, title: '흔한 실수 & 문제 진단', tag: '2분할 비교', en: 'PROBLEM' },
       { id: 3, title: '공간 무드 & 컬러 조합', tag: '무드 1컷 + 칩', en: 'CONCEPT' },
-      { id: 4, title: '실전 솔루션 01 (간접등)', tag: '와이드 1컷', en: 'TIP 01' },
-      { id: 5, title: '실전 솔루션 02 (높낮이)', tag: '단차 1컷', en: 'TIP 02' },
+      { id: 4, title: '실전 솔루션 01 (자재/간접등)', tag: '와이드 1컷', en: 'TIP 01' },
+      { id: 5, title: '실전 솔루션 02 (높낮이/동선)', tag: '단차 1컷', en: 'TIP 02' },
       { id: 6, title: '디자이너 조언 & 주의점', tag: '접사 2분할', en: 'ADVICE' },
       { id: 7, title: '저장 유도 핵심 3원칙', tag: '정보형 카드', en: 'SUMMARY' },
       { id: 8, title: '비에이스튜디오 상담 안내', tag: 'CTA / 계정', en: 'OUTRO' },
     ];
 
-    // High quality fallback presets pool (20 professional topics with easy, natural language)
-    const fallbackPresets = [
+    // High quality Curated Unsplash Interior Photos mapped by Theme
+    const photoThemes = {
+      lighting: {
+        img1: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1540518614846-7ede433c4ef4?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1517991104123-1d56a6e81ed9?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80"
+      },
+      kitchen: {
+        img1: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1556912167-f556f1f39fdf?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1556911073-38141963c9e0?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      },
+      cafe: {
+        img1: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1509785307050-d4066910ec1e?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80"
+      },
+      minimal: {
+        img1: "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80"
+      },
+      beauty: {
+        img1: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80"
+      },
+      office: {
+        img1: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1517502884422-41eaead166d4?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1200&q=80"
+      }
+    };
+
+    // Deep Preset Pool (30 professional, easy-language topics)
+    const masterPresetPool = [
       {
         topic: "비싼 가구 없이 5성급 호텔 분위기 내는 조명 공식",
+        theme: "lighting",
         tag: "LIGHTING GUIDE",
         subTag: "INTERIOR SOLUTION",
         title: "비싼 가구 없이 5성급 호텔 분위기 내는 조명 공식",
@@ -668,11 +754,11 @@
           { name: "Warm 3000K", hex: "#EADCC9" },
           { name: "Soft Crema", hex: "#D1C7BD" },
           { name: "Natural Oak", hex: "#A89886" }
-        ],
-        imgQuery: "warm lighting aesthetic living room interior"
+        ]
       },
       {
         topic: "화이트 인테리어는 끝? 요즘 대세 '웜 미니멀' 공식",
+        theme: "minimal",
         tag: "TREND GUIDE",
         subTag: "RESIDENTIAL",
         title: "하얗기만 한 집은 질린다? 요즘 대세 '웜 미니멀' 인테리어",
@@ -680,7 +766,7 @@
         problemTitle: "인스타 보고 올화이트로 맞췄는데 왜 차갑고 피곤할까요?",
         problemDesc: "벽, 바닥, 가구까지 온통 새하얗기만 하면 빛이 난반사되어 눈이 쉽게 피로해집니다. 이제는 부드러운 크림과 베이지의 온기가 필요한 때입니다.",
         conceptTitle: "“크리미한 벽체와 오크 원목의 편안한 조화”",
-        conceptDesc: "완전한 흰색(White) 대신 미세한 베이지가 감도는 도장과 자연스러운 나뭇결의 마루를 매칭하면 집에 들어서는 순간 안도감이 듭니다.",
+        conceptDesc: "완전한 흰색 대신 미세한 베이지가 감도는 도장과 자연스러운 나뭇결의 마루를 매칭하면 집에 들어서는 순간 안도감이 듭니다.",
         tip1Title: "벽체 컬러는 쨍한 백색 대신 '소프트 크림' 선택하기",
         tip1Desc: "자연광을 받았을 때 은은하게 빛을 머금는 크림 톤 벽체는 공간을 훨씬 넓고 포근하게 만들어줍니다.",
         tip2Title: "차가운 철제 대신 원목과 패브릭으로 질감 더하기",
@@ -697,11 +783,11 @@
           { name: "Soft Cream", hex: "#F3EDE2" },
           { name: "Natural Oak", hex: "#C4A482" },
           { name: "Muted Greige", hex: "#9E978E" }
-        ],
-        imgQuery: "warm minimalist interior oak wood living room"
+        ]
       },
       {
         topic: "20~30평대에서도 가능한 대면형 아일랜드 주방 가이드",
+        theme: "kitchen",
         tag: "KITCHEN GUIDE",
         subTag: "SPACE LAYOUT",
         title: "작은 평수에서도 실현하는 로망의 대면형 아일랜드 주방",
@@ -726,11 +812,11 @@
           { name: "Pure White", hex: "#F5F5F5" },
           { name: "Ceramic Grey", hex: "#B8B5B0" },
           { name: "Warm Walnut", hex: "#735B47" }
-        ],
-        imgQuery: "modern kitchen island open layout apartment"
+        ]
       },
       {
         topic: "손님이 사진 찍어 올리는 핫플 카페 인테리어 3법칙",
+        theme: "cafe",
         tag: "CAFE DESIGN",
         subTag: "COMMERCIAL",
         title: "손님이 알아서 사진 찍는 핫플 카페 인테리어 3법칙",
@@ -755,11 +841,11 @@
           { name: "Rough Plaster", hex: "#CFC9BD" },
           { name: "Dark Walnut", hex: "#4A3B32" },
           { name: "Raw Steel", hex: "#7E8287" }
-        ],
-        imgQuery: "aesthetic coffee shop counter interior cafe"
+        ]
       },
       {
         topic: "인테리어 디자이너는 자기 집에 절대 안 쓰는 유행 3가지",
+        theme: "minimal",
         tag: "DESIGN ADVICE",
         subTag: "FAIL-SAFE",
         title: "디자이너는 자기 집에 절대 안 쓰는 유행 인테리어 3가지",
@@ -784,13 +870,99 @@
           { name: "Matte Beige", hex: "#DDD6C8" },
           { name: "Quiet Wood", hex: "#9E8B75" },
           { name: "Shadow Grey", hex: "#63605B" }
+        ]
+      },
+      {
+        topic: "곡선 가벽과 미장으로 완성하는 30평 뷰티 살롱 & 쇼룸",
+        theme: "beauty",
+        tag: "COMMERCIAL",
+        subTag: "BEAUTY & SALON",
+        title: "곡선 가벽과 부드러운 조명으로 완성하는 프리미엄 뷰티 살롱",
+        desc: "고객이 문을 여는 순간 특별한 대우를 받는 느낌을 주는 공간! 뷰티·에스테틱 샵 인테리어 핵심 가이드입니다.",
+        problemTitle: "딱딱한 네모 가벽만 가득한 샵, 왜 차갑고 답답할까요?",
+        problemDesc: "프라이빗한 관리를 위해 방을 쪼개다 보면 복도가 좁아지고 고객은 위압감을 느낍니다. 공간을 부드럽게 감싸는 곡선 설계가 필요합니다.",
+        conceptTitle: "“피부 톤이 화사해 보이는 3500K 뉴트럴 라이팅”",
+        conceptDesc: "너무 노랗지도 하얗지도 않은 3500K 온백색 조명과 미장 벽체의 결이 고객의 거울 샷을 가장 예쁘게 만듭니다.",
+        tip1Title: "복도 코너는 각진 모서리 대신 부드러운 라운드 마감",
+        tip1Desc: "동선이 좁아도 모서리를 둥글게 굴려주면 시각적으로 공간이 유기적으로 흐르며 편안함을 줍니다.",
+        tip2Title: "카운터 뒤쪽에 은은한 히든 간접월 시공하기",
+        tip2Desc: "벽면과 바닥 사이에 숨겨진 라인 조명은 매장의 깊이감을 2배로 넓혀주고 고급 호텔 스파 같은 인상을 줍니다.",
+        adviceTitle: "거울 주변에 그림자가 지지 않는 페이스 조명 배치",
+        adviceDesc: "천장 직부등 대신 거울 뒤 간접등이나 전면 라이팅을 설치해야 고객의 얼굴에 그늘이 지지 않습니다.",
+        summaryTitle: "프리미엄 샵 공간 디자인 3원칙",
+        tips: [
+          { t: "동선의 피로를 덜어주는 라운드 곡선벽", d: "좁은 통로에서도 답답함 없이 아늑함을 제공합니다." },
+          { t: "피부톤을 살리는 3500K 온백색 라이팅", d: "고객 만족도와 시술 후 거울 만족도를 극대화합니다." },
+          { t: "수납과 집기는 빌트인으로 매립하기", d: "시술 제품들이 밖으로 노출되지 않아 항상 청결합니다." }
         ],
-        imgQuery: "minimalist interior architectural detail living room"
+        chips: [
+          { name: "Soft Plaster", hex: "#EBE5DC" },
+          { name: "Warm Terrazzo", hex: "#D6CCC2" },
+          { name: "Champagne Gold", hex: "#C5B392" }
+        ]
+      },
+      {
+        topic: "일할 맛 나는 50평 크리에이티브 오피스 레이아웃",
+        theme: "office",
+        tag: "OFFICE DESIGN",
+        subTag: "WORK & SPACE",
+        title: "출근하고 싶어지는 50평 크리에이티브 오피스 인테리어",
+        desc: "칸막이로 가득 찬 칙칙한 사무실은 이제 안녕! 업무 몰입과 자유로운 소통이 공존하는 감각적인 오피스 레이아웃을 공개합니다.",
+        problemTitle: "벽을 막자니 답답하고, 트자니 소음 때문에 업무에 집중이 안 된다면?",
+        problemDesc: "개방감과 프라이버시는 늘 부딪힙니다. 답답한 불투명 가벽 대신 '슬림 프레임 유리 파티션'이 최적의 대안입니다.",
+        conceptTitle: "“빛은 통하고 소음은 차단하는 스마트 조닝”",
+        conceptDesc: "회의실과 임원실은 차음 유리로 시야를 열어두고, 라운지는 카페처럼 편안한 원목과 조명으로 긴장을 풀어줍니다.",
+        tip1Title: "회의실은 10T 강화유리 + 하부 흡음 패널 매칭",
+        tip1Desc: "유리의 세련된 개방감을 살리면서도 소리가 울리지 않도록 흡음 패브릭을 적절히 믹스하세요.",
+        tip2Title: "책상 위는 눈이 피로하지 않은 눈부심 방지 루버 조명",
+        tip2Desc: "모니터에 빛이 반사되지 않도록 확산형 라인 조명을 시선 축과 평행하게 배치해야 집중력이 올라갑니다.",
+        adviceTitle: "탕비실과 라운지는 업무 공간과 확실히 분리하기",
+        adviceDesc: "커피 향과 휴식의 소음이 업무 존으로 넘어가지 않도록 슬라이딩 도어나 중문으로 분리해 주세요.",
+        summaryTitle: "성공하는 워크스페이스 3원칙",
+        tips: [
+          { t: "유리 파티션으로 시야 개방감 확보", d: "자연광이 사무실 깊은 곳까지 들어와 밝은 에너지를 만듭니다." },
+          { t: "모니터 반사 없는 눈부심 방지 조명", d: "장시간 근무에도 눈의 피로감을 최소화합니다." },
+          { t: "소통을 유도하는 카페형 라운지 존", d: "아이디어 회의와 티타임이 자유롭게 일어나는 공간입니다." }
+        ],
+        chips: [
+          { name: "Deep Charcoal", hex: "#2B2D42" },
+          { name: "Clean Glass", hex: "#8D99AE" },
+          { name: "Warm Ash", hex: "#D4A373" }
+        ]
+      },
+      {
+        topic: "30평대 거실 히든도어와 무몰딩, 과연 돈값 할까?",
+        theme: "minimal",
+        tag: "DETAIL GUIDE",
+        subTag: "ARCHITECTURE",
+        title: "30평대 아파트 히든도어 & 무몰딩, 정말 돈값 할까요?",
+        desc: "인테리어 견적서에 몇백만 원씩 추가되는 무몰딩과 히든도어! 과연 우리 집에 할 가치가 있는지 솔직하게 분석해 드립니다.",
+        problemTitle: "문선 하나 없애는 데 왜 이렇게 비용이 많이 들까요?",
+        problemDesc: "단순히 몰딩을 떼는 게 아니라, 벽면 전체에 석고보드 목공 작업을 다시 치고 수평을 0.1mm 단위로 잡아야 하기 때문입니다.",
+        conceptTitle: "“벽과 문이 하나가 되는 극상의 미니멀 라인”",
+        conceptDesc: "벽체와 문선, 걸레받이가 사라지는 순간 시야를 가로막던 선들이 정돈되어 30평대 거실이 40평대처럼 넓어 보입니다.",
+        tip1Title: "예산이 부족하다면 '마이너스 몰딩'으로 가성비 타협",
+        tip1Desc: "완전 무몰딩 대신 얇은 금속 마이너스 몰딩을 쓰면 목공 비용을 40% 아끼면서도 단정한 선을 유지할 수 있습니다.",
+        tip2Title: "히든도어는 거실에서 잘 보이는 화장실 문 1~2개만 적용",
+        tip2Desc: "온 집안 문을 다 바꿀 필요 없이, 소파에 앉았을 때 정면으로 보이는 문에만 힘을 주면 가성비가 최고입니다.",
+        adviceTitle: "도배 대신 필름 또는 도장 마감과의 궁합 확인",
+        adviceDesc: "히든도어 모서리는 손이 자주 닿으므로 일반 도배지보다는 내구성이 좋은 인테리어 필름 마감을 강력 추천합니다.",
+        summaryTitle: "무몰딩 & 히든도어 선택 기준 3가지",
+        tips: [
+          { t: "거실 메인 뷰에만 선택과 집중하기", d: "예산을 아끼면서도 가장 큰 시각적 만족을 얻을 수 있습니다." },
+          { t: "벽체 수평 목공 품질 철저히 검수", d: "선이 비뚤어지면 안 하느니만 못한 결과가 나오므로 기술력이 핵심입니다." },
+          { t: "오염에 강한 프리미엄 필름 마감 선택", d: "손때와 생활 스크래치로부터 깔끔한 모서리를 지켜줍니다." }
+        ],
+        chips: [
+          { name: "Pure Matte", hex: "#FAF8F5" },
+          { name: "Shadow Line", hex: "#C7C2B8" },
+          { name: "Silent Walnut", hex: "#5C4D3C" }
+        ]
       }
     ];
 
-    // Current working data for 8 slides
-    let activeCardData = JSON.parse(JSON.stringify(fallbackPresets[0]));
+    // Active working data for 8 slides
+    let activeCardData = JSON.parse(JSON.stringify(masterPresetPool[0]));
 
     // Initialize Navigation Deck
     function initSlideNav() {
@@ -809,16 +981,16 @@
 
         btn.innerHTML = `
           <div>
-            <span class="text-[11px] font-mono ${item.id === currentSlideIndex ? 'text-studio-accent font-bold' : 'text-neutral-500'} uppercase">0${item.id} · ${item.en}</span>
-            <p class="text-xs font-semibold mt-0.5">${item.title}</p>
+            <span class="text-xs font-mono ${item.id === currentSlideIndex ? 'text-studio-accent font-bold' : 'text-neutral-500'} uppercase">0${item.id} · ${item.en}</span>
+            <p class="text-xs sm:text-sm font-semibold mt-0.5 text-neutral-200 group-hover:text-white">${item.title}</p>
           </div>
-          <span class="text-[10px] px-2 py-0.5 rounded bg-black/40 text-neutral-400 group-hover:text-white">${item.tag}</span>
+          <span class="text-[11px] px-2 py-0.5 rounded bg-black/40 text-neutral-400 group-hover:text-white">${item.tag}</span>
         `;
         navContainer.appendChild(btn);
       });
     }
 
-    // Switch Visible Slide
+    // Switch Slide Viewport
     function switchSlide(index) {
       currentSlideIndex = index;
       for (let i = 1; i <= 8; i++) {
@@ -836,44 +1008,45 @@
         if (navBtn) {
           if (i === index) {
             navBtn.className = "w-full text-left p-2.5 rounded-lg border border-studio-accent/60 bg-studio-accent/20 text-white transition flex items-center justify-between";
-            navBtn.querySelector('span').className = "text-[11px] font-mono text-studio-accent font-bold uppercase";
+            navBtn.querySelector('span').className = "text-xs font-mono text-studio-accent font-bold uppercase";
           } else {
             navBtn.className = "w-full text-left p-2.5 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] text-neutral-300 transition flex items-center justify-between group";
-            navBtn.querySelector('span').className = "text-[11px] font-mono text-neutral-500 uppercase";
+            navBtn.querySelector('span').className = "text-xs font-mono text-neutral-500 uppercase";
           }
         }
       }
     }
 
-    // Render Topics Buttons List
+    // Render Recommended Topics List (Buttons)
     function renderRecommendedTopics(topicsList) {
       const container = document.getElementById('topicButtonsList');
       container.innerHTML = '';
       topicsList.forEach((item, idx) => {
         const btn = document.createElement('button');
-        btn.className = "w-full text-left p-2 rounded-lg bg-black/30 hover:bg-white/10 border border-white/5 text-xs text-neutral-200 hover:text-white flex items-center gap-2 transition";
+        btn.className = "w-full text-left p-2.5 rounded-lg bg-black/40 hover:bg-white/10 border border-white/10 text-xs sm:text-sm text-neutral-200 hover:text-white flex items-center gap-2 transition";
         btn.onclick = () => applyPresetTopic(item);
         btn.innerHTML = `
-          <span class="text-[10px] font-mono text-studio-accent font-bold">#0${idx + 1}</span>
-          <span class="truncate flex-1">${item.topic}</span>
+          <span class="text-xs font-mono text-studio-accent font-bold shrink-0">#0${idx + 1}</span>
+          <span class="truncate flex-1 font-medium">${item.topic}</span>
+          <span class="text-[10px] text-neutral-400 bg-white/5 px-1.5 py-0.5 rounded shrink-0">${item.tag || '가이드'}</span>
         `;
         container.appendChild(btn);
       });
     }
 
-    // Refresh Recommended Topics (Shuffle or Generate)
+    // Refresh Recommended Topics (Shuffle from pool or generate with AI)
     async function refreshRecommendedTopics() {
       const apiKey = localStorage.getItem('bastudio_gemini_key') || "";
-      if (apiKey) {
-        // If API key exists, call Gemini to generate 5 brand new trending topics
-        try {
-          const genBtn = document.getElementById('generateBtn');
-          document.getElementById('currentTopicLabel').innerText = "AI가 새로운 주제를 제안하는 중...";
-          const prompt = `인테리어 디자인 스튜디오 '비에이스튜디오'의 인스타그램 카드뉴스용 최신 가이드 주제 5개를 JSON 배열로 추천해줘.
-어려운 공사 용어(연색성, 룩스 등)는 절대 쓰지 말고, 사람들이 '저장'하고 싶어 하는 실전 팁과 최신 트렌드 위주로 작성해줘.
-응답 형식: [{"topic": "주제명"}]`;
+      const currentTopicLabel = document.getElementById('currentTopicLabel');
 
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      if (apiKey) {
+        try {
+          currentTopicLabel.innerText = "AI가 새로운 주제를 제안하는 중...";
+          const prompt = `인테리어 디자인 스튜디오 '비에이스튜디오'의 인스타그램 카드뉴스용 최신 가이드 주제 5개를 JSON 배열로 추천해줘.
+어려운 공사 전문 용어(연색성, 룩스 등)는 절대 쓰지 말고, 일반인이 '저장'하고 싶어 하는 실전 팁과 최신 트렌드 위주로 작성해줘.
+응답 형식: [{"topic": "주제명", "tag": "태그명"}]`;
+
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -882,25 +1055,42 @@
             })
           });
           const data = await res.json();
-          const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            renderRecommendedTopics(parsed);
-            document.getElementById('currentTopicLabel').innerText = "AI 추천 주제가 갱신되었습니다.";
-            return;
+          if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+            const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              // Map parsed to preset-like items
+              const formatted = parsed.map(p => ({
+                topic: p.topic,
+                tag: p.tag || 'AI 추천',
+                isAiGeneratedPrompt: true
+              }));
+              renderRecommendedTopics(formatted);
+              currentTopicLabel.innerText = "새로운 AI 추천 주제가 갱신되었습니다.";
+              showCustomToast("🎲 새로운 AI 추천 주제 5개가 도착했습니다!");
+              return;
+            }
           }
         } catch (e) {
-          console.log("Fallback to local shuffle:", e);
+          console.warn("Gemini call fallback to smart pool:", e);
         }
       }
 
-      // Fallback: Randomly shuffle from presets pool
-      const shuffled = [...fallbackPresets].sort(() => 0.5 - Math.random()).slice(0, 5);
+      // Shuffle from Master Pool (Guarantees fresh 5 items each time)
+      const shuffled = [...masterPresetPool].sort(() => 0.5 - Math.random()).slice(0, 5);
       renderRecommendedTopics(shuffled);
-      document.getElementById('currentTopicLabel').innerText = "최신 추천 주제 목록이 갱신되었습니다.";
+      currentTopicLabel.innerText = "새로운 추천 주제 목록이 갱신되었습니다.";
+      showCustomToast("🎲 추천 주제 5개가 새로고침되었습니다!");
     }
 
     // Apply Preset Topic to 8 Slides
     function applyPresetTopic(data) {
+      // If clicked an AI-generated topic title without body, trigger generation for it
+      if (data.isAiGeneratedPrompt) {
+        document.getElementById('customTopicInput').value = data.topic;
+        handleGenerateContent();
+        return;
+      }
+
       activeCardData = data;
       document.getElementById('currentTopicLabel').innerText = `적용 중: ${data.topic}`;
 
@@ -949,30 +1139,15 @@
         document.getElementById('tip3Desc').innerText = data.tips[2].d;
       }
 
-      // Apply dynamic high-res Unsplash interior images according to topic
-      if (data.imgQuery) {
-        updateImagesWithKeywords(data.imgQuery);
-      }
+      // Apply dynamic High-Res Unsplash photos according to theme
+      applyThemePhotos(data.theme || 'minimal');
+      showCustomToast(`✨ "${data.topic.slice(0, 18)}..." 적용 완료!`);
     }
 
-    // Dynamic Image URL generator with cache busting
-    function updateImagesWithKeywords(keyword) {
-      const cleanKeyword = encodeURIComponent(keyword.trim());
-      const base = "https://images.unsplash.com/";
+    // Dynamic Photos by Theme
+    function applyThemePhotos(themeName) {
+      const selected = photoThemes[themeName] || photoThemes.minimal;
       
-      const curatedPhotos = [
-        "photo-1600210492486-724fe5c67fb0",
-        "photo-1513694203232-719a280e022f",
-        "photo-1507473885765-e6ed057f782c",
-        "photo-1618221195710-dd6b41faaea6",
-        "photo-1540518614846-7ede433c4ef4",
-        "photo-1517991104123-1d56a6e81ed9",
-        "photo-1583847268964-b28dc8f51f92",
-        "photo-1556911220-e15b29be8c8f",
-        "photo-1616486338812-3dadae4b4ace"
-      ];
-
-      // Refresh slide image sources
       const img1 = document.getElementById('img-1');
       const img2a = document.getElementById('img-2a');
       const img2b = document.getElementById('img-2b');
@@ -983,47 +1158,57 @@
       const img6b = document.getElementById('img-6b');
       const img8 = document.getElementById('img-8');
 
-      if (img1) img1.src = `${base}${curatedPhotos[0]}?auto=format&fit=crop&w=1200&q=80`;
-      if (img2a) img2a.src = `${base}${curatedPhotos[1]}?auto=format&fit=crop&w=600&q=80`;
-      if (img2b) img2b.src = `${base}${curatedPhotos[2]}?auto=format&fit=crop&w=600&q=80`;
-      if (img3) img3.src = `${base}${curatedPhotos[3]}?auto=format&fit=crop&w=1000&q=80`;
-      if (img4) img4.src = `${base}${curatedPhotos[4]}?auto=format&fit=crop&w=1000&q=80`;
-      if (img5) img5.src = `${base}${curatedPhotos[5]}?auto=format&fit=crop&w=1000&q=80`;
-      if (img6a) img6a.src = `${base}${curatedPhotos[6]}?auto=format&fit=crop&w=600&q=80`;
-      if (img6b) img6b.src = `${base}${curatedPhotos[7]}?auto=format&fit=crop&w=600&q=80`;
-      if (img8) img8.src = `${base}${curatedPhotos[8]}?auto=format&fit=crop&w=1200&q=80`;
+      if (img1) img1.src = selected.img1;
+      if (img2a) img2a.src = selected.img2a;
+      if (img2b) img2b.src = selected.img2b;
+      if (img3) img3.src = selected.img3;
+      if (img4) img4.src = selected.img4;
+      if (img5) img5.src = selected.img5;
+      if (img6a) img6a.src = selected.img6a;
+      if (img6b) img6b.src = selected.img6b;
+      if (img8) img8.src = selected.img8;
     }
 
-    // Generate Content using Gemini or Smart Fallback
+    // Generate Content using Gemini or Smart Topic Synthesizer
     async function handleGenerateContent() {
       const topicInput = document.getElementById('customTopicInput');
-      const userTopic = topicInput.value.trim();
+      let userTopic = topicInput.value.trim();
       const apiKey = localStorage.getItem('bastudio_gemini_key') || "";
+
+      if (!userTopic) {
+        userTopic = masterPresetPool[Math.floor(Math.random() * masterPresetPool.length)].topic;
+        topicInput.value = userTopic;
+      }
 
       const btn = document.getElementById('generateBtn');
       const btnText = document.getElementById('genBtnText');
       const btnIcon = document.getElementById('genBtnIcon');
+      const overlay = document.getElementById('loadingOverlay');
+      const overlayText = document.getElementById('loadingOverlayText');
 
       // Loading UI State
       btn.disabled = true;
       btnText.innerText = "작성 중...";
       btnIcon.innerText = "⏳";
+      overlayText.innerText = `비에이스튜디오 AI가 "${userTopic}" 가이드를 작성 중입니다...`;
+      overlay.classList.add('active');
 
-      if (apiKey && userTopic) {
+      if (apiKey) {
         try {
           const prompt = `당신은 감각적인 프리미엄 인테리어 디자인 스튜디오 '비에이스튜디오(BA STUDIO)'의 수석 공간 디자이너입니다.
 주제: "${userTopic}"
 이 주제로 인스타그램 카드뉴스 8장 분량의 전문 가이드를 작성해주세요.
 
 [필수 규칙]:
-1. '연색성', '룩스', '조도', '메지', '조인트', '동선 레이아웃' 같은 어려운 기술/공사 용어는 절대 쓰지 마세요.
-2. 대신 "자연광처럼 따뜻한 색감", "눈이 피로하지 않은 밝기", "타일 틈새 마감", "요리하기 편한 길" 등 쉬운 일상어로 2~3줄씩 친절하게 작성하세요.
+1. '연색성', '룩스', '조도', '메지', '조인트', '동선 레이아웃' 같은 어려운 기술/공사 전문용어는 절대 쓰지 마세요.
+2. 대신 "자연광처럼 따뜻한 색감", "눈이 피로하지 않은 밝기", "타일 틈새 마감선", "요리하기 편한 길" 등 쉬운 일상어로 2~3줄씩 친절하게 작성하세요.
 3. 브랜드명: '비에이스튜디오', 영문 'BA STUDIO', 인스타그램 '@bastudio_seoul' (전화번호는 절대 적지 마세요).
-4. 각 슬라이드의 제목과 본문은 한글 단어 단위로 자연스럽게 읽히도록 작성하세요.
+4. 각 슬라이드의 제목과 본문은 한글 단어 단위(break-keep)로 자연스럽게 읽히도록 작성하세요.
 
-[반환해야 할 JSON 형식]:
+[반환해야 할 순수 JSON 형식]:
 {
   "topic": "${userTopic}",
+  "theme": "lighting 또는 kitchen 또는 cafe 또는 minimal 또는 beauty 또는 office 중 하나",
   "tag": "DESIGN GUIDE",
   "subTag": "BA STUDIO SOLUTION",
   "title": "호기심을 자극하는 메인 헤드라인 (30자 내외)",
@@ -1049,11 +1234,9 @@
     { "name": "컬러명 2", "hex": "#C5B49F" },
     { "name": "컬러명 3", "hex": "#847B72" }
   ],
-  "imgQuery": "관련 영문 인테리어 키워드 (예: modern kitchen wood interior)",
   "instagramCaption": "인스타그램 업로드용 피드 본문 캡션 및 해시태그 전문"
 }`;
 
-          // Using standard gemini-3-flash-preview endpoint
           const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1064,47 +1247,76 @@
           });
 
           const data = await res.json();
-          let rawText = data.candidates[0].content.parts[0].text;
-          rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-          const parsed = JSON.parse(rawText);
-          applyPresetTopic(parsed);
-          document.getElementById('currentTopicLabel').innerText = `적용 중: ${userTopic}`;
-          finishGenerationUI();
-          return;
+          if (data.error) {
+            throw new Error(data.error.message || "Gemini API 오류");
+          }
+
+          let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (rawText) {
+            rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+            const parsed = JSON.parse(rawText);
+            applyPresetTopic(parsed);
+            document.getElementById('currentTopicLabel').innerText = `적용 중: ${userTopic}`;
+            finishGenerationUI();
+            showCustomToast("🎉 Gemini AI가 새로운 8장 가이드를 작성했습니다!");
+            return;
+          }
         } catch (err) {
-          console.error("Gemini API Error, falling back to smart template:", err);
+          console.error("Gemini API Error, falling back to smart synthesizer:", err);
+          showCustomToast(`⚠️ API 연결 지연으로 스마트 엔진이 가이드를 맞춤 생성했습니다.`);
         }
       }
 
-      // Fallback: Smart keyword matching or random preset
+      // Smart Topic Synthesizer (Zero API Error - Always delivers tailored content)
       setTimeout(() => {
-        let matched = fallbackPresets[0];
-        if (userTopic) {
-          const lower = userTopic.toLowerCase();
-          if (lower.includes('주방') || lower.includes('아일랜드')) matched = fallbackPresets[2];
-          else if (lower.includes('카페') || lower.includes('상업') || lower.includes('상가')) matched = fallbackPresets[3];
-          else if (lower.includes('웜') || lower.includes('미니멀') || lower.includes('화이트')) matched = fallbackPresets[1];
-          else if (lower.includes('실수') || lower.includes('유행') || lower.includes('디자이너')) matched = fallbackPresets[4];
-          
-          // Custom override topic text
-          matched = JSON.parse(JSON.stringify(matched));
-          matched.title = userTopic;
-          matched.topic = userTopic;
+        const lower = userTopic.toLowerCase();
+        let targetTheme = "minimal";
+        let matched = null;
+
+        if (lower.includes('조명') || lower.includes('호텔') || lower.includes('스탠드') || lower.includes('간접등')) {
+          targetTheme = "lighting";
+          matched = masterPresetPool[0];
+        } else if (lower.includes('주방') || lower.includes('아일랜드') || lower.includes('싱크대') || lower.includes('식탁')) {
+          targetTheme = "kitchen";
+          matched = masterPresetPool[2];
+        } else if (lower.includes('카페') || lower.includes('상업') || lower.includes('음식점') || lower.includes('식당') || lower.includes('베이커리')) {
+          targetTheme = "cafe";
+          matched = masterPresetPool[3];
+        } else if (lower.includes('뷰티') || lower.includes('살롱') || lower.includes('에스테틱') || lower.includes('쇼룸')) {
+          targetTheme = "beauty";
+          matched = masterPresetPool[5];
+        } else if (lower.includes('오피스') || lower.includes('사무실') || lower.includes('워크')) {
+          targetTheme = "office";
+          matched = masterPresetPool[6];
+        } else if (lower.includes('히든') || lower.includes('몰딩') || lower.includes('도어') || lower.includes('문')) {
+          targetTheme = "minimal";
+          matched = masterPresetPool[7];
         } else {
-          matched = fallbackPresets[Math.floor(Math.random() * fallbackPresets.length)];
+          matched = masterPresetPool[Math.floor(Math.random() * masterPresetPool.length)];
+          targetTheme = matched.theme || "minimal";
         }
-        applyPresetTopic(matched);
+
+        // Deep copy and customize with current topic
+        const customData = JSON.parse(JSON.stringify(matched));
+        customData.topic = userTopic;
+        customData.title = userTopic;
+        customData.theme = targetTheme;
+        applyPresetTopic(customData);
+
         finishGenerationUI();
-      }, 500);
+      }, 600);
     }
 
     function finishGenerationUI() {
       const btn = document.getElementById('generateBtn');
       const btnText = document.getElementById('genBtnText');
       const btnIcon = document.getElementById('genBtnIcon');
+      const overlay = document.getElementById('loadingOverlay');
+      
       btn.disabled = false;
       btnText.innerText = "AI 글 생성";
       btnIcon.innerText = "✨";
+      overlay.classList.remove('active');
     }
 
     // Copy Instagram Caption & Hashtags
@@ -1148,21 +1360,71 @@ ${desc}
       tempTextArea.select();
       document.execCommand('copy');
       document.body.removeChild(tempTextArea);
-
-      // Custom toast instead of alert()
       showCustomToast("📋 인스타그램 피드 본문이 클립보드에 복사되었습니다!");
     }
 
     function showCustomToast(msg) {
       const toast = document.createElement('div');
-      toast.className = "fixed bottom-8 right-8 bg-studio-accent text-white px-5 py-3 rounded-lg shadow-2xl z-50 text-xs font-semibold flex items-center gap-2 animate-bounce";
+      toast.className = "fixed bottom-8 right-8 bg-studio-accent text-white px-5 py-3 rounded-lg shadow-2xl z-50 text-xs font-semibold flex items-center gap-2";
       toast.innerHTML = `<span>✅</span> <span>${msg}</span>`;
       document.body.appendChild(toast);
       setTimeout(() => {
         toast.remove();
-      }, 3000);
+      }, 3500);
     }
-    // JSON Import Modal Functions
+
+    // Photo Replacement Handler (Local file)
+    function handlePhotoClick(slideNum, imgId) {
+      targetImgElement = document.getElementById(imgId);
+      const fileInput = document.getElementById('imageFileInput');
+      fileInput.click();
+    }
+
+    document.getElementById('imageFileInput').addEventListener('change', function(e) {
+      if (this.files && this.files[0] && targetImgElement) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          targetImgElement.src = event.target.result;
+          showCustomToast("📷 사진이 성공적으로 교체되었습니다.");
+        };
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+
+    // Ratio Switchers (1:1 and 4:5)
+    document.getElementById('ratio1to1').addEventListener('click', function() {
+      const vp = document.getElementById('slideViewport');
+      vp.style.width = '540px';
+      vp.style.height = '540px';
+      this.className = "px-2.5 py-1 rounded bg-studio-accent text-white font-semibold text-[11px] shadow";
+      document.getElementById('ratio4to5').className = "px-2.5 py-1 rounded text-neutral-400 hover:text-white font-medium text-[11px]";
+    });
+
+    document.getElementById('ratio4to5').addEventListener('click', function() {
+      const vp = document.getElementById('slideViewport');
+      vp.style.width = '540px';
+      vp.style.height = '675px';
+      this.className = "px-2.5 py-1 rounded bg-studio-accent text-white font-semibold text-[11px] shadow";
+      document.getElementById('ratio1to1').className = "px-2.5 py-1 rounded text-neutral-400 hover:text-white font-medium text-[11px]";
+    });
+
+    // Guide Overlay Toggle
+    document.getElementById('toggleGuideBtn').addEventListener('click', function() {
+      isGuideActive = !isGuideActive;
+      const vp = document.getElementById('slideViewport');
+      const text = document.getElementById('guideStatusText');
+      if (isGuideActive) {
+        vp.classList.add('guide-active');
+        text.innerText = "📸 가이드: ON";
+        this.className = "px-2.5 py-1.5 rounded border border-studio-accent text-studio-accent bg-studio-accent/15 flex items-center gap-1.5 transition";
+      } else {
+        vp.classList.remove('guide-active');
+        text.innerText = "사진 위치 가이드: OFF";
+        this.className = "px-2.5 py-1.5 rounded border border-white/20 text-neutral-300 bg-white/5 hover:bg-white/10 flex items-center gap-1.5 transition";
+      }
+    });
+
+    // Modals: JSON Import
     function openJsonModal() {
       document.getElementById('jsonModal').classList.remove('hidden');
     }
@@ -1171,7 +1433,7 @@ ${desc}
     }
     function copyAiStudioPromptTemplate() {
       const promptTemplate = `당신은 프리미엄 인테리어 디자인 스튜디오 '비에이스튜디오 (BA STUDIO)'의 수석 브랜드 디렉터입니다.
-주제: "[여기에 원하는 주제를 적으세요. 예: 34평 웜미니멀 아파트, 25평 브런치 카페]"
+주제: "[원하는 인테리어 주제를 적으세요. 예: 34평 웜미니멀 아파트, 25평 브런치 카페]"
 
 [필수 규칙]:
 1. '연색성', '룩스', '조도', '메지', '조인트' 같은 어려운 기술/공사 용어는 절대 쓰지 마세요.
@@ -1181,6 +1443,7 @@ ${desc}
 [반환 형식: 순수 JSON]:
 {
   "topic": "주제명",
+  "theme": "lighting 또는 kitchen 또는 cafe 또는 minimal 또는 beauty 또는 office",
   "tag": "DESIGN GUIDE",
   "subTag": "BA STUDIO SOLUTION",
   "title": "호기심을 자극하는 메인 헤드라인 (30자 내외)",
@@ -1206,11 +1469,9 @@ ${desc}
     { "name": "컬러명 2", "hex": "#C5B49F" },
     { "name": "컬러명 3", "hex": "#847B72" }
   ],
-  "imgQuery": "영문 인테리어 키워드",
   "instagramCaption": "인스타그램 업로드용 본문 캡션 및 해시태그 전문"
 }`;
       copyTextToClipboard(promptTemplate);
-      showCustomToast("📋 AI 스튜디오용 프롬프트가 복사되었습니다!");
     }
 
     function applyDirectJson() {
@@ -1227,57 +1488,7 @@ ${desc}
       }
     }
 
-    // Photo Replacement Handler (Computer file or URL)
-    function handlePhotoClick(slideNum, imgId) {
-      targetImgElement = document.getElementById(imgId);
-      const fileInput = document.getElementById('imageFileInput');
-      fileInput.click();
-    }
-
-    document.getElementById('imageFileInput').addEventListener('change', function(e) {
-      if (this.files && this.files[0] && targetImgElement) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          targetImgElement.src = event.target.result;
-        };
-        reader.readAsDataURL(this.files[0]);
-      }
-    });
-
-    // Ratio Switchers
-    document.getElementById('ratio1to1').addEventListener('click', function() {
-      const vp = document.getElementById('slideViewport');
-      vp.style.width = '540px';
-      vp.style.height = '540px';
-      this.className = "px-2.5 py-1.5 rounded bg-studio-accent text-white font-semibold shadow";
-      document.getElementById('ratio4to5').className = "px-2.5 py-1.5 rounded text-neutral-400 hover:text-white font-medium";
-    });
-
-    document.getElementById('ratio4to5').addEventListener('click', function() {
-      const vp = document.getElementById('slideViewport');
-      vp.style.width = '540px';
-      vp.style.height = '675px';
-      this.className = "px-2.5 py-1.5 rounded bg-studio-accent text-white font-semibold shadow";
-      document.getElementById('ratio1to1').className = "px-2.5 py-1.5 rounded text-neutral-400 hover:text-white font-medium";
-    });
-
-    // Guide Toggle
-    document.getElementById('toggleGuideBtn').addEventListener('click', function() {
-      isGuideActive = !isGuideActive;
-      const vp = document.getElementById('slideViewport');
-      const text = document.getElementById('guideStatusText');
-      if (isGuideActive) {
-        vp.classList.add('guide-active');
-        text.innerText = "📸 가이드: ON";
-        this.className = "px-3 py-1.5 rounded border border-studio-accent text-studio-accent bg-studio-accent/15 flex items-center gap-1.5 transition";
-      } else {
-        vp.classList.remove('guide-active');
-        text.innerText = "사진 위치 가이드: OFF";
-        this.className = "px-3 py-1.5 rounded border border-white/20 text-neutral-300 bg-white/5 hover:bg-white/10 flex items-center gap-1.5 transition";
-      }
-    });
-
-    // API Modal Functions
+    // Modals: API Key
     function openApiModal() {
       document.getElementById('geminiApiKeyInput').value = localStorage.getItem('bastudio_gemini_key') || '';
       document.getElementById('apiModal').classList.remove('hidden');
@@ -1290,25 +1501,73 @@ ${desc}
       if (key) {
         localStorage.setItem('bastudio_gemini_key', key);
         document.getElementById('apiStatusTag').innerText = "Gemini AI 연결됨";
-        document.getElementById('apiStatusTag').className = "text-[10px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20";
-        alert("✅ Gemini API Key가 안전하게 저장되었습니다! 이제 AI 실시간 생성을 이용하실 수 있습니다.");
+        document.getElementById('apiStatusTag').className = "text-[10px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20 font-medium";
+        showCustomToast("✅ Gemini API Key가 저장되었습니다! 실시간 AI 작성이 활성화되었습니다.");
       } else {
         localStorage.removeItem('bastudio_gemini_key');
         document.getElementById('apiStatusTag').innerText = "스마트 엔진 사용 중";
-        document.getElementById('apiStatusTag').className = "text-[10px] text-studio-accent bg-studio-accent/15 px-2 py-0.5 rounded";
+        document.getElementById('apiStatusTag').className = "text-[10px] text-studio-accent bg-studio-accent/15 px-2 py-0.5 rounded border border-studio-accent/30 font-medium";
+        showCustomToast("스마트 엔진 모드로 전환되었습니다.");
       }
       closeApiModal();
     }
 
-    // Window Onload Initialization
+    // 8-Slide High Resolution ZIP Batch Download
+    async function exportAllSlidesZip() {
+      const exportBtn = document.getElementById('exportAllBtn');
+      const overlay = document.getElementById('loadingOverlay');
+      const overlayText = document.getElementById('loadingOverlayText');
+
+      overlayText.innerText = "8개 슬라이드를 고화질 이미지(ZIP)로 묶는 중입니다 (0/8)...";
+      overlay.classList.add('active');
+      exportBtn.disabled = true;
+
+      const originalIndex = currentSlideIndex;
+      const zip = new JSZip();
+      const folder = zip.folder("bastudio_cardnews_8slides");
+
+      try {
+        for (let i = 1; i <= 8; i++) {
+          switchSlide(i);
+          overlayText.innerText = `8개 슬라이드를 고화질 이미지(ZIP)로 묶는 중입니다 (${i}/8)...`;
+          // Wait briefly for DOM render
+          await new Promise(r => setTimeout(r, 250));
+
+          const slideEl = document.getElementById(`slide-${i}`);
+          const canvas = await html2canvas(slideEl, {
+            scale: 2, // High resolution (1080px width)
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: null
+          });
+
+          const dataUrl = canvas.toDataURL('image/png');
+          const base64Data = dataUrl.replace(/^data:image\/png;base64,/, "");
+          folder.file(`bastudio_slide_0${i}.png`, base64Data, { base64: true });
+        }
+
+        overlayText.innerText = "압축 파일(ZIP) 생성 중...";
+        const content = await zip.generateAsync({ type: "blob" });
+        saveAs(content, `bastudio_cardnews_8slides_${Date.now()}.zip`);
+        showCustomToast("💾 8장 전체 슬라이드가 ZIP 파일로 다운로드되었습니다!");
+      } catch (err) {
+        console.error("Export Error:", err);
+        showCustomToast("⚠️️ 다운로드 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      } finally {
+        switchSlide(originalIndex);
+        overlay.classList.remove('active');
+        exportBtn.disabled = false;
+      }
+    }
+
     window.onload = function() {
       initSlideNav();
-      renderRecommendedTopics(fallbackPresets.slice(0, 5));
-      applyPresetTopic(fallbackPresets[0]);
+      renderRecommendedTopics(masterPresetPool.slice(0, 5));
+      applyPresetTopic(masterPresetPool[0]);
 
       if (localStorage.getItem('bastudio_gemini_key')) {
         document.getElementById('apiStatusTag').innerText = "Gemini AI 연결됨";
-        document.getElementById('apiStatusTag').className = "text-[10px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20";
+        document.getElementById('apiStatusTag').className = "text-[10px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20 font-medium";
       }
     };
   </script>
