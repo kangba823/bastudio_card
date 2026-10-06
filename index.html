@@ -84,6 +84,18 @@
     .guide-active .guide-tag {
       display: flex;
     }
+    /* Matrix Pill Buttons */
+    .matrix-pill {
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .matrix-pill.active {
+      background-color: #B08968 !important;
+      color: #ffffff !important;
+      border-color: #B08968 !important;
+      font-weight: 700;
+      box-shadow: 0 0 10px rgba(176, 137, 104, 0.35);
+    }
     /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
@@ -99,7 +111,6 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #B08968;
     }
-    /* Loading overlay */
     #loadingOverlay {
       display: none;
     }
@@ -121,7 +132,7 @@
           <h1 class="brand-logo text-base sm:text-lg font-bold tracking-widest text-white uppercase">BA STUDIO</h1>
           <span class="text-[10px] px-2 py-0.5 rounded bg-white/10 text-neutral-300 font-medium">비에이스튜디오</span>
         </div>
-        <p class="text-[10px] text-studio-muted">Interior & Space Design | 8장 가이드 카드뉴스 AI 스튜디오</p>
+        <p class="text-[10px] text-studio-muted">Interior & Space Design | 8장 가이드 카드뉴스 스튜디오</p>
       </div>
     </div>
 
@@ -141,12 +152,12 @@
 
       <!-- Settings: AI Studio JSON Import -->
       <button onclick="openJsonModal()" class="px-3 py-1.5 rounded border border-white/20 text-neutral-200 bg-white/5 hover:bg-white/15 font-medium flex items-center gap-1.5 transition">
-        <span>📥</span> AI 스튜디오 JSON 붙여넣기
+        <span>📥</span> AI JSON 붙여넣기
       </button>
 
       <!-- Settings: Gemini API Key -->
       <button onclick="openApiModal()" class="px-3 py-1.5 rounded border border-studio-accent/60 text-studio-accent bg-studio-accent/10 hover:bg-studio-accent/20 font-medium flex items-center gap-1.5 transition">
-        <span>⚙️</span> API 직접 연결
+        <span>⚙️</span> API 설정
       </button>
 
       <!-- Copy Instagram Caption -->
@@ -164,43 +175,90 @@
   <!-- Main Workspace -->
   <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
 
-    <!-- Left Sidebar: AI Topic Generator & Slide Deck Navigation -->
-    <aside class="w-full lg:w-[410px] border-b lg:border-b-0 lg:border-r border-white/10 bg-[#161616] p-4 flex flex-col gap-4 overflow-y-auto max-h-[50vh] lg:max-h-[calc(100vh-58px)]">
+    <!-- Left Sidebar: 3-Step Matrix Topic Builder & Slide Navigation -->
+    <aside class="w-full lg:w-[420px] border-b lg:border-b-0 lg:border-r border-white/10 bg-[#161616] p-4 flex flex-col gap-4 overflow-y-auto max-h-[50vh] lg:max-h-[calc(100vh-58px)]">
 
-      <!-- AI Topic Section -->
-      <div class="bg-[#1F1F1F] p-4 rounded-xl border border-white/10 space-y-3">
-        <div class="flex items-center justify-between">
+      <!-- ============================================== -->
+      <!-- NEW: 3-STEP MATRIX TOPIC SELECTOR (클릭 조합 생성기) -->
+      <!-- ============================================== -->
+      <div class="bg-[#1F1F1F] p-4 rounded-xl border border-white/10 space-y-4 shadow-sm">
+        <div class="flex items-center justify-between pb-1 border-b border-white/5">
           <div class="flex items-center gap-1.5">
-            <span class="text-base">✨</span>
-            <h3 class="text-xs font-bold text-white uppercase tracking-wider">추천 인테리어 가이드 주제</h3>
+            <span class="text-base">🎯</span>
+            <h3 class="text-xs font-bold text-white uppercase tracking-wider">주제 3단 조합 선택기</h3>
           </div>
-          <button onclick="refreshRecommendedTopics()" class="text-xs text-studio-accent hover:text-white font-medium flex items-center gap-1 transition px-2.5 py-1 rounded bg-studio-accent/15 border border-studio-accent/30 shadow-sm">
-            <span>🎲</span> 새 주제 5개 뽑기
+          <button onclick="randomizeMatrixCombination()" class="text-xs text-studio-accent hover:text-white font-medium flex items-center gap-1 transition px-2.5 py-1 rounded bg-studio-accent/15 border border-studio-accent/30 shadow-sm">
+            <span>🎲</span> 랜덤 꿀조합
           </button>
         </div>
 
-        <!-- 5 Recommended Topic Buttons (Interactive & Always Fresh) -->
-        <div class="space-y-2" id="topicButtonsList">
-          <!-- Populated dynamically by JavaScript -->
-        </div>
-
-        <!-- Custom Topic Input -->
-        <div class="pt-3 border-t border-white/10 space-y-2">
-          <label class="text-xs text-neutral-300 font-semibold block">직접 주제 또는 키워드 입력:</label>
-          <div class="flex gap-2">
-            <input type="text" id="customTopicInput" placeholder="예: 30평대 아파트 조명 팁, 성수동 브런치 카페" 
-                   class="flex-1 bg-black/60 border border-white/20 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-studio-accent placeholder-neutral-500">
-            <button id="generateBtn" onclick="handleGenerateContent()" class="px-4 py-2 bg-studio-accent hover:bg-studio-accentHover text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shrink-0 shadow transition">
-              <span id="genBtnIcon">✨</span>
-              <span id="genBtnText">AI 글 생성</span>
-            </button>
+        <!-- Step 1: 공간 유형 -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
+            <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">1</span>
+            공간 유형 선택:
+          </label>
+          <div class="grid grid-cols-3 gap-1.5" id="matrixSpaceButtons">
+            <button class="matrix-pill active px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'apt', this)">🏡 아파트/주거</button>
+            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'cafe', this)">☕ 카페/베이커리</button>
+            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'kitchen', this)">🍳 주방/아일랜드</button>
+            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'bath', this)">🛁 욕실/타일</button>
+            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'beauty', this)">✨ 뷰티/쇼룸</button>
+            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'office', this)">💼 오피스/서재</button>
           </div>
         </div>
 
-        <!-- Engine Status -->
-        <div id="aiStatusBadge" class="text-xs text-neutral-400 flex items-center justify-between pt-2 border-t border-white/5">
-          <span id="currentTopicLabel" class="truncate max-w-[220px] text-neutral-300">적용 중: 3000K 호텔 감성 조명 공식</span>
-          <span id="apiStatusTag" class="text-[11px] text-studio-accent bg-studio-accent/15 px-2 py-0.5 rounded border border-studio-accent/30 font-medium">스마트 엔진 준비됨</span>
+        <!-- Step 2: 평형 / 상황 -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
+            <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">2</span>
+            평수 / 대상 상황:
+          </label>
+          <div class="grid grid-cols-3 gap-1.5" id="matrixScaleButtons">
+            <button class="matrix-pill active px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('scale', 'small', this)">20평대 신혼집</button>
+            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('scale', 'mid', this)">30~40평대 아파트</button>
+            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('scale', 'store', this)">15~30평 상업공간</button>
+          </div>
+        </div>
+
+        <!-- Step 3: 핵심 고민 / 테마 -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
+            <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">3</span>
+            핵심 가이드 테마:
+          </label>
+          <div class="grid grid-cols-2 gap-1.5" id="matrixTopicButtons">
+            <button class="matrix-pill active px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'lighting', this)">💡 3000K 호텔 조명 공식</button>
+            <button class="matrix-pill px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'storage', this)">📦 수납 2배 극대화 공식</button>
+            <button class="matrix-pill px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'traffic', this)">🚪 대면형 구조 & 동선</button>
+            <button class="matrix-pill px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'mistake', this)">⚠️ 디자이너가 피하는 유행</button>
+            <button class="matrix-pill px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'minimal', this)">🪵 웜미니멀 & 우드톤</button>
+            <button class="matrix-pill px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'finish', this)">🧱 졸리컷 & 프리미엄 마감</button>
+          </div>
+        </div>
+
+        <!-- Action: 완성된 조합 생성 버튼 -->
+        <div class="pt-2 border-t border-white/10 space-y-2">
+          <div class="p-2.5 bg-black/60 rounded-lg border border-studio-accent/30 text-xs">
+            <span class="text-studio-accent font-semibold block text-[10px] uppercase">현재 선택된 조합:</span>
+            <p id="combinedTopicTitle" class="text-white font-bold text-xs mt-0.5 truncate break-keep">
+              20평대 아파트 | 실패 없는 3000K 호텔 감성 조명 공식
+            </p>
+          </div>
+
+          <button id="generateMatrixBtn" onclick="applyMatrixCardnews()" class="w-full py-2.5 bg-studio-accent hover:bg-studio-accentHover text-white text-xs font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg transition">
+            <span>✨</span>
+            <span id="genBtnText">선택한 조합으로 8장 즉시 완성</span>
+          </button>
+        </div>
+
+        <!-- Freeform Custom Keyword Input -->
+        <div class="pt-2 border-t border-white/5 flex gap-2 items-center">
+          <input type="text" id="freeformInput" placeholder="직접 키워드 입력 (예: 성수동 꽃집, 45평 복층)" 
+                 class="flex-1 bg-black/40 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-studio-accent placeholder-neutral-500">
+          <button onclick="handleFreeformGenerate()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 text-xs font-medium shrink-0 transition">
+            적용
+          </button>
         </div>
       </div>
 
@@ -210,7 +268,6 @@
           <h3 class="text-xs font-bold text-neutral-300 uppercase tracking-wider">슬라이드 구성 (총 8장)</h3>
           <span class="text-xs text-studio-accent">클릭하여 슬라이드 이동</span>
         </div>
-
         <nav class="space-y-1.5" id="slideNav">
           <!-- 8 Slide Navigation Items (Generated by script) -->
         </nav>
@@ -256,7 +313,7 @@
             <span class="text-xs text-white/80 font-mono tracking-widest">01 / 08</span>
           </div>
 
-          <!-- Title Area (Mobile Scaled Up for Legibility) -->
+          <!-- Title Area -->
           <div class="relative z-10 text-white space-y-3 pb-2">
             <div class="inline-block px-3 py-1 bg-white/20 backdrop-blur rounded text-xs font-semibold tracking-wider uppercase text-white">
               <span id="slide1SubTag">INTERIOR SOLUTION</span>
@@ -576,13 +633,13 @@
   <!-- Hidden Image File Input -->
   <input type="file" id="imageFileInput" accept="image/*" class="hidden">
 
-  <!-- Loading Overlay for Generation or ZIP Export -->
+  <!-- Loading Overlay -->
   <div id="loadingOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 items-center justify-center flex-col gap-4 text-white">
     <div class="w-12 h-12 border-4 border-studio-accent/30 border-t-studio-accent rounded-full animate-spin"></div>
     <p id="loadingOverlayText" class="text-sm font-semibold tracking-wide">비에이스튜디오 가이드 생성 중...</p>
   </div>
 
-  <!-- AI Studio JSON Direct Import Modal -->
+  <!-- AI Studio JSON Modal -->
   <div id="jsonModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-[#1C1C1C] border border-white/15 rounded-xl max-w-lg w-full p-6 text-white space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-white/10 pb-3">
@@ -593,19 +650,14 @@
       </div>
       
       <div class="space-y-2 text-xs text-neutral-300 leading-relaxed">
-        <p>Google AI Studio에서 생성된 <strong>JSON 전체 텍스트</strong>를 아래에 붙여넣으시면 8장 슬라이드에 즉각 반영됩니다.</p>
+        <p>Google AI Studio에서 나온 <strong>JSON 전체 텍스트</strong>를 붙여넣으시면 8장 슬라이드에 즉시 반영됩니다.</p>
         <textarea id="jsonDirectInput" rows="10" placeholder='{\n  "topic": "...",\n  "title": "...",\n  "desc": "..."\n}'
                   class="w-full bg-black/60 border border-white/20 rounded-lg p-3 text-xs text-neutral-200 focus:outline-none focus:border-studio-accent font-mono resize-none"></textarea>
       </div>
 
-      <div class="flex justify-between items-center pt-2">
-        <button onclick="copyAiStudioPromptTemplate()" class="text-xs text-studio-accent hover:underline flex items-center gap-1">
-          <span>📋</span> AI 스튜디오용 프롬프트 복사
-        </button>
-        <div class="flex gap-2">
-          <button onclick="closeJsonModal()" class="px-3 py-1.5 rounded text-xs text-neutral-400 hover:text-white">닫기</button>
-          <button onclick="applyDirectJson()" class="px-4 py-1.5 rounded text-xs bg-studio-accent text-white font-medium hover:bg-studio-accentHover">슬라이드에 즉시 적용</button>
-        </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeJsonModal()" class="px-3 py-1.5 rounded text-xs text-neutral-400 hover:text-white">닫기</button>
+        <button onclick="applyDirectJson()" class="px-4 py-1.5 rounded text-xs bg-studio-accent text-white font-medium hover:bg-studio-accentHover">슬라이드에 즉시 적용</button>
       </div>
     </div>
   </div>
@@ -621,13 +673,13 @@
       </div>
       
       <div class="space-y-3 text-xs text-neutral-300 leading-relaxed">
-        <p>Google AI Studio에서 무료로 발급받은 <strong>Gemini API Key</strong>를 입력해 두시면, 버튼 클릭 시 실제 AI가 새로운 가이드 8장을 실시간으로 자동 작성합니다.</p>
+        <p>Gemini API Key를 입력하시면, 선택하신 3단 매트릭스 조합을 토대로 Gemini AI가 실시간으로 문장을 직접 써줍니다.</p>
         <div>
           <label class="block text-xs text-neutral-400 mb-1">Gemini API Key (AIza...):</label>
           <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." 
                  class="w-full bg-black/50 border border-white/20 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
         </div>
-        <p class="text-[11px] text-neutral-400 leading-normal">※ API 키가 없어도 비에이스튜디오 스마트 엔진(30종 프리셋 풀)으로 100% 무제한 생성이 가능합니다.</p>
+        <p class="text-[11px] text-neutral-400">※ API 키가 없어도 비에이스튜디오 스마트 매트릭스 엔진으로 100% 무제한 생성이 가능합니다.</p>
       </div>
 
       <div class="flex justify-end gap-2 pt-2">
@@ -643,20 +695,29 @@
     let isGuideActive = false;
     let targetImgElement = null;
 
-    // Slide Titles for Navigation Deck
-    const slideDeckMeta = [
-      { id: 1, title: '표지 & 핵심 타이틀', tag: '대표 1컷', en: 'COVER' },
-      { id: 2, title: '흔한 실수 & 문제 진단', tag: '2분할 비교', en: 'PROBLEM' },
-      { id: 3, title: '공간 무드 & 컬러 조합', tag: '무드 1컷 + 칩', en: 'CONCEPT' },
-      { id: 4, title: '실전 솔루션 01 (자재/간접등)', tag: '와이드 1컷', en: 'TIP 01' },
-      { id: 5, title: '실전 솔루션 02 (높낮이/동선)', tag: '단차 1컷', en: 'TIP 02' },
-      { id: 6, title: '디자이너 조언 & 주의점', tag: '접사 2분할', en: 'ADVICE' },
-      { id: 7, title: '저장 유도 핵심 3원칙', tag: '정보형 카드', en: 'SUMMARY' },
-      { id: 8, title: '비에이스튜디오 상담 안내', tag: 'CTA / 계정', en: 'OUTRO' },
-    ];
+    // Selected Matrix State
+    let matrixState = {
+      space: 'apt',
+      scale: 'small',
+      theme: 'lighting'
+    };
 
-    // High quality Curated Unsplash Interior Photos mapped by 8 Theme Categories
-    const photoThemes = {
+    // Human-friendly labels
+    const matrixLabels = {
+      space: { apt: '아파트', cafe: '카페·상업', kitchen: '주방', bath: '욕실', beauty: '뷰티살롱', office: '오피스' },
+      scale: { small: '20평대 신혼집', mid: '30~40평대', store: '상업 매장' },
+      theme: {
+        lighting: '3000K 호텔 감성 조명 공식',
+        storage: '수납 2배 극대화 빌트인 공식',
+        traffic: '대면형 구조 & 최적 동선 가이드',
+        mistake: '디자이너는 절대 안 쓰는 유행 3가지',
+        minimal: '질리지 않는 웜미니멀 & 우드톤',
+        finish: '호텔 욕실 졸리컷 & 600각 타일 시공'
+      }
+    };
+
+    // 8 Theme Photo Sets (Distinct, Curated High-Res Unsplash IDs)
+    const photoLibraries = {
       lighting: {
         img1: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80",
         img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
@@ -690,16 +751,27 @@
         img6b: "https://images.unsplash.com/photo-1509785307050-d4066910ec1e?auto=format&fit=crop&w=600&q=80",
         img8: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80"
       },
-      minimal: {
-        img1: "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80",
+      bath: {
+        img1: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1604014237800-1c9102c219da?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1584622781564-1d987f7333c1?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      },
+      storage: {
+        img1: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80",
         img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
-        img2b: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
-        img3: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=80",
-        img4: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
-        img5: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1000&q=80",
-        img6a: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=600&q=80",
-        img6b: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=600&q=80",
-        img8: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80"
+        img2b: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80"
       },
       beauty: {
         img1: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80",
@@ -712,16 +784,16 @@
         img6b: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=600&q=80",
         img8: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80"
       },
-      bathroom: {
-        img1: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80",
-        img2a: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80",
-        img2b: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=600&q=80",
-        img3: "https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80",
-        img4: "https://images.unsplash.com/photo-1604014237800-1c9102c219da?auto=format&fit=crop&w=1000&q=80",
-        img5: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1000&q=80",
-        img6a: "https://images.unsplash.com/photo-1584622781564-1d987f7333c1?auto=format&fit=crop&w=600&q=80",
-        img6b: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=600&q=80",
-        img8: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      minimal: {
+        img1: "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80"
       },
       office: {
         img1: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
@@ -733,27 +805,12 @@
         img6a: "https://images.unsplash.com/photo-1517502884422-41eaead166d4?auto=format&fit=crop&w=600&q=80",
         img6b: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80",
         img8: "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1200&q=80"
-      },
-      storage: {
-        img1: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80",
-        img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
-        img2b: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=600&q=80",
-        img3: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80",
-        img4: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80",
-        img5: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
-        img6a: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80",
-        img6b: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80",
-        img8: "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80"
       }
     };
 
-    // Master Preset Pool (12 diverse, non-repeating topics)
-    const masterPresetPool = [
-      {
-        topic: "비싼 가구 없이 5성급 호텔 분위기 내는 조명 공식",
-        theme: "lighting",
-        tag: "LIGHTING GUIDE",
-        subTag: "INTERIOR SOLUTION",
+    // Rich Topic-Specific Content Blueprints
+    const matrixContentDatabase = {
+      lighting: {
         title: "비싼 가구 없이 5성급 호텔 분위기 내는 조명 공식",
         desc: "형광등 하나로 집 분위기를 망치고 계신가요? 디자이너가 알려주는 실패 없는 3000K 조명 배치 팁을 공개합니다.",
         problemTitle: "예쁜 가구를 샀는데 왜 우리 집은 카페처럼 아늑하지 않을까?",
@@ -772,50 +829,34 @@
           { t: "시선보다 낮은 플로어 램프 활용하기", d: "빛의 높낮이를 분산시켜 밋밋했던 방에 입체적인 깊이감을 만듭니다." },
           { t: "벽면과 커튼에 빛을 은은하게 튕기기", d: "눈부심 없이 호텔 객실처럼 아늑하고 편안한 분위기를 완성합니다." }
         ],
-        chips: [
-          { name: "Warm 3000K", hex: "#EADCC9" },
-          { name: "Soft Crema", hex: "#D1C7BD" },
-          { name: "Natural Oak", hex: "#A89886" }
-        ]
+        chips: [{ name: "Warm 3000K", hex: "#EADCC9" }, { name: "Soft Crema", hex: "#D1C7BD" }, { name: "Natural Oak", hex: "#A89886" }]
       },
-      {
-        topic: "화이트 인테리어는 끝? 요즘 대세 '웜 미니멀' 공식",
-        theme: "minimal",
-        tag: "TREND GUIDE",
-        subTag: "RESIDENTIAL",
-        title: "하얗기만 한 집은 질린다? 요즘 대세 '웜 미니멀' 인테리어",
-        desc: "병원처럼 차가운 올화이트 대신, 따뜻한 온기와 여백이 감도는 새로운 미니멀 공간을 만드는 비결을 소개합니다.",
-        problemTitle: "인스타 보고 올화이트로 맞췄는데 왜 차갑고 피곤할까요?",
-        problemDesc: "벽, 바닥, 가구까지 온통 새하얗기만 하면 빛이 난반사되어 눈이 쉽게 피로해집니다. 이제는 부드러운 크림과 베이지의 온기가 필요한 때입니다.",
-        conceptTitle: "“크리미한 벽체와 오크 원목의 편안한 조화”",
-        conceptDesc: "완전한 흰색 대신 미세한 베이지가 감도는 도장과 자연스러운 나뭇결의 마루를 매칭하면 집에 들어서는 순간 안도감이 듭니다.",
-        tip1Title: "벽체 컬러는 쨍한 백색 대신 '소프트 크림' 선택하기",
-        tip1Desc: "자연광을 받았을 때 은은하게 빛을 머금는 크림 톤 벽체는 공간을 훨씬 넓고 포근하게 만들어줍니다.",
-        tip2Title: "차가운 철제 대신 원목과 패브릭으로 질감 더하기",
-        tip2Desc: "부클레 패브릭 소파나 자연스러운 원목 식탁을 배치하면 미니멀하면서도 썰렁하지 않은 균형을 잡을 수 있습니다.",
-        adviceTitle: "기존 가구와 조화롭게 믹스하는 톤 맞춤 팁",
-        adviceDesc: "기존 가구가 흰색이라도 러그나 커튼을 베이지·어스톤으로 깔아주면 자연스럽게 웜 미니멀 무드로 바꿀 수 있습니다.",
-        summaryTitle: "실패 없는 웜 미니멀 인테리어 3원칙",
+      storage: {
+        title: "좁은 집도 2배 넓어 보이는 무몰딩 맞춤 수납 공식",
+        desc: "짐이 밖으로 나와 어수선했던 거실과 침실을 호텔처럼 정돈하는 빌트인 붙박이장 설계 노하우입니다.",
+        problemTitle: "수납장을 사다 놓을수록 왜 집은 더 좁고 답답해질까요?",
+        problemDesc: "기성 가구는 가구 윗공간과 옆공간에 죽은 공간이 생겨 먼지만 쌓이고 시야를 산만하게 만듭니다. 벽체처럼 정돈된 일체형 수납이 필요합니다.",
+        conceptTitle: "“벽체처럼 느껴지는 무몰딩 무손잡이 수납장”",
+        conceptDesc: "천장 끝까지 빈틈없이 채우고 푸시도어로 손잡이를 없애면 수납장이 가구가 아니라 하나의 깔끔한 벽처럼 인식됩니다.",
+        tip1Title: "서랍과 선반의 내부 비율은 6:4로 구성하기",
+        tip1Desc: "깊은 선반은 안쪽 물건을 꺼내기 어렵습니다. 허리 아래쪽은 무조건 서랍형으로 구성해야 수납 효율이 2배 올라갑니다.",
+        tip2Title: "침대 헤드보드 뒤편 히든 수납월 활용하기",
+        tip2Desc: "침대 머리맡 벽면에 얇은 수납장을 짜 넣으면 협탁 없이도 조명, 핸드폰 충전기, 책을 완벽히 매립할 수 있습니다.",
+        adviceTitle: "도어 색상은 벽지 색상과 톤온톤으로 맞추기",
+        adviceDesc: "붙박이장 도어를 벽지 색보다 어둡게 하면 방이 좁아 보입니다. 벽체와 가장 유사한 매트 화이트나 웜크림을 추천합니다.",
+        summaryTitle: "미니멀 수납 인테리어 3원칙",
         tips: [
-          { t: "쨍한 백색 대신 소프트 베이지 베이스", d: "눈의 피로를 덜어주고 아침 햇살을 가장 따뜻하게 품어냅니다." },
-          { t: "내추럴 원목으로 공간의 중심 잡기", d: "차분한 나뭇결이 공간에 질리지 않는 고급스러운 안정감을 줍니다." },
-          { t: "부드러운 패브릭 텍스처로 온기 채우기", d: "린넨 커튼과 러그로 소리와 빛을 부드럽게 감싸 안아줍니다." }
+          { t: "천장 끝까지 채우는 무몰딩 빌트인", d: "먼지 쌓이는 틈새 없이 벽면 일체형으로 깔끔합니다." },
+          { t: "하부는 인출식 서랍형으로 동선 최적화", d: "안쪽 깊숙한 물건까지 한눈에 찾아 쓸 수 있습니다." },
+          { t: "돌출 손잡이 없는 푸시형 미니멀 도어", d: "손잡이가 튀어나오지 않아 시각적 걸림이 없습니다." }
         ],
-        chips: [
-          { name: "Soft Cream", hex: "#F3EDE2" },
-          { name: "Natural Oak", hex: "#C4A482" },
-          { name: "Muted Greige", hex: "#9E978E" }
-        ]
+        chips: [{ name: "Cream White", hex: "#F7F5F0" }, { name: "Ash Beige", hex: "#D6CFBF" }, { name: "Light Oak", hex: "#B8A389" }]
       },
-      {
-        topic: "20~30평대에서도 가능한 대면형 아일랜드 주방 가이드",
-        theme: "kitchen",
-        tag: "KITCHEN GUIDE",
-        subTag: "SPACE LAYOUT",
+      traffic: {
         title: "작은 평수에서도 실현하는 로망의 대면형 아일랜드 주방",
         desc: "벽만 보고 요리하던 답답한 주방은 그만! 가족과 마주 보며 요리하는 대면형 구조 설계 노하우를 정리했습니다.",
-        problemTitle: "20평대 구축 아파트, 과연 대면형 주방이 들어갈 수 있을까요?",
-        problemDesc: "기존 'ㄱ자' 싱크대는 공간을 가로막고 가족과의 소통을 단절시킵니다. 하지만 동선 규격만 제대로 잡으면 20평대도 충분히 가능합니다.",
+        problemTitle: "구축 아파트, 과연 대면형 주방이 들어갈 수 있을까요?",
+        problemDesc: "기존 'ㄱ자' 싱크대는 공간을 가로막고 가족과의 소통을 단절시킵니다. 하지만 동선 규격만 제대로 잡으면 작은 평수도 충분히 가능합니다.",
         conceptTitle: "“식탁과 아일랜드를 하나로 묶는 콤팩트 동선”",
         conceptDesc: "식탁을 따로 두지 않고 아일랜드와 T자형으로 결합하면 낭비되는 공간 없이 효율적인 동선을 만들 수 있습니다.",
         tip1Title: "아일랜드와 싱크대 사이 최적 통로 폭은 90~100cm",
@@ -830,46 +871,9 @@
           { t: "통로 폭 90cm 이상 필수로 지키기", d: "요리와 설거지 동선이 꼬이지 않는 쾌적함을 보장합니다." },
           { t: "아일랜드 하부 서랍 수납 극대화", d: "상부장이 없어도 주방 집기가 밖으로 나오지 않게 정리됩니다." }
         ],
-        chips: [
-          { name: "Pure White", hex: "#F5F5F5" },
-          { name: "Ceramic Grey", hex: "#B8B5B0" },
-          { name: "Warm Walnut", hex: "#735B47" }
-        ]
+        chips: [{ name: "Pure White", hex: "#F5F5F5" }, { name: "Ceramic Grey", hex: "#B8B5B0" }, { name: "Warm Walnut", hex: "#735B47" }]
       },
-      {
-        topic: "손님이 사진 찍어 올리는 핫플 카페 인테리어 3법칙",
-        theme: "cafe",
-        tag: "CAFE DESIGN",
-        subTag: "COMMERCIAL",
-        title: "손님이 알아서 사진 찍는 핫플 카페 인테리어 3법칙",
-        desc: "오픈 첫 달 인스타그램 바이럴을 터뜨리는 공간의 비밀! 예비 점주님들이 꼭 알아야 할 공간 브랜딩 공식입니다.",
-        problemTitle: "테이블만 꽉 채운 카페, 왜 손님들은 사진을 찍지 않을까요?",
-        problemDesc: "자리를 많이 놓으려고 시선을 가로막으면 손님들은 답답함을 느낍니다. 문을 열자마자 사진기를 켜게 만드는 강력한 시각적 앵커가 필요합니다.",
-        conceptTitle: "“시선을 압도하는 웅장한 바 카운터의 힘”",
-        conceptDesc: "매장에 들어섰을 때 가장 먼저 마주하는 카운터를 원목이나 거친 미장으로 묵직하게 디자인하면 브랜드의 신뢰도가 올라갑니다.",
-        tip1Title: "테이블마다 셀카가 잘 나오는 '탑 라이팅' 세팅",
-        tip1Desc: "얼굴에 짙은 그림자가 지지 않도록 테이블 위 펜던트 조명의 각도와 높이를 섬세하게 조율해야 포토존이 됩니다.",
-        tip2Title: "카운터와 주방의 작업 동선은 철저히 숨기기",
-        tip2Desc: "정리되지 않은 컵과 설거지 공간을 손님 눈높이보다 20cm 높은 카운터 턱으로 가려주면 언제나 매장이 단정해 보입니다.",
-        adviceTitle: "자연스러운 배경이 되는 러프한 벽체 텍스처",
-        adviceDesc: "매끄러운 페인트보다 흙이나 돌 질감이 살짝 느껴지는 미장 마감을 선택하면 음식과 인물 사진이 한층 돋보입니다.",
-        summaryTitle: "성공하는 카페 공간 디자인 3원칙",
-        tips: [
-          { t: "문 열자마자 돋보이는 바 카운터", d: "브랜드의 첫인상을 결정짓는 가장 강력한 포토 스팟입니다." },
-          { t: "사진이 잘 나오는 테이블 펜던트 조명", d: "손님들이 자발적으로 SNS에 커피 사진을 공유하게 만듭니다." },
-          { t: "주방 작업 공간은 깔끔하게 가리기", d: "바쁜 시간에도 매장이 흐트러짐 없이 정돈되어 보입니다." }
-        ],
-        chips: [
-          { name: "Rough Plaster", hex: "#CFC9BD" },
-          { name: "Dark Walnut", hex: "#4A3B32" },
-          { name: "Raw Steel", hex: "#7E8287" }
-        ]
-      },
-      {
-        topic: "인테리어 디자이너는 자기 집에 절대 안 쓰는 유행 3가지",
-        theme: "minimal",
-        tag: "DESIGN ADVICE",
-        subTag: "FAIL-SAFE",
+      mistake: {
         title: "디자이너는 자기 집에 절대 안 쓰는 유행 인테리어 3가지",
         desc: "유행이라고 무작정 따라 했다가 1년 뒤 후회하는 디테일들! 10년이 지나도 질리지 않는 공간의 기본기를 알려드립니다.",
         problemTitle: "잡지나 핀터레스트에서 본 예쁜 유행, 왜 살면서 후회할까요?",
@@ -888,17 +892,30 @@
           { t: "천장 조명은 꼭 필요한 곳에만 절제", d: "시각적 피로감을 줄이고 깔끔한 천장 선을 유지할 수 있습니다." },
           { t: "청소와 관리가 쉬운 단순한 마감선", d: "시간이 지나도 손이 덜 가고 한결같은 깨끗함을 지켜줍니다." }
         ],
-        chips: [
-          { name: "Matte Beige", hex: "#DDD6C8" },
-          { name: "Quiet Wood", hex: "#9E8B75" },
-          { name: "Shadow Grey", hex: "#63605B" }
-        ]
+        chips: [{ name: "Matte Beige", hex: "#DDD6C8" }, { name: "Quiet Wood", hex: "#9E8B75" }, { name: "Shadow Grey", hex: "#63605B" }]
       },
-      {
-        topic: "호텔 욕실처럼 고급스러운 졸리컷 & 포세린 타일 시공 팁",
-        theme: "bathroom",
-        tag: "BATHROOM GUIDE",
-        subTag: "RESIDENTIAL",
+      minimal: {
+        title: "하얗기만 한 집은 질린다? 요즘 대세 '웜 미니멀' 인테리어",
+        desc: "병원처럼 차가운 올화이트 대신, 따뜻한 온기와 여백이 감도는 새로운 미니멀 공간을 만드는 비결을 소개합니다.",
+        problemTitle: "인스타 보고 올화이트로 맞췄는데 왜 차갑고 피곤할까요?",
+        problemDesc: "벽, 바닥, 가구까지 온통 새하얗기만 하면 빛이 난반사되어 눈이 쉽게 피로해집니다. 이제는 부드러운 크림과 베이지의 온기가 필요한 때입니다.",
+        conceptTitle: "“크리미한 벽체와 오크 원목의 편안한 조화”",
+        conceptDesc: "완전한 흰색 대신 미세한 베이지가 감도는 도장과 자연스러운 나뭇결의 마루를 매칭하면 집에 들어서는 순간 안도감이 듭니다.",
+        tip1Title: "벽체 컬러는 쨍한 백색 대신 '소프트 크림' 선택하기",
+        tip1Desc: "자연광을 받았을 때 은은하게 빛을 머금는 크림 톤 벽체는 공간을 훨씬 넓고 포근하게 만들어줍니다.",
+        tip2Title: "차가운 철제 대신 원목과 패브릭으로 질감 더하기",
+        tip2Desc: "부클레 패브릭 소파나 자연스러운 원목 식탁을 배치하면 미니멀하면서도 썰렁하지 않은 균형을 잡을 수 있습니다.",
+        adviceTitle: "기존 가구와 조화롭게 믹스하는 톤 맞춤 팁",
+        adviceDesc: "기존 가구가 흰색이라도 러그나 커튼을 베이지·어스톤으로 깔아주면 자연스럽게 웜 미니멀 무드로 바꿀 수 있습니다.",
+        summaryTitle: "실패 없는 웜 미니멀 인테리어 3원칙",
+        tips: [
+          { t: "쨍한 백색 대신 소프트 베이지 베이스", d: "눈의 피로를 덜어주고 아침 햇살을 가장 따뜻하게 품어냅니다." },
+          { t: "내추럴 원목으로 공간의 중심 잡기", d: "차분한 나뭇결이 공간에 질리지 않는 고급스러운 안정감을 줍니다." },
+          { t: "부드러운 패브릭 텍스처로 온기 채우기", d: "린넨 커튼과 러그로 소리와 빛을 부드럽게 감싸 안아줍니다." }
+        ],
+        chips: [{ name: "Soft Cream", hex: "#F3EDE2" }, { name: "Natural Oak", hex: "#C4A482" }, { name: "Muted Greige", hex: "#9E978E" }]
+      },
+      finish: {
         title: "호텔 욕실 부럽지 않은 졸리컷 & 600각 타일 인테리어",
         desc: "플라스틱 재료분리대 없이 타일과 타일이 깔끔하게 만나는 졸리컷 시공! 실패 없이 완성하는 핵심 팁입니다.",
         problemTitle: "모서리 재료분리대, 왜 욕실을 촌스럽게 만들까요?",
@@ -917,215 +934,113 @@
           { t: "모서리 몰딩 없는 45도 졸리컷 마감", d: "군더더기 없는 고급스러운 선을 완성합니다." },
           { t: "조명 거울로 은은한 페이스 라이팅 연출", d: "얼굴에 그림자 없이 따뜻한 무드를 만들어줍니다." }
         ],
-        chips: [
-          { name: "Stone Grey", hex: "#A8A59E" },
-          { name: "Sand Beige", hex: "#D4CEBE" },
-          { name: "Matte Nickel", hex: "#7D8082" }
-        ]
-      },
-      {
-        topic: "곡선 가벽과 미장으로 완성하는 30평 뷰티 살롱 & 쇼룸",
-        theme: "beauty",
-        tag: "COMMERCIAL",
-        subTag: "BEAUTY & SALON",
-        title: "곡선 가벽과 부드러운 조명으로 완성하는 프리미엄 뷰티 살롱",
-        desc: "고객이 문을 여는 순간 특별한 대우를 받는 느낌을 주는 공간! 뷰티·에스테틱 샵 인테리어 핵심 가이드입니다.",
-        problemTitle: "딱딱한 네모 가벽만 가득한 샵, 왜 차갑고 답답할까요?",
-        problemDesc: "프라이빗한 관리를 위해 방을 쪼개다 보면 복도가 좁아지고 고객은 위압감을 느낍니다. 공간을 부드럽게 감싸는 곡선 설계가 필요합니다.",
-        conceptTitle: "“피부 톤이 화사해 보이는 3500K 뉴트럴 라이팅”",
-        conceptDesc: "너무 노랗지도 하얗지도 않은 3500K 온백색 조명과 미장 벽체의 결이 고객의 거울 샷을 가장 예쁘게 만듭니다.",
-        tip1Title: "복도 코너는 각진 모서리 대신 부드러운 라운드 마감",
-        tip1Desc: "동선이 좁아도 모서리를 둥글게 굴려주면 시각적으로 공간이 유기적으로 흐르며 편안함을 줍니다.",
-        tip2Title: "카운터 뒤쪽에 은은한 히든 간접월 시공하기",
-        tip2Desc: "벽면과 바닥 사이에 숨겨진 라인 조명은 매장의 깊이감을 2배로 넓혀주고 고급 호텔 스파 같은 인상을 줍니다.",
-        adviceTitle: "거울 주변에 그림자가 지지 않는 페이스 조명 배치",
-        adviceDesc: "천장 직부등 대신 거울 뒤 간접등이나 전면 라이팅을 설치해야 고객의 얼굴에 그늘이 지지 않습니다.",
-        summaryTitle: "프리미엄 샵 공간 디자인 3원칙",
-        tips: [
-          { t: "동선의 피로를 덜어주는 라운드 곡선벽", d: "좁은 통로에서도 답답함 없이 아늑함을 제공합니다." },
-          { t: "피부톤을 살리는 3500K 온백색 라이팅", d: "고객 만족도와 시술 후 거울 만족도를 극대화합니다." },
-          { t: "수납과 집기는 빌트인으로 매립하기", d: "시술 제품들이 밖으로 노출되지 않아 항상 청결합니다." }
-        ],
-        chips: [
-          { name: "Soft Plaster", hex: "#EBE5DC" },
-          { name: "Warm Terrazzo", hex: "#D6CCC2" },
-          { name: "Champagne Gold", hex: "#C5B392" }
-        ]
-      },
-      {
-        topic: "일할 맛 나는 50평 크리에이티브 오피스 레이아웃",
-        theme: "office",
-        tag: "OFFICE DESIGN",
-        subTag: "WORK & SPACE",
-        title: "출근하고 싶어지는 50평 크리에이티브 오피스 인테리어",
-        desc: "칸막이로 가득 찬 칙칙한 사무실은 이제 안녕! 업무 몰입과 자유로운 소통이 공존하는 감각적인 오피스 레이아웃을 공개합니다.",
-        problemTitle: "벽을 막자니 답답하고, 트자니 소음 때문에 업무에 집중이 안 된다면?",
-        problemDesc: "개방감과 프라이버시는 늘 부딪힙니다. 답답한 불투명 가벽 대신 '슬림 프레임 유리 파티션'이 최적의 대안입니다.",
-        conceptTitle: "“빛은 통하고 소음은 차단하는 스마트 조닝”",
-        conceptDesc: "회의실과 임원실은 차음 유리로 시야를 열어두고, 라운지는 카페처럼 편안한 원목과 조명으로 긴장을 풀어줍니다.",
-        tip1Title: "회의실은 10T 강화유리 + 하부 흡음 패널 매칭",
-        tip1Desc: "유리의 세련된 개방감을 살리면서도 소리가 울리지 않도록 흡음 패브릭을 적절히 믹스하세요.",
-        tip2Title: "책상 위는 눈이 피로하지 않은 눈부심 방지 루버 조명",
-        tip2Desc: "모니터에 빛이 반사되지 않도록 확산형 라인 조명을 시선 축과 평행하게 배치해야 집중력이 올라갑니다.",
-        adviceTitle: "탕비실과 라운지는 업무 공간과 확실히 분리하기",
-        adviceDesc: "커피 향과 휴식의 소음이 업무 존으로 넘어가지 않도록 슬라이딩 도어나 중문으로 분리해 주세요.",
-        summaryTitle: "성공하는 워크스페이스 3원칙",
-        tips: [
-          { t: "유리 파티션으로 시야 개방감 확보", d: "자연광이 사무실 깊은 곳까지 들어와 밝은 에너지를 만듭니다." },
-          { t: "모니터 반사 없는 눈부심 방지 조명", d: "장시간 근무에도 눈의 피로감을 최소화합니다." },
-          { t: "소통을 유도하는 카페형 라운지 존", d: "아이디어 회의와 티타임이 자유롭게 일어나는 공간입니다." }
-        ],
-        chips: [
-          { name: "Deep Charcoal", hex: "#2B2D42" },
-          { name: "Clean Glass", hex: "#8D99AE" },
-          { name: "Warm Ash", hex: "#D4A373" }
-        ]
-      },
-      {
-        topic: "30평대 거실 히든도어와 무몰딩, 과연 돈값 할까?",
-        theme: "minimal",
-        tag: "DETAIL GUIDE",
-        subTag: "ARCHITECTURE",
-        title: "30평대 아파트 히든도어 & 무몰딩, 정말 돈값 할까요?",
-        desc: "인테리어 견적서에 몇백만 원씩 추가되는 무몰딩과 히든도어! 과연 우리 집에 할 가치가 있는지 솔직하게 분석해 드립니다.",
-        problemTitle: "문선 하나 없애는 데 왜 이렇게 비용이 많이 들까요?",
-        problemDesc: "단순히 몰딩을 떼는 게 아니라, 벽면 전체에 석고보드 목공 작업을 다시 치고 수평을 0.1mm 단위로 잡아야 하기 때문입니다.",
-        conceptTitle: "“벽과 문이 하나가 되는 극상의 미니멀 라인”",
-        conceptDesc: "벽체와 문선, 걸레받이가 사라지는 순간 시야를 가로막던 선들이 정돈되어 30평대 거실이 40평대처럼 넓어 보입니다.",
-        tip1Title: "예산이 부족하다면 '마이너스 몰딩'으로 가성비 타협",
-        tip1Desc: "완전 무몰딩 대신 얇은 금속 마이너스 몰딩을 쓰면 목공 비용을 40% 아끼면서도 단정한 선을 유지할 수 있습니다.",
-        tip2Title: "히든도어는 거실에서 잘 보이는 화장실 문 1~2개만 적용",
-        tip2Desc: "온 집안 문을 다 바꿀 필요 없이, 소파에 앉았을 때 정면으로 보이는 문에만 힘을 주면 가성비가 최고입니다.",
-        adviceTitle: "도배 대신 필름 또는 도장 마감과의 궁합 확인",
-        adviceDesc: "히든도어 모서리는 손이 자주 닿으므로 일반 도배지보다는 내구성이 좋은 인테리어 필름 마감을 강력 추천합니다.",
-        summaryTitle: "무몰딩 & 히든도어 선택 기준 3가지",
-        tips: [
-          { t: "거실 메인 뷰에만 선택과 집중하기", d: "예산을 아끼면서도 가장 큰 시각적 만족을 얻을 수 있습니다." },
-          { t: "벽체 수평 목공 품질 철저히 검수", d: "선이 비뚤어지면 안 하느니만 못한 결과가 나오므로 기술력이 핵심입니다." },
-          { t: "오염에 강한 프리미엄 필름 마감 선택", d: "손때와 생활 스크래치로부터 깔끔한 모서리를 지켜줍니다." }
-        ],
-        chips: [
-          { name: "Pure Matte", hex: "#FAF8F5" },
-          { name: "Shadow Line", hex: "#C7C2B8" },
-          { name: "Silent Walnut", hex: "#5C4D3C" }
-        ]
-      },
-      {
-        topic: "20평대 짐 많은 신혼집 수납 2배 늘리는 빌트인 가구 공식",
-        theme: "storage",
-        tag: "STORAGE GUIDE",
-        subTag: "RESIDENTIAL",
-        title: "20평대 좁은 집도 넓어 보이는 맞춤 수납 인테리어 공식",
-        desc: "짐이 밖으로 나와 어수선했던 거실과 침실을 호텔처럼 정돈하는 빌트인 붙박이장 설계 노하우입니다.",
-        problemTitle: "수납장을 사다 놓을수록 왜 집은 더 좁고 답답해질까요?",
-        problemDesc: "기성 가구는 가구 윗공간과 옆공간에 죽은 공간(데드스페이스)이 생겨 먼지만 쌓이고 시야를 산만하게 만듭니다.",
-        conceptTitle: "“벽체처럼 느껴지는 무몰딩 무손잡이 수납장”",
-        conceptDesc: "천장 끝까지 빈틈없이 채우고 푸시도어로 손잡이를 없애면 수납장이 가구가 아니라 하나의 깔끔한 벽처럼 인식됩니다.",
-        tip1Title: "서랍과 선반의 내부 비율은 6:4로 구성하기",
-        tip1Desc: "깊은 선반은 안쪽 물건을 꺼내기 어렵습니다. 허리 아래쪽은 무조건 서랍형으로 구성해야 수납 효율이 2배 올라갑니다.",
-        tip2Title: "침대 헤드보드 뒤편 히든 수납월 활용하기",
-        tip2Desc: "침대 머리맡 벽면에 얇은 수납장을 짜 넣으면 협탁 없이도 조명, 핸드폰 충전기, 책을 완벽히 매립할 수 있습니다.",
-        adviceTitle: "도어 색상은 벽지 색상과 톤온톤으로 맞추기",
-        adviceDesc: "붙박이장 도어를 벽지 색보다 어둡게 하면 방이 좁아 보입니다. 벽체와 가장 유사한 매트 화이트나 웜크림을 추천합니다.",
-        summaryTitle: "미니멀 수납 인테리어 3원칙",
-        tips: [
-          { t: "천장 끝까지 채우는 무몰딩 빌트인", d: "먼지 쌓이는 틈새 없이 벽면 일체형으로 깔끔합니다." },
-          { t: "하부는 인출식 서랍형으로 동선 최적화", d: "안쪽 깊숙한 물건까지 한눈에 찾아 쓸 수 있습니다." },
-          { t: "돌출 손잡이 없는 푸시형 미니멀 도어", d: "손잡이가 튀어나오지 않아 시각적 걸림이 없습니다." }
-        ],
-        chips: [
-          { name: "Cream White", hex: "#F7F5F0" },
-          { name: "Ash Beige", hex: "#D6CFBF" },
-          { name: "Light Oak", hex: "#B8A389" }
-        ]
+        chips: [{ name: "Stone Grey", hex: "#A8A59E" }, { name: "Sand Beige", hex: "#D4CEBE" }, { name: "Matte Nickel", hex: "#7D8082" }]
       }
-    ];
+    };
 
-    // Active working data for 8 slides
-    let activeCardData = JSON.parse(JSON.stringify(masterPresetPool[0]));
+    let activeCardData = {};
 
-    // Initialize Navigation Deck
-    function initSlideNav() {
-      const navContainer = document.getElementById('slideNav');
-      navContainer.innerHTML = '';
+    // Select Matrix Pill
+    function selectMatrixPill(group, value, el) {
+      matrixState[group] = value;
+      const parent = el.parentElement;
+      parent.querySelectorAll('.matrix-pill').forEach(btn => btn.classList.remove('active'));
+      el.classList.add('active');
+      updateCombinedTopicLabel();
+    }
 
-      slideDeckMeta.forEach(item => {
-        const btn = document.createElement('button');
-        btn.id = `nav-btn-${item.id}`;
-        btn.className = `w-full text-left p-3 rounded-lg border transition flex items-center justify-between group ${
-          item.id === currentSlideIndex 
-            ? 'border-studio-accent/60 bg-studio-accent/20 text-white' 
-            : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.06] text-neutral-300'
-        }`;
-        btn.onclick = () => switchSlide(item.id);
+    // Update Combined Topic Title in UI
+    function updateCombinedTopicLabel() {
+      const sp = matrixLabels.space[matrixState.space];
+      const sc = matrixLabels.scale[matrixState.scale];
+      const th = matrixLabels.theme[matrixState.theme];
+      const combined = `${sc} ${sp} | ${th}`;
+      document.getElementById('combinedTopicTitle').innerText = combined;
+    }
 
-        btn.innerHTML = `
-          <div>
-            <span class="text-xs font-mono ${item.id === currentSlideIndex ? 'text-studio-accent font-bold' : 'text-neutral-500'} uppercase">0${item.id} · ${item.en}</span>
-            <p class="text-sm font-semibold mt-0.5 text-neutral-200 group-hover:text-white">${item.title}</p>
-          </div>
-          <span class="text-xs px-2 py-0.5 rounded bg-black/40 text-neutral-400 group-hover:text-white">${item.tag}</span>
-        `;
-        navContainer.appendChild(btn);
+    // Randomize Matrix Combination (Slot machine)
+    function randomizeMatrixCombination() {
+      const spaces = Object.keys(matrixLabels.space);
+      const scales = Object.keys(matrixLabels.scale);
+      const themes = Object.keys(matrixLabels.theme);
+
+      const rSpace = spaces[Math.floor(Math.random() * spaces.length)];
+      const rScale = scales[Math.floor(Math.random() * scales.length)];
+      const rTheme = themes[Math.floor(Math.random() * themes.length)];
+
+      // Update UI active buttons
+      setButtonActive('matrixSpaceButtons', rSpace);
+      setButtonActive('matrixScaleButtons', rScale);
+      setButtonActive('matrixTopicButtons', rTheme);
+
+      matrixState = { space: rSpace, scale: rScale, theme: rTheme };
+      updateCombinedTopicLabel();
+      showCustomToast("🎲 새로운 꿀조합이 선택되었습니다! [8장 즉시 완성]을 눌러보세요.");
+    }
+
+    function setButtonActive(containerId, value) {
+      const container = document.getElementById(containerId);
+      const buttons = container.querySelectorAll('.matrix-pill');
+      buttons.forEach(btn => {
+        if (btn.getAttribute('onclick').includes(`'${value}'`)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
       });
     }
 
-    // Switch Slide Viewport
-    function switchSlide(index) {
-      currentSlideIndex = index;
-      for (let i = 1; i <= 8; i++) {
-        const slideEl = document.getElementById(`slide-${i}`);
-        const navBtn = document.getElementById(`nav-btn-${i}`);
-        if (slideEl) {
-          if (i === index) {
-            slideEl.classList.remove('hidden');
-            slideEl.classList.add('flex');
-          } else {
-            slideEl.classList.add('hidden');
-            slideEl.classList.remove('flex');
-          }
-        }
-        if (navBtn) {
-          if (i === index) {
-            navBtn.className = "w-full text-left p-3 rounded-lg border border-studio-accent/60 bg-studio-accent/20 text-white transition flex items-center justify-between";
-            navBtn.querySelector('span').className = "text-xs font-mono text-studio-accent font-bold uppercase";
-          } else {
-            navBtn.className = "w-full text-left p-3 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] text-neutral-300 transition flex items-center justify-between group";
-            navBtn.querySelector('span').className = "text-xs font-mono text-neutral-500 uppercase";
-          }
-        }
-      }
-    }
-
-    // Render Recommended Topics List (Buttons)
-    function renderRecommendedTopics(topicsList) {
-      const container = document.getElementById('topicButtonsList');
-      container.innerHTML = '';
-      topicsList.forEach((item, idx) => {
-        const btn = document.createElement('button');
-        btn.className = "w-full text-left p-3 rounded-lg bg-black/40 hover:bg-white/10 border border-white/10 text-xs sm:text-sm text-neutral-200 hover:text-white flex items-center gap-2 transition";
-        btn.onclick = () => applyPresetTopic(item);
-        btn.innerHTML = `
-          <span class="text-xs font-mono text-studio-accent font-bold shrink-0">#0${idx + 1}</span>
-          <span class="truncate flex-1 font-semibold">${item.topic}</span>
-          <span class="text-[11px] text-neutral-400 bg-white/5 px-2 py-0.5 rounded shrink-0">${item.tag || '가이드'}</span>
-        `;
-        container.appendChild(btn);
-      });
-    }
-
-    // Refresh Recommended Topics (Shuffle from pool or generate with AI)
-    async function refreshRecommendedTopics() {
+    // Apply Matrix Cardnews
+    async function applyMatrixCardnews() {
       const apiKey = localStorage.getItem('bastudio_gemini_key') || "";
-      const currentTopicLabel = document.getElementById('currentTopicLabel');
+      const sp = matrixLabels.space[matrixState.space];
+      const sc = matrixLabels.scale[matrixState.scale];
+      const th = matrixLabels.theme[matrixState.theme];
+      const combinedTopic = `${sc} ${sp} 대상 ${th}`;
 
+      const overlay = document.getElementById('loadingOverlay');
+      const overlayText = document.getElementById('loadingOverlayText');
+      overlayText.innerText = `비에이스튜디오 가이드 "${combinedTopic}" 작성 중...`;
+      overlay.classList.add('active');
+
+      // 1. Try Gemini API if key is present
       if (apiKey) {
         try {
-          currentTopicLabel.innerText = "AI가 새로운 주제를 제안하는 중...";
-          const prompt = `인테리어 디자인 스튜디오 '비에이스튜디오'의 인스타그램 카드뉴스용 최신 가이드 주제 5개를 JSON 배열로 추천해줘.
-어려운 공사 전문 용어(연색성, 룩스 등)는 절대 쓰지 말고, 일반인이 '저장'하고 싶어 하는 실전 팁과 최신 트렌드 위주로 작성해줘.
-응답 형식: [{"topic": "주제명", "tag": "태그명"}]`;
+          const prompt = `당신은 프리미엄 인테리어 디자인 스튜디오 '비에이스튜디오 (BA STUDIO)'의 수석 공간 디자이너입니다.
+주제: "${combinedTopic}"
+이 주제로 인스타그램 카드뉴스 8장 분량의 가이드를 작성하세요.
+절대 '연색성', '룩스', '조도', '메지', '조인트' 같은 어려운 기술 용어는 쓰지 말고 쉬운 일상어로 작성하세요.
+브랜드명: '비에이스튜디오', 영문 'BA STUDIO', 인스타그램 '@bastudio_seoul' (전화번호 제외).
 
+[반환 형식: 순수 JSON]:
+{
+  "topic": "${combinedTopic}",
+  "tag": "DESIGN GUIDE",
+  "subTag": "BA STUDIO SOLUTION",
+  "title": "호기심을 자극하는 메인 헤드라인 (30자 내외)",
+  "desc": "표지 서브 설명 2줄",
+  "problemTitle": "인테리어 시 겪는 실수와 고민",
+  "problemDesc": "디자이너 진단 2줄",
+  "conceptTitle": "공간 무드 핵심 슬로건",
+  "conceptDesc": "따뜻함과 질감 설명 2줄",
+  "tip1Title": "첫 번째 실전 디테일 솔루션 제목",
+  "tip1Desc": "설명 2줄",
+  "tip2Title": "두 번째 실전 솔루션 제목",
+  "tip2Desc": "설명 2줄",
+  "adviceTitle": "디자이너 실무 팁 및 주의점",
+  "adviceDesc": "실무 조언 2줄",
+  "summaryTitle": "실패 없는 인테리어 핵심 3원칙",
+  "tips": [
+    { "t": "원칙 1 제목", "d": "1줄 요약" },
+    { "t": "원칙 2 제목", "d": "1줄 요약" },
+    { "t": "원칙 3 제목", "d": "1줄 요약" }
+  ],
+  "chips": [
+    { "name": "추천 컬러 1", "hex": "#EADCC9" },
+    { "name": "추천 컬러 2", "hex": "#D1C7BD" },
+    { "name": "추천 컬러 3", "hex": "#A89886" }
+  ]
+}`;
           const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1135,42 +1050,35 @@
             })
           });
           const data = await res.json();
-          if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-            const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              const formatted = parsed.map(p => ({
-                topic: p.topic,
-                tag: p.tag || 'AI 추천',
-                isAiGeneratedPrompt: true
-              }));
-              renderRecommendedTopics(formatted);
-              currentTopicLabel.innerText = "새로운 AI 추천 주제 5개가 도착했습니다.";
-              showCustomToast("🎲 새로운 AI 추천 주제 5개가 도착했습니다!");
-              return;
-            }
+          let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (rawText) {
+            rawText = rawText.replace(/```json|```/g, '').trim();
+            const parsed = JSON.parse(rawText);
+            renderCardnewsToDOM(parsed, matrixState.space, matrixState.theme);
+            overlay.classList.remove('active');
+            showCustomToast(`🎉 Gemini AI가 "${combinedTopic}" 가이드를 완성했습니다!`);
+            return;
           }
-        } catch (e) {
-          console.warn("Gemini call fallback to master pool:", e);
+        } catch (err) {
+          console.warn("Gemini Error, falling back to smart blueprint:", err);
         }
       }
 
-      // Shuffle from Master Pool (Guarantees fresh 5 items each time)
-      const shuffled = [...masterPresetPool].sort(() => 0.5 - Math.random()).slice(0, 5);
-      renderRecommendedTopics(shuffled);
-      currentTopicLabel.innerText = "새로운 추천 주제 목록이 갱신되었습니다.";
-      showCustomToast("🎲 추천 주제 5개가 새로고침되었습니다!");
+      // 2. High Quality Smart Blueprint Engine (100% Reliable & Instant)
+      setTimeout(() => {
+        const blueprint = matrixContentDatabase[matrixState.theme] || matrixContentDatabase.lighting;
+        const customData = JSON.parse(JSON.stringify(blueprint));
+        customData.topic = combinedTopic;
+        customData.title = `${sc} ${sp}: ${blueprint.title}`;
+        renderCardnewsToDOM(customData, matrixState.space, matrixState.theme);
+        overlay.classList.remove('active');
+        showCustomToast(`✨ "${combinedTopic}" 8장 완성이 완료되었습니다!`);
+      }, 300);
     }
 
-    // Apply Preset Topic to 8 Slides
-    function applyPresetTopic(data) {
-      if (data.isAiGeneratedPrompt) {
-        document.getElementById('customTopicInput').value = data.topic;
-        handleGenerateContent();
-        return;
-      }
-
+    // Render Data & Photos to DOM
+    function renderCardnewsToDOM(data, spaceKey, themeKey) {
       activeCardData = data;
-      document.getElementById('currentTopicLabel').innerText = `적용 중: ${data.topic}`;
 
       // Slide 1
       document.getElementById('slide1Tag').innerText = data.tag || 'INTERIOR GUIDE';
@@ -1217,252 +1125,113 @@
         document.getElementById('tip3Desc').innerText = data.tips[2].d;
       }
 
-      // Apply dynamic High-Res Unsplash photos according to theme
-      applyThemePhotos(data.theme || 'minimal');
-      showCustomToast(`✨ "${data.topic.slice(0, 18)}..." 적용 완료!`);
+      // Apply Exact Photos by space or theme
+      const photoKey = (photoLibraries[spaceKey] ? spaceKey : (photoLibraries[themeKey] ? themeKey : 'minimal'));
+      applyPhotoLibrary(photoKey);
     }
 
-    // Dynamic Photos by Theme
-    function applyThemePhotos(themeName) {
-      const selected = photoThemes[themeName] || photoThemes.minimal;
-      
-      const img1 = document.getElementById('img-1');
-      const img2a = document.getElementById('img-2a');
-      const img2b = document.getElementById('img-2b');
-      const img3 = document.getElementById('img-3');
-      const img4 = document.getElementById('img-4');
-      const img5 = document.getElementById('img-5');
-      const img6a = document.getElementById('img-6a');
-      const img6b = document.getElementById('img-6b');
-      const img8 = document.getElementById('img-8');
-
-      if (img1) img1.src = selected.img1;
-      if (img2a) img2a.src = selected.img2a;
-      if (img2b) img2b.src = selected.img2b;
-      if (img3) img3.src = selected.img3;
-      if (img4) img4.src = selected.img4;
-      if (img5) img5.src = selected.img5;
-      if (img6a) img6a.src = selected.img6a;
-      if (img6b) img6b.src = selected.img6b;
-      if (img8) img8.src = selected.img8;
+    function applyPhotoLibrary(key) {
+      const set = photoLibraries[key] || photoLibraries.minimal;
+      document.getElementById('img-1').src = set.img1;
+      document.getElementById('img-2a').src = set.img2a;
+      document.getElementById('img-2b').src = set.img2b;
+      document.getElementById('img-3').src = set.img3;
+      document.getElementById('img-4').src = set.img4;
+      document.getElementById('img-5').src = set.img5;
+      document.getElementById('img-6a').src = set.img6a;
+      document.getElementById('img-6b').src = set.img6b;
+      document.getElementById('img-8').src = set.img8;
     }
 
-    // Generate Content using Gemini or Smart Topic Synthesizer
-    async function handleGenerateContent() {
-      const topicInput = document.getElementById('customTopicInput');
-      let userTopic = topicInput.value.trim();
-      const apiKey = localStorage.getItem('bastudio_gemini_key') || "";
-
-      if (!userTopic) {
-        userTopic = masterPresetPool[Math.floor(Math.random() * masterPresetPool.length)].topic;
-        topicInput.value = userTopic;
-      }
-
-      const btn = document.getElementById('generateBtn');
-      const btnText = document.getElementById('genBtnText');
-      const btnIcon = document.getElementById('genBtnIcon');
-      const overlay = document.getElementById('loadingOverlay');
-      const overlayText = document.getElementById('loadingOverlayText');
-
-      // Loading UI State
-      btn.disabled = true;
-      btnText.innerText = "작성 중...";
-      btnIcon.innerText = "⏳";
-      overlayText.innerText = `비에이스튜디오 AI가 "${userTopic}" 가이드를 작성 중입니다...`;
-      overlay.classList.add('active');
-
-      if (apiKey) {
-        try {
-          const prompt = `당신은 감각적인 프리미엄 인테리어 디자인 스튜디오 '비에이스튜디오(BA STUDIO)'의 수석 공간 디자이너입니다.
-주제: "${userTopic}"
-이 주제로 인스타그램 카드뉴스 8장 분량의 전문 가이드를 작성해주세요.
-
-[필수 규칙]:
-1. '연색성', '룩스', '조도', '메지', '조인트', '동선 레이아웃' 같은 어려운 기술/공사 전문용어는 절대 쓰지 마세요.
-2. 대신 "자연광처럼 따뜻한 색감", "눈이 피로하지 않은 밝기", "타일 틈새 마감선", "요리하기 편한 길" 등 쉬운 일상어로 2~3줄씩 친절하게 작성하세요.
-3. 브랜드명: '비에이스튜디오', 영문 'BA STUDIO', 인스타그램 '@bastudio_seoul' (전화번호는 절대 적지 마세요).
-4. theme은 다음 8개 중 하나만 정확히 선택하세요: "lighting", "kitchen", "cafe", "minimal", "beauty", "bathroom", "office", "storage"
-
-[반환해야 할 순수 JSON 형식]:
-{
-  "topic": "${userTopic}",
-  "theme": "lighting 또는 kitchen 또는 cafe 또는 minimal 또는 beauty 또는 bathroom 또는 office 또는 storage 중 하나",
-  "tag": "DESIGN GUIDE",
-  "subTag": "BA STUDIO SOLUTION",
-  "title": "호기심을 자극하는 메인 헤드라인 (30자 내외)",
-  "desc": "표지 서브 설명 (2줄 내외)",
-  "problemTitle": "인테리어 시 흔히 하는 실수나 고민 질문",
-  "problemDesc": "문제에 대한 디자이너의 진단 2줄",
-  "conceptTitle": "공간 톤앤매너 핵심 슬로건",
-  "conceptDesc": "따뜻함과 질감을 강조한 설명 2줄",
-  "tip1Title": "첫 번째 실전 디테일 솔루션 제목",
-  "tip1Desc": "솔루션 설명 2줄",
-  "tip2Title": "두 번째 구조/배치/조명 솔루션 제목",
-  "tip2Desc": "솔루션 설명 2줄",
-  "adviceTitle": "절대 피해야 할 실수 또는 디자이너 팁",
-  "adviceDesc": "실무 조언 2줄",
-  "summaryTitle": "실패 없는 인테리어 핵심 3원칙",
-  "tips": [
-    { "t": "원칙 1 제목", "d": "1줄 요약" },
-    { "t": "원칙 2 제목", "d": "1줄 요약" },
-    { "t": "원칙 3 제목", "d": "1줄 요약" }
-  ],
-  "chips": [
-    { "name": "컬러명 1", "hex": "#E8E2D8" },
-    { "name": "컬러명 2", "hex": "#C5B49F" },
-    { "name": "컬러명 3", "hex": "#847B72" }
-  ],
-  "instagramCaption": "인스타그램 업로드용 피드 본문 캡션 및 해시태그 전문"
-}`;
-
-          // Using gemini-2.5-flash with standardized REST endpoint
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { responseMimeType: "application/json" }
-            })
-          });
-
-          const data = await res.json();
-          if (data.error) {
-            throw new Error(data.error.message || "Gemini API 오류");
-          }
-
-          let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (rawText) {
-            rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-            const parsed = JSON.parse(rawText);
-            applyPresetTopic(parsed);
-            document.getElementById('currentTopicLabel').innerText = `적용 중: ${userTopic}`;
-            finishGenerationUI();
-            showCustomToast("🎉 Gemini AI가 새로운 8장 가이드를 작성했습니다!");
-            return;
-          }
-        } catch (err) {
-          console.error("Gemini API Error:", err);
-          showCustomToast(`⚠️ Gemini 연결 안내: ${err.message.slice(0, 45)}... 스마트 엔진으로 전환합니다.`);
-        }
-      }
-
-      // Smart Topic Synthesizer (Zero API Error - Always delivers tailored content)
-      setTimeout(() => {
-        const lower = userTopic.toLowerCase();
-        let targetTheme = "minimal";
-        let matched = null;
-
-        if (lower.includes('조명') || lower.includes('호텔') || lower.includes('스탠드') || lower.includes('간접등')) {
-          targetTheme = "lighting";
-          matched = masterPresetPool[0];
-        } else if (lower.includes('주방') || lower.includes('아일랜드') || lower.includes('싱크대') || lower.includes('식탁')) {
-          targetTheme = "kitchen";
-          matched = masterPresetPool[2];
-        } else if (lower.includes('카페') || lower.includes('상업') || lower.includes('음식점') || lower.includes('식당') || lower.includes('베이커리')) {
-          targetTheme = "cafe";
-          matched = masterPresetPool[3];
-        } else if (lower.includes('뷰티') || lower.includes('살롱') || lower.includes('에스테틱') || lower.includes('쇼룸')) {
-          targetTheme = "beauty";
-          matched = masterPresetPool[6];
-        } else if (lower.includes('욕실') || lower.includes('화장실') || lower.includes('타일') || lower.includes('졸리컷')) {
-          targetTheme = "bathroom";
-          matched = masterPresetPool[5];
-        } else if (lower.includes('수납') || lower.includes('붙박이') || lower.includes('장') || lower.includes('옷장')) {
-          targetTheme = "storage";
-          matched = masterPresetPool[9];
-        } else if (lower.includes('오피스') || lower.includes('사무실') || lower.includes('워크')) {
-          targetTheme = "office";
-          matched = masterPresetPool[7];
-        } else if (lower.includes('히든') || lower.includes('몰딩') || lower.includes('도어') || lower.includes('문')) {
-          targetTheme = "minimal";
-          matched = masterPresetPool[8];
-        } else {
-          matched = masterPresetPool[Math.floor(Math.random() * masterPresetPool.length)];
-          targetTheme = matched.theme || "minimal";
-        }
-
-        // Deep copy and customize with current topic
-        const customData = JSON.parse(JSON.stringify(matched));
-        customData.topic = userTopic;
-        customData.title = userTopic;
-        customData.theme = targetTheme;
-        applyPresetTopic(customData);
-
-        finishGenerationUI();
-      }, 500);
-    }
-
-    function finishGenerationUI() {
-      const btn = document.getElementById('generateBtn');
-      const btnText = document.getElementById('genBtnText');
-      const btnIcon = document.getElementById('genBtnIcon');
-      const overlay = document.getElementById('loadingOverlay');
-      
-      btn.disabled = false;
-      btnText.innerText = "AI 글 생성";
-      btnIcon.innerText = "✨";
-      overlay.classList.remove('active');
-    }
-
-    // Copy Instagram Caption & Hashtags
-    function copyInstagramCaption() {
-      if (activeCardData.instagramCaption) {
-        copyTextToClipboard(activeCardData.instagramCaption);
+    // Freeform Input Generator
+    function handleFreeformGenerate() {
+      const input = document.getElementById('freeformInput').value.trim();
+      if (!input) {
+        showCustomToast("키워드를 입력해 주세요 (예: 성수동 브런치 카페)");
         return;
       }
-
-      const topic = activeCardData.title || activeCardData.topic;
-      const desc = activeCardData.desc || '';
-      const tip1 = activeCardData.tips?.[0]?.t || '공간에 어울리는 톤앤매너 통일';
-      const tip2 = activeCardData.tips?.[1]?.t || '빛의 높낮이를 살리는 간접 조명';
-      const tip3 = activeCardData.tips?.[2]?.t || '동선과 수납을 배려한 레이아웃';
-
-      const caption = `[BA STUDIO | 공간 디자인 가이드]
-✨ "${topic}"
-
-${desc}
-
-📌 비에이스튜디오가 제안하는 핵심 3원칙:
-1. ${tip1}
-2. ${tip2}
-3. ${tip3}
-
-공간은 단순한 구조를 넘어 일상의 감도를 결정합니다.
-나만의 주거·상업 공간 인테리어를 고민 중이시라면 지금 이 피드를 저장(📌)해두고 참고해 보세요!
-
-🏷️ 공간 설계 및 디자인 상담 신청:
-인스타그램 프로필 링크 클릭 (@bastudio_seoul)
-
-#비에이스튜디오 #BASTUDIO #인테리어가이드 #인테리어팁 #아파트인테리어 #카페인테리어 #상업공간인테리어 #조명인테리어 #공간디자인 #인테리어체크리스트`;
-
-      copyTextToClipboard(caption);
+      const lower = input.toLowerCase();
+      if (lower.includes('카페') || lower.includes('상업') || lower.includes('디저트')) {
+        matrixState.space = 'cafe';
+      } else if (lower.includes('주방') || lower.includes('싱크') || lower.includes('아일랜드')) {
+        matrixState.space = 'kitchen';
+      } else if (lower.includes('욕실') || lower.includes('화장실') || lower.includes('타일')) {
+        matrixState.space = 'bath';
+      } else if (lower.includes('뷰티') || lower.includes('살롱') || lower.includes('에스테틱')) {
+        matrixState.space = 'beauty';
+      } else {
+        matrixState.space = 'apt';
+      }
+      setButtonActive('matrixSpaceButtons', matrixState.space);
+      updateCombinedTopicLabel();
+      applyMatrixCardnews();
     }
 
-    function copyTextToClipboard(text) {
-      const tempTextArea = document.createElement('textarea');
-      tempTextArea.value = text;
-      document.body.appendChild(tempTextArea);
-      tempTextArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(tempTextArea);
-      showCustomToast("📋 인스타그램 피드 본문이 클립보드에 복사되었습니다!");
+    // Navigation & Slide Deck Deck
+    const slideDeckMeta = [
+      { id: 1, title: '표지 & 핵심 타이틀', tag: '대표 1컷', en: 'COVER' },
+      { id: 2, title: '흔한 실수 & 문제 진단', tag: '2분할 비교', en: 'PROBLEM' },
+      { id: 3, title: '공간 무드 & 컬러 조합', tag: '무드 1컷 + 칩', en: 'CONCEPT' },
+      { id: 4, title: '실전 솔루션 01 (자재/간접등)', tag: '와이드 1컷', en: 'TIP 01' },
+      { id: 5, title: '실전 솔루션 02 (높낮이/동선)', tag: '단차 1컷', en: 'TIP 02' },
+      { id: 6, title: '디자이너 조언 & 주의점', tag: '접사 2분할', en: 'ADVICE' },
+      { id: 7, title: '저장 유도 핵심 3원칙', tag: '정보형 카드', en: 'SUMMARY' },
+      { id: 8, title: '비에이스튜디오 상담 안내', tag: 'CTA / 계정', en: 'OUTRO' },
+    ];
+
+    function initSlideNav() {
+      const navContainer = document.getElementById('slideNav');
+      navContainer.innerHTML = '';
+      slideDeckMeta.forEach(item => {
+        const btn = document.createElement('button');
+        btn.id = `nav-btn-${item.id}`;
+        btn.className = `w-full text-left p-3 rounded-lg border transition flex items-center justify-between group ${
+          item.id === currentSlideIndex 
+            ? 'border-studio-accent/60 bg-studio-accent/20 text-white' 
+            : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.06] text-neutral-300'
+        }`;
+        btn.onclick = () => switchSlide(item.id);
+        btn.innerHTML = `
+          <div>
+            <span class="text-xs font-mono ${item.id === currentSlideIndex ? 'text-studio-accent font-bold' : 'text-neutral-500'} uppercase">0${item.id} · ${item.en}</span>
+            <p class="text-sm font-semibold mt-0.5 text-neutral-200 group-hover:text-white">${item.title}</p>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded bg-black/40 text-neutral-400 group-hover:text-white">${item.tag}</span>
+        `;
+        navContainer.appendChild(btn);
+      });
     }
 
-    function showCustomToast(msg) {
-      const toast = document.createElement('div');
-      toast.className = "fixed bottom-8 right-8 bg-studio-accent text-white px-5 py-3 rounded-lg shadow-2xl z-50 text-xs font-semibold flex items-center gap-2 max-w-sm break-keep";
-      toast.innerHTML = `<span>ℹ️</span> <span>${msg}</span>`;
-      document.body.appendChild(toast);
-      setTimeout(() => {
-        toast.remove();
-      }, 4000);
+    function switchSlide(index) {
+      currentSlideIndex = index;
+      for (let i = 1; i <= 8; i++) {
+        const slideEl = document.getElementById(`slide-${i}`);
+        const navBtn = document.getElementById(`nav-btn-${i}`);
+        if (slideEl) {
+          if (i === index) {
+            slideEl.classList.remove('hidden');
+            slideEl.classList.add('flex');
+          } else {
+            slideEl.classList.add('hidden');
+            slideEl.classList.remove('flex');
+          }
+        }
+        if (navBtn) {
+          if (i === index) {
+            navBtn.className = "w-full text-left p-3 rounded-lg border border-studio-accent/60 bg-studio-accent/20 text-white transition flex items-center justify-between";
+            navBtn.querySelector('span').className = "text-xs font-mono text-studio-accent font-bold uppercase";
+          } else {
+            navBtn.className = "w-full text-left p-3 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] text-neutral-300 transition flex items-center justify-between group";
+            navBtn.querySelector('span').className = "text-xs font-mono text-neutral-500 uppercase";
+          }
+        }
+      }
     }
 
     // Photo Replacement Handler (Local file)
     function handlePhotoClick(slideNum, imgId) {
       targetImgElement = document.getElementById(imgId);
-      const fileInput = document.getElementById('imageFileInput');
-      fileInput.click();
+      document.getElementById('imageFileInput').click();
     }
 
     document.getElementById('imageFileInput').addEventListener('change', function(e) {
@@ -1509,90 +1278,79 @@ ${desc}
       }
     });
 
-    // Modals: JSON Import
-    function openJsonModal() {
-      document.getElementById('jsonModal').classList.remove('hidden');
-    }
-    function closeJsonModal() {
-      document.getElementById('jsonModal').classList.add('hidden');
-    }
-    function copyAiStudioPromptTemplate() {
-      const promptTemplate = `당신은 프리미엄 인테리어 디자인 스튜디오 '비에이스튜디오 (BA STUDIO)'의 수석 브랜드 디렉터입니다.
-주제: "[원하는 인테리어 주제를 적으세요. 예: 34평 웜미니멀 아파트, 25평 브런치 카페]"
+    // Copy Instagram Caption
+    function copyInstagramCaption() {
+      const topic = activeCardData.title || activeCardData.topic || "비에이스튜디오 공간 디자인 가이드";
+      const desc = activeCardData.desc || '';
+      const tip1 = activeCardData.tips?.[0]?.t || '공간에 어울리는 톤앤매너 통일';
+      const tip2 = activeCardData.tips?.[1]?.t || '빛의 높낮이를 살리는 간접 조명';
+      const tip3 = activeCardData.tips?.[2]?.t || '동선과 수납을 배려한 레이아웃';
 
-[필수 규칙]:
-1. '연색성', '룩스', '조도', '메지', '조인트' 같은 어려운 기술/공사 용어는 절대 쓰지 마세요.
-2. 쉬운 일상어로 2~3줄씩 친절하게 작성하세요.
-3. 브랜드명: '비에이스튜디오', 영문 'BA STUDIO', 인스타그램 '@bastudio_seoul' (전화번호 제외)
+      const caption = `[BA STUDIO | 공간 디자인 가이드]
+✨ "${topic}"
 
-[반환 형식: 순수 JSON]:
-{
-  "topic": "주제명",
-  "theme": "lighting 또는 kitchen 또는 cafe 또는 minimal 또는 beauty 또는 bathroom 또는 office 또는 storage",
-  "tag": "DESIGN GUIDE",
-  "subTag": "BA STUDIO SOLUTION",
-  "title": "호기심을 자극하는 메인 헤드라인 (30자 내외)",
-  "desc": "표지 서브 설명 (2줄 내외)",
-  "problemTitle": "인테리어 시 흔히 하는 실수나 고민 질문",
-  "problemDesc": "문제에 대한 디자이너의 진단 2줄",
-  "conceptTitle": "공간 톤앤매너 핵심 슬로건",
-  "conceptDesc": "따뜻함과 질감을 강조한 설명 2줄",
-  "tip1Title": "첫 번째 실전 디테일 솔루션 제목",
-  "tip1Desc": "솔루션 설명 2줄",
-  "tip2Title": "두 번째 구조/배치/조명 솔루션 제목",
-  "tip2Desc": "솔루션 설명 2줄",
-  "adviceTitle": "절대 피해야 할 실수 또는 디자이너 팁",
-  "adviceDesc": "실무 조언 2줄",
-  "summaryTitle": "실패 없는 인테리어 핵심 3원칙",
-  "tips": [
-    { "t": "원칙 1 제목", "d": "1줄 요약" },
-    { "t": "원칙 2 제목", "d": "1줄 요약" },
-    { "t": "원칙 3 제목", "d": "1줄 요약" }
-  ],
-  "chips": [
-    { "name": "컬러명 1", "hex": "#E8E2D8" },
-    { "name": "컬러명 2", "hex": "#C5B49F" },
-    { "name": "컬러명 3", "hex": "#847B72" }
-  ],
-  "instagramCaption": "인스타그램 업로드용 본문 캡션 및 해시태그 전문"
-}`;
-      copyTextToClipboard(promptTemplate);
+${desc}
+
+📌 비에이스튜디오가 제안하는 핵심 3원칙:
+1. ${tip1}
+2. ${tip2}
+3. ${tip3}
+
+공간은 단순한 구조를 넘어 일상의 감도를 결정합니다.
+나만의 주거·상업 공간 인테리어를 고민 중이시라면 지금 이 피드를 저장(📌)해두고 참고해 보세요!
+
+🏷️ 공간 설계 및 디자인 상담 신청:
+인스타그램 프로필 링크 클릭 (@bastudio_seoul)
+
+#비에이스튜디오 #BASTUDIO #인테리어가이드 #인테리어팁 #아파트인테리어 #카페인테리어 #상업공간인테리어 #조명인테리어 #공간디자인 #인테리어체크리스트`;
+
+      const tempTextArea = document.createElement('textarea');
+      tempTextArea.value = caption;
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempTextArea);
+      showCustomToast("📋 인스타그램 피드 본문이 클립보드에 복사되었습니다!");
     }
 
+    function showCustomToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = "fixed bottom-8 right-8 bg-studio-accent text-white px-5 py-3 rounded-lg shadow-2xl z-50 text-xs font-semibold flex items-center gap-2 max-w-sm break-keep";
+      toast.innerHTML = `<span>ℹ️</span> <span>${msg}</span>`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    // Modal Handlers
+    function openJsonModal() { document.getElementById('jsonModal').classList.remove('hidden'); }
+    function closeJsonModal() { document.getElementById('jsonModal').classList.add('hidden'); }
     function applyDirectJson() {
       const input = document.getElementById('jsonDirectInput').value.trim();
       if (!input) return;
       try {
-        let clean = input.replace(/```json/g, '').replace(/```/g, '').trim();
+        let clean = input.replace(/```json|```/g, '').trim();
         const parsed = JSON.parse(clean);
-        applyPresetTopic(parsed);
+        renderCardnewsToDOM(parsed, 'minimal', 'lighting');
         closeJsonModal();
-        showCustomToast("🎉 구글 AI 스튜디오 결과가 8장 슬라이드에 성공적으로 적용되었습니다!");
+        showCustomToast("🎉 JSON 데이터가 8장 슬라이드에 성공적으로 적용되었습니다!");
       } catch (e) {
-        showCustomToast("⚠️️ 올바른 JSON 형식이 아닙니다. 형식을 확인해 주세요.");
+        showCustomToast("⚠ 올바른 JSON 형식이 아닙니다.");
       }
     }
 
-    // Modals: API Key
     function openApiModal() {
       document.getElementById('geminiApiKeyInput').value = localStorage.getItem('bastudio_gemini_key') || '';
       document.getElementById('apiModal').classList.remove('hidden');
     }
-    function closeApiModal() {
-      document.getElementById('apiModal').classList.add('hidden');
-    }
+    function closeApiModal() { document.getElementById('apiModal').classList.add('hidden'); }
     function saveApiKey() {
       const key = document.getElementById('geminiApiKeyInput').value.trim();
       if (key) {
         localStorage.setItem('bastudio_gemini_key', key);
-        document.getElementById('apiStatusTag').innerText = "Gemini AI 연결됨";
-        document.getElementById('apiStatusTag').className = "text-[11px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20 font-medium";
-        showCustomToast("✅ Gemini API Key가 저장되었습니다! 실시간 AI 작성이 활성화되었습니다.");
+        showCustomToast("✅ Gemini API Key가 저장되었습니다! 실시간 AI 작성이 활성화됩니다.");
       } else {
         localStorage.removeItem('bastudio_gemini_key');
-        document.getElementById('apiStatusTag').innerText = "스마트 엔진 사용 중";
-        document.getElementById('apiStatusTag').className = "text-[11px] text-studio-accent bg-studio-accent/15 px-2 py-0.5 rounded border border-studio-accent/30 font-medium";
-        showCustomToast("스마트 엔진 모드로 전환되었습니다.");
+        showCustomToast("스마트 매트릭스 엔진 모드로 전환되었습니다.");
       }
       closeApiModal();
     }
@@ -1636,7 +1394,7 @@ ${desc}
         showCustomToast("💾 8장 전체 슬라이드가 ZIP 파일로 다운로드되었습니다!");
       } catch (err) {
         console.error("Export Error:", err);
-        showCustomToast("⚠ 다운로드 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+        showCustomToast("⚠ 다운로드 중 오류가 발생했습니다.");
       } finally {
         switchSlide(originalIndex);
         overlay.classList.remove('active');
@@ -1644,15 +1402,11 @@ ${desc}
       }
     }
 
+    // Window Init
     window.onload = function() {
       initSlideNav();
-      renderRecommendedTopics(masterPresetPool.slice(0, 5));
-      applyPresetTopic(masterPresetPool[0]);
-
-      if (localStorage.getItem('bastudio_gemini_key')) {
-        document.getElementById('apiStatusTag').innerText = "Gemini AI 연결됨";
-        document.getElementById('apiStatusTag').className = "text-[11px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20 font-medium";
-      }
+      updateCombinedTopicLabel();
+      applyMatrixCardnews();
     };
   </script>
 </body>
