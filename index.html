@@ -63,7 +63,7 @@
       content: '📷 클릭하여 내 사진으로 교체';
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.65);
       backdrop-filter: blur(2px);
       display: flex;
       align-items: center;
@@ -84,12 +84,12 @@
     .guide-active .guide-tag {
       display: flex;
     }
-    /* Matrix Pill Buttons */
-    .matrix-pill {
+    /* Pill Buttons */
+    .filter-pill {
       cursor: pointer;
       transition: all 0.15s ease;
     }
-    .matrix-pill.active {
+    .filter-pill.active {
       background-color: #B08968 !important;
       color: #ffffff !important;
       border-color: #B08968 !important;
@@ -132,7 +132,7 @@
           <h1 class="brand-logo text-base sm:text-lg font-bold tracking-widest text-white uppercase">BA STUDIO</h1>
           <span class="text-[10px] px-2 py-0.5 rounded bg-white/10 text-neutral-300 font-medium">비에이스튜디오</span>
         </div>
-        <p class="text-[10px] text-studio-muted">Interior & Space Design | 8장 가이드 카드뉴스 스튜디오</p>
+        <p class="text-[10px] text-studio-muted">Interior & Space Design | 인테리어 가이드 카드뉴스 스튜디오</p>
       </div>
     </div>
 
@@ -175,88 +175,84 @@
   <!-- Main Workspace -->
   <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
 
-    <!-- Left Sidebar: 3-Step Matrix Topic Builder & Slide Navigation -->
-    <aside class="w-full lg:w-[420px] border-b lg:border-b-0 lg:border-r border-white/10 bg-[#161616] p-4 flex flex-col gap-4 overflow-y-auto max-h-[50vh] lg:max-h-[calc(100vh-58px)]">
+    <!-- Left Sidebar: Dependent Category Filtering -->
+    <aside class="w-full lg:w-[430px] border-b lg:border-b-0 lg:border-r border-white/10 bg-[#161616] p-4 flex flex-col gap-4 overflow-y-auto max-h-[50vh] lg:max-h-[calc(100vh-58px)]">
 
       <!-- ============================================== -->
-      <!-- NEW: 3-STEP MATRIX TOPIC SELECTOR (클릭 조합 생성기) -->
+      <!-- SMART DEPENDENT FILTER BUILDER (연동 필터 시스템) -->
       <!-- ============================================== -->
       <div class="bg-[#1F1F1F] p-4 rounded-xl border border-white/10 space-y-4 shadow-sm">
         <div class="flex items-center justify-between pb-1 border-b border-white/5">
           <div class="flex items-center gap-1.5">
             <span class="text-base">🎯</span>
-            <h3 class="text-xs font-bold text-white uppercase tracking-wider">주제 3단 조합 선택기</h3>
+            <h3 class="text-xs font-bold text-white uppercase tracking-wider">공간 맞춤 가이드 빌더</h3>
           </div>
-          <button onclick="randomizeMatrixCombination()" class="text-xs text-studio-accent hover:text-white font-medium flex items-center gap-1 transition px-2.5 py-1 rounded bg-studio-accent/15 border border-studio-accent/30 shadow-sm">
-            <span>🎲</span> 랜덤 꿀조합
+          <button onclick="randomizeMatchingTopic()" class="text-xs text-studio-accent hover:text-white font-medium flex items-center gap-1 transition px-2.5 py-1 rounded bg-studio-accent/15 border border-studio-accent/30 shadow-sm">
+            <span>🎲</span> 추천 꿀조합
           </button>
         </div>
 
-        <!-- Step 1: 공간 유형 -->
+        <!-- Step 1: 공간 대분류 (주거 / F&B카페 / 상업·쇼룸) -->
         <div class="space-y-1.5">
           <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
             <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">1</span>
-            공간 유형 선택:
+            공간 대분류 선택:
           </label>
-          <div class="grid grid-cols-3 gap-1.5" id="matrixSpaceButtons">
-            <button class="matrix-pill active px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'apt', this)">🏡 아파트/주거</button>
-            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'cafe', this)">☕ 카페/베이커리</button>
-            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'kitchen', this)">🍳 주방/아일랜드</button>
-            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'bath', this)">🛁 욕실/타일</button>
-            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'beauty', this)">✨ 뷰티/쇼룸</button>
-            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('space', 'office', this)">💼 오피스/서재</button>
+          <div class="grid grid-cols-3 gap-1.5" id="categoryTabs">
+            <button class="filter-pill active px-2 py-2 rounded-lg border border-white/10 bg-black/40 text-xs text-neutral-300 text-center font-medium" onclick="handleCategoryChange('residential')">
+              🏡 아파트·주거
+            </button>
+            <button class="filter-pill px-2 py-2 rounded-lg border border-white/10 bg-black/40 text-xs text-neutral-300 text-center font-medium" onclick="handleCategoryChange('cafe')">
+              ☕ F&B 카페·식당
+            </button>
+            <button class="filter-pill px-2 py-2 rounded-lg border border-white/10 bg-black/40 text-xs text-neutral-300 text-center font-medium" onclick="handleCategoryChange('commercial')">
+              ✨ 뷰티·상업쇼룸
+            </button>
           </div>
         </div>
 
-        <!-- Step 2: 평형 / 상황 -->
+        <!-- Step 2: 평형 / 대상 상황 (1단계에 따라 자동 변경) -->
         <div class="space-y-1.5">
           <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
             <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">2</span>
-            평수 / 대상 상황:
+            대상 평수 / 상황:
           </label>
-          <div class="grid grid-cols-3 gap-1.5" id="matrixScaleButtons">
-            <button class="matrix-pill active px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('scale', 'small', this)">20평대 신혼집</button>
-            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('scale', 'mid', this)">30~40평대 아파트</button>
-            <button class="matrix-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center" onclick="selectMatrixPill('scale', 'store', this)">15~30평 상업공간</button>
+          <div class="grid grid-cols-3 gap-1.5" id="scaleButtonsContainer">
+            <!-- Dynamic Buttons rendered based on category -->
           </div>
         </div>
 
-        <!-- Step 3: 핵심 고민 / 테마 -->
+        <!-- Step 3: 핵심 가이드 테마 (1단계에 100% 매칭되는 테마만 표시) -->
         <div class="space-y-1.5">
           <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
             <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">3</span>
-            핵심 가이드 테마:
+            핵심 가이드 테마 (100% 맞춤 연동):
           </label>
-          <div class="grid grid-cols-2 gap-1.5" id="matrixTopicButtons">
-            <button class="matrix-pill active px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'lighting', this)">💡 3000K 호텔 조명 공식</button>
-            <button class="matrix-pill px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'storage', this)">📦 수납 2배 극대화 공식</button>
-            <button class="matrix-pill px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'traffic', this)">🚪 대면형 구조 & 동선</button>
-            <button class="matrix-pill px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'mistake', this)">⚠️ 디자이너가 피하는 유행</button>
-            <button class="matrix-pill px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'minimal', this)">🪵 웜미니멀 & 우드톤</button>
-            <button class="matrix-pill px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate" onclick="selectMatrixPill('theme', 'finish', this)">🧱 졸리컷 & 프리미엄 마감</button>
+          <div class="grid grid-cols-2 gap-1.5" id="themeButtonsContainer">
+            <!-- Dynamic Buttons rendered based on category -->
           </div>
         </div>
 
         <!-- Action: 완성된 조합 생성 버튼 -->
         <div class="pt-2 border-t border-white/10 space-y-2">
           <div class="p-2.5 bg-black/60 rounded-lg border border-studio-accent/30 text-xs">
-            <span class="text-studio-accent font-semibold block text-[10px] uppercase">현재 선택된 조합:</span>
+            <span class="text-studio-accent font-semibold block text-[10px] uppercase">현재 선택된 완성 주제:</span>
             <p id="combinedTopicTitle" class="text-white font-bold text-xs mt-0.5 truncate break-keep">
-              20평대 아파트 | 실패 없는 3000K 호텔 감성 조명 공식
+              20평대 신혼집 | 실패 없는 3000K 호텔 감성 조명 공식
             </p>
           </div>
 
-          <button id="generateMatrixBtn" onclick="applyMatrixCardnews()" class="w-full py-2.5 bg-studio-accent hover:bg-studio-accentHover text-white text-xs font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg transition">
+          <button id="generateMatrixBtn" onclick="applyCardnewsGeneration()" class="w-full py-2.5 bg-studio-accent hover:bg-studio-accentHover text-white text-xs font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg transition">
             <span>✨</span>
-            <span id="genBtnText">선택한 조합으로 8장 즉시 완성</span>
+            <span id="genBtnText">선택한 주제로 8장 즉시 완성</span>
           </button>
         </div>
 
         <!-- Freeform Custom Keyword Input -->
         <div class="pt-2 border-t border-white/5 flex gap-2 items-center">
-          <input type="text" id="freeformInput" placeholder="직접 키워드 입력 (예: 성수동 꽃집, 45평 복층)" 
+          <input type="text" id="freeformInput" placeholder="직접 키워드 입력 (예: 성수동 30평 브런치 카페)" 
                  class="flex-1 bg-black/40 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-studio-accent placeholder-neutral-500">
-          <button onclick="handleFreeformGenerate()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 text-xs font-medium shrink-0 transition">
+          <button onclick="handleCustomInputGenerate()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 text-xs font-medium shrink-0 transition">
             적용
           </button>
         </div>
@@ -269,7 +265,7 @@
           <span class="text-xs text-studio-accent">클릭하여 슬라이드 이동</span>
         </div>
         <nav class="space-y-1.5" id="slideNav">
-          <!-- 8 Slide Navigation Items (Generated by script) -->
+          <!-- 8 Slide Navigation Items -->
         </nav>
       </div>
 
@@ -673,13 +669,13 @@
       </div>
       
       <div class="space-y-3 text-xs text-neutral-300 leading-relaxed">
-        <p>Gemini API Key를 입력하시면, 선택하신 3단 매트릭스 조합을 토대로 Gemini AI가 실시간으로 문장을 직접 써줍니다.</p>
+        <p>Gemini API Key를 입력하시면, 선택하신 카테고리와 주제를 기반으로 Gemini AI가 실시간으로 문장을 직접 써줍니다.</p>
         <div>
           <label class="block text-xs text-neutral-400 mb-1">Gemini API Key (AIza...):</label>
           <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." 
                  class="w-full bg-black/50 border border-white/20 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
         </div>
-        <p class="text-[11px] text-neutral-400">※ API 키가 없어도 비에이스튜디오 스마트 매트릭스 엔진으로 100% 무제한 생성이 가능합니다.</p>
+        <p class="text-[11px] text-neutral-400">※ API 키가 없어도 비에이스튜디오 스마트 매칭 엔진으로 100% 무제한 생성이 가능합니다.</p>
       </div>
 
       <div class="flex justify-end gap-2 pt-2">
@@ -695,28 +691,63 @@
     let isGuideActive = false;
     let targetImgElement = null;
 
-    // Selected Matrix State
-    let matrixState = {
-      space: 'apt',
-      scale: 'small',
-      theme: 'lighting'
-    };
-
-    // Human-friendly labels
-    const matrixLabels = {
-      space: { apt: '아파트', cafe: '카페·상업', kitchen: '주방', bath: '욕실', beauty: '뷰티살롱', office: '오피스' },
-      scale: { small: '20평대 신혼집', mid: '30~40평대', store: '상업 매장' },
-      theme: {
-        lighting: '3000K 호텔 감성 조명 공식',
-        storage: '수납 2배 극대화 빌트인 공식',
-        traffic: '대면형 구조 & 최적 동선 가이드',
-        mistake: '디자이너는 절대 안 쓰는 유행 3가지',
-        minimal: '질리지 않는 웜미니멀 & 우드톤',
-        finish: '호텔 욕실 졸리컷 & 600각 타일 시공'
+    // Strict Structured Data Hierarchy (절대 다른 카테고리와 섞이지 않는 구조)
+    const categoryDatabase = {
+      // 1. 주거 공간
+      residential: {
+        label: "아파트·주거",
+        scales: [
+          { id: 'small_apt', label: '20평대 신혼집' },
+          { id: 'mid_apt', label: '30~40평대 아파트' },
+          { id: 'large_apt', label: '50평대 대형평수' }
+        ],
+        themes: [
+          { id: 'lighting', label: '💡 3000K 호텔 조명 공식', photoKey: 'lighting' },
+          { id: 'kitchen', label: '🍳 대면형 아일랜드 주방', photoKey: 'kitchen' },
+          { id: 'storage', label: '📦 무몰딩 빌트인 수납 극대화', photoKey: 'storage' },
+          { id: 'bath', label: '🛁 호텔식 600각 졸리컷 욕실', photoKey: 'bath' },
+          { id: 'minimal', label: '🪵 질리지 않는 웜 미니멀 우드', photoKey: 'minimal' },
+          { id: 'mistake', label: '⚠️ 디자이너가 피하는 주거 유행', photoKey: 'minimal' }
+        ]
+      },
+      // 2. F&B 카페 & 베이커리
+      cafe: {
+        label: "F&B 카페·식당",
+        scales: [
+          { id: 'small_cafe', label: '10~15평 소형·테이크아웃' },
+          { id: 'mid_cafe', label: '25~35평 감성 브런치 카페' },
+          { id: 'large_cafe', label: '50평 이상 대형 베이커리' }
+        ],
+        themes: [
+          { id: 'cafe_bar', label: '☕ 회전율 높이는 바 카운터 동선', photoKey: 'cafe' },
+          { id: 'cafe_photo', label: '📸 사진 찍고 싶어지는 포토존 법칙', photoKey: 'cafe' },
+          { id: 'cafe_light', label: '🍷 분위기 살리는 저녁 무드 핀조명', photoKey: 'lighting' },
+          { id: 'cafe_texture', label: '🧱 러프한 미장 & 원목 바 인테리어', photoKey: 'cafe' }
+        ]
+      },
+      // 3. 뷰티 살롱 & 상업 쇼룸
+      commercial: {
+        label: "뷰티·상업쇼룸",
+        scales: [
+          { id: 'beauty_1person', label: '1인 프라이빗 뷰티살롱' },
+          { id: 'showroom_mid', label: '20~30평 브랜드 쇼룸' },
+          { id: 'office_space', label: '30~50평 프리미엄 오피스' }
+        ],
+        themes: [
+          { id: 'beauty_face', label: '✨ 셀카 잘 나오는 페이스 라이팅', photoKey: 'beauty' },
+          { id: 'beauty_traffic', label: '🚪 고객 동선 완벽 분리 가벽 설계', photoKey: 'beauty' },
+          { id: 'office_layout', label: '💼 집중과 쉼이 있는 라운지 오피스', photoKey: 'office' },
+          { id: 'commercial_display', label: '🏛️ 제품이 돋보이는 미니멀 집기', photoKey: 'minimal' }
+        ]
       }
     };
 
-    // 8 Theme Photo Sets (Distinct, Curated High-Res Unsplash IDs)
+    // Current Selection
+    let currentCategory = 'residential';
+    let currentScale = 'small_apt';
+    let currentTheme = 'lighting';
+
+    // 8 Theme Photo Sets (100% Curated Unsplash IDs)
     const photoLibraries = {
       lighting: {
         img1: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80",
@@ -809,7 +840,8 @@
     };
 
     // Rich Topic-Specific Content Blueprints
-    const matrixContentDatabase = {
+    const detailedContentDatabase = {
+      // 주거 테마들
       lighting: {
         title: "비싼 가구 없이 5성급 호텔 분위기 내는 조명 공식",
         desc: "형광등 하나로 집 분위기를 망치고 계신가요? 디자이너가 알려주는 실패 없는 3000K 조명 배치 팁을 공개합니다.",
@@ -830,6 +862,27 @@
           { t: "벽면과 커튼에 빛을 은은하게 튕기기", d: "눈부심 없이 호텔 객실처럼 아늑하고 편안한 분위기를 완성합니다." }
         ],
         chips: [{ name: "Warm 3000K", hex: "#EADCC9" }, { name: "Soft Crema", hex: "#D1C7BD" }, { name: "Natural Oak", hex: "#A89886" }]
+      },
+      kitchen: {
+        title: "작은 평수에서도 실현하는 로망의 대면형 아일랜드 주방",
+        desc: "벽만 보고 요리하던 답답한 주방은 그만! 가족과 마주 보며 요리하는 대면형 구조 설계 노하우를 정리했습니다.",
+        problemTitle: "구축 아파트, 과연 대면형 주방이 들어갈 수 있을까요?",
+        problemDesc: "기존 'ㄱ자' 싱크대는 공간을 가로막고 가족과의 소통을 단절시킵니다. 하지만 통로 규격만 제대로 잡으면 작은 평수도 충분히 가능합니다.",
+        conceptTitle: "“식탁과 아일랜드를 하나로 묶는 콤팩트 동선”",
+        conceptDesc: "식탁을 따로 두지 않고 아일랜드와 T자형으로 결합하면 낭비되는 공간 없이 효율적인 동선을 만들 수 있습니다.",
+        tip1Title: "아일랜드와 싱크대 사이 최적 통로 폭은 90~100cm",
+        tip1Desc: "서랍을 열고 두 사람이 엇갈려 지나가기에 가장 편안한 황금 치수입니다. 너무 좁으면 요리할 때 불편합니다.",
+        tip2Title: "후드 배관이 멀다면 탄소필터 후드 활용하기",
+        tip2Desc: "환기구 위치 때문에 아일랜드 위치를 고민하셨다면, 배관 연결 없이도 냄새를 잡아주는 탄소필터형 아일랜드 후드가 정답입니다.",
+        adviceTitle: "상부장을 과감히 덜어내어 시각적 개방감 확보하기",
+        adviceDesc: "아일랜드 하부에 서랍형 수납을 넉넉히 짜넣고, 전면 벽체는 상부장 없이 타일만 깔끔하게 마감하면 주방이 2배 넓어 보입니다.",
+        summaryTitle: "작은 집 대면형 주방 완성 3원칙",
+        tips: [
+          { t: "식탁 겸용 아일랜드 일체형 설계", d: "식탁 자리를 아껴 거실을 훨씬 넓게 쓸 수 있습니다." },
+          { t: "통로 폭 90cm 이상 필수로 지키기", d: "요리와 설거지 동선이 꼬이지 않는 쾌적함을 보장합니다." },
+          { t: "아일랜드 하부 서랍 수납 극대화", d: "상부장이 없어도 주방 집기가 밖으로 나오지 않게 정리됩니다." }
+        ],
+        chips: [{ name: "Pure White", hex: "#F5F5F5" }, { name: "Ceramic Grey", hex: "#B8B5B0" }, { name: "Warm Walnut", hex: "#735B47" }]
       },
       storage: {
         title: "좁은 집도 2배 넓어 보이는 무몰딩 맞춤 수납 공식",
@@ -852,47 +905,26 @@
         ],
         chips: [{ name: "Cream White", hex: "#F7F5F0" }, { name: "Ash Beige", hex: "#D6CFBF" }, { name: "Light Oak", hex: "#B8A389" }]
       },
-      traffic: {
-        title: "작은 평수에서도 실현하는 로망의 대면형 아일랜드 주방",
-        desc: "벽만 보고 요리하던 답답한 주방은 그만! 가족과 마주 보며 요리하는 대면형 구조 설계 노하우를 정리했습니다.",
-        problemTitle: "구축 아파트, 과연 대면형 주방이 들어갈 수 있을까요?",
-        problemDesc: "기존 'ㄱ자' 싱크대는 공간을 가로막고 가족과의 소통을 단절시킵니다. 하지만 동선 규격만 제대로 잡으면 작은 평수도 충분히 가능합니다.",
-        conceptTitle: "“식탁과 아일랜드를 하나로 묶는 콤팩트 동선”",
-        conceptDesc: "식탁을 따로 두지 않고 아일랜드와 T자형으로 결합하면 낭비되는 공간 없이 효율적인 동선을 만들 수 있습니다.",
-        tip1Title: "아일랜드와 싱크대 사이 최적 통로 폭은 90~100cm",
-        tip1Desc: "서랍을 열고 두 사람이 엇갈려 지나가기에 가장 편안한 황금 치수입니다. 너무 좁으면 요리할 때 불편합니다.",
-        tip2Title: "후드 배관이 멀다면 탄소필터 후드 활용하기",
-        tip2Desc: "환기구 위치 때문에 아일랜드 위치를 고민하셨다면, 배관 연결 없이도 냄새를 잡아주는 탄소필터형 아일랜드 후드가 정답입니다.",
-        adviceTitle: "상부장을 과감히 덜어내어 시각적 개방감 확보하기",
-        adviceDesc: "아일랜드 하부에 서랍형 수납을 넉넉히 짜넣고, 전면 벽체는 상부장 없이 타일만 깔끔하게 마감하면 주방이 2배 넓어 보입니다.",
-        summaryTitle: "작은 집 대면형 주방 완성 3원칙",
+      bath: {
+        title: "호텔 욕실 부럽지 않은 졸리컷 & 600각 타일 인테리어",
+        desc: "플라스틱 재료분리대 없이 타일과 타일이 깔끔하게 만나는 졸리컷 시공! 실패 없이 완성하는 핵심 팁입니다.",
+        problemTitle: "모서리 은색 몰딩, 왜 욕실을 촌스럽게 만들까요?",
+        problemDesc: "은색 스테인리스 몰딩은 타일의 고급스러운 결을 끊어놓습니다. 타일 단면을 45도로 깎아 맞추는 졸리컷이 호텔 욕실의 핵심입니다.",
+        conceptTitle: "“선이 사라지는 미니멀 욕실의 완성”",
+        conceptDesc: "바닥과 벽체를 같은 600각 포세린 타일로 일체감 있게 감싸면 좁은 욕실도 2배로 넓어 보이는 시각적 확장을 만듭니다.",
+        tip1Title: "타일은 흡수율이 낮은 '포세린 타일' 필수 선택",
+        tip1Desc: "일반 도기질 타일은 모서리를 깎으면 속살이 깨집니다. 단단하고 물을 흡수하지 않는 포세린 타일이어야 졸리컷이 가능합니다.",
+        tip2Title: "물때가 잘 타지 않는 에폭시 줄눈으로 마감하기",
+        tip2Desc: "백시멘트 대신 방수와 내구성이 뛰어난 에폭시 계열 줄눈을 쓰면 몇 년이 지나도 곰팡이 걱정 없이 깨끗합니다.",
+        adviceTitle: "수전과 악세사리는 무광 니켈로 일체감 주기",
+        adviceDesc: "번쩍이는 유광 크롬 대신 은은한 무광 니켈(새틴) 수전을 고르면 물얼룩이 덜 보이고 한층 차분한 호텔 무드가 완성됩니다.",
+        summaryTitle: "호텔식 욕실 완성 체크리스트",
         tips: [
-          { t: "식탁 겸용 아일랜드 일체형 설계", d: "식탁 자리를 아껴 거실을 훨씬 넓게 쓸 수 있습니다." },
-          { t: "통로 폭 90cm 이상 필수로 지키기", d: "요리와 설거지 동선이 꼬이지 않는 쾌적함을 보장합니다." },
-          { t: "아일랜드 하부 서랍 수납 극대화", d: "상부장이 없어도 주방 집기가 밖으로 나오지 않게 정리됩니다." }
+          { t: "벽과 바닥을 동일한 600각 타일로 통일", d: "경계선이 사라져 공간이 훨씬 정돈되고 넓어 보입니다." },
+          { t: "모서리 몰딩 없는 45도 졸리컷 마감", d: "군더더기 없는 고급스러운 선을 완성합니다." },
+          { t: "조명 거울로 은은한 페이스 라이팅 연출", d: "얼굴에 그림자 없이 따뜻한 무드를 만들어줍니다." }
         ],
-        chips: [{ name: "Pure White", hex: "#F5F5F5" }, { name: "Ceramic Grey", hex: "#B8B5B0" }, { name: "Warm Walnut", hex: "#735B47" }]
-      },
-      mistake: {
-        title: "디자이너는 자기 집에 절대 안 쓰는 유행 인테리어 3가지",
-        desc: "유행이라고 무작정 따라 했다가 1년 뒤 후회하는 디테일들! 10년이 지나도 질리지 않는 공간의 기본기를 알려드립니다.",
-        problemTitle: "잡지나 핀터레스트에서 본 예쁜 유행, 왜 살면서 후회할까요?",
-        problemDesc: "사진 찍기엔 화려해 보이지만, 청소가 어렵거나 빛 반사가 심해 일상생활에서 큰 스트레스를 주는 유행 요소들이 있습니다.",
-        conceptTitle: "“화려한 장식보다 선과 여백의 단정함”",
-        conceptDesc: "유행을 타는 포인트 자재를 덜어내고, 벽과 문선의 라인을 정갈하게 맞추는 데 투자할 때 시간이 지나도 가치 있는 공간이 됩니다.",
-        tip1Title: "유광 하이그로시 대신 차분한 '무광 매트' 마감",
-        tip1Desc: "지문과 기름때가 번들거리는 유광 대신 지문 방지 무광 도어를 선택하면 훨씬 고급스럽고 관리가 편합니다.",
-        tip2Title: "과도한 천장 조명 타공 줄이고 조도 집중하기",
-        tip2Desc: "천장 전체에 구멍을 뚫어 등을 촘촘히 박으면 어지럽습니다. 필요한 곳에만 조도를 모아주는 것이 세련된 연출법입니다.",
-        adviceTitle: "청소가 까다로운 틈새 장식 요소 피하기",
-        adviceDesc: "먼지가 쌓이기 쉬운 템바보드나 복잡한 요철 벽체는 포인트 한 곳에만 절제하여 사용하시는 것을 권장합니다.",
-        summaryTitle: "오래 봐도 질리지 않는 인테리어 3원칙",
-        tips: [
-          { t: "반짝이는 유광 대신 은은한 무광 선택", d: "고급스러운 호텔처럼 차분하고 우아한 분위기를 유지합니다." },
-          { t: "천장 조명은 꼭 필요한 곳에만 절제", d: "시각적 피로감을 줄이고 깔끔한 천장 선을 유지할 수 있습니다." },
-          { t: "청소와 관리가 쉬운 단순한 마감선", d: "시간이 지나도 손이 덜 가고 한결같은 깨끗함을 지켜줍니다." }
-        ],
-        chips: [{ name: "Matte Beige", hex: "#DDD6C8" }, { name: "Quiet Wood", hex: "#9E8B75" }, { name: "Shadow Grey", hex: "#63605B" }]
+        chips: [{ name: "Stone Grey", hex: "#A8A59E" }, { name: "Sand Beige", hex: "#D4CEBE" }, { name: "Matte Nickel", hex: "#7D8082" }]
       },
       minimal: {
         title: "하얗기만 한 집은 질린다? 요즘 대세 '웜 미니멀' 인테리어",
@@ -915,88 +947,313 @@
         ],
         chips: [{ name: "Soft Cream", hex: "#F3EDE2" }, { name: "Natural Oak", hex: "#C4A482" }, { name: "Muted Greige", hex: "#9E978E" }]
       },
-      finish: {
-        title: "호텔 욕실 부럽지 않은 졸리컷 & 600각 타일 인테리어",
-        desc: "플라스틱 재료분리대 없이 타일과 타일이 깔끔하게 만나는 졸리컷 시공! 실패 없이 완성하는 핵심 팁입니다.",
-        problemTitle: "모서리 재료분리대, 왜 욕실을 촌스럽게 만들까요?",
-        problemDesc: "은색 스테인리스 몰딩은 타일의 고급스러운 결을 끊어놓습니다. 타일 단면을 45도로 깎아 맞추는 졸리컷이 호텔 욕실의 핵심입니다.",
-        conceptTitle: "“선이 사라지는 미니멀 욕실의 완성”",
-        conceptDesc: "바닥과 벽체를 같은 600각 포세린 타일로 일체감 있게 감싸면 좁은 욕실도 2배로 넓어 보이는 시각적 확장을 만듭니다.",
-        tip1Title: "타일은 흡수율이 낮은 '포세린 타일' 필수 선택",
-        tip1Desc: "일반 도기질 타일은 모서리를 깎으면 속살이 깨집니다. 단단하고 물을 흡수하지 않는 포세린 타일이어야 졸리컷이 가능합니다.",
-        tip2Title: "물때가 잘 타지 않는 에폭시 줄눈으로 마감하기",
-        tip2Desc: "백시멘트 대신 방수와 내구성이 뛰어난 에폭시 계열 줄눈을 쓰면 몇 년이 지나도 곰팡이 걱정 없이 깨끗합니다.",
-        adviceTitle: "수전과 악세사리는 무광 니켈로 일체감 주기",
-        adviceDesc: "번쩍이는 유광 크롬 대신 은은한 무광 니켈(새틴) 수전을 고르면 물얼룩이 덜 보이고 한층 차분한 호텔 무드가 완성됩니다.",
-        summaryTitle: "호텔식 욕실 완성 체크리스트",
+      mistake: {
+        title: "디자이너는 자기 집에 절대 안 쓰는 유행 인테리어 3가지",
+        desc: "유행이라고 무작정 따라 했다가 1년 뒤 후회하는 디테일들! 10년이 지나도 질리지 않는 공간의 기본기를 알려드립니다.",
+        problemTitle: "잡지나 핀터레스트에서 본 예쁜 유행, 왜 살면서 후회할까요?",
+        problemDesc: "사진 찍기엔 화려해 보이지만, 청소가 어렵거나 빛 반사가 심해 일상생활에서 큰 스트레스를 주는 유행 요소들이 있습니다.",
+        conceptTitle: "“화려한 장식보다 선과 여백의 단정함”",
+        conceptDesc: "유행을 타는 포인트 자재를 덜어내고, 벽과 문선의 라인을 정갈하게 맞추는 데 투자할 때 시간이 지나도 가치 있는 공간이 됩니다.",
+        tip1Title: "유광 하이그로시 대신 차분한 '무광 매트' 마감",
+        tip1Desc: "지문과 기름때가 번들거리는 유광 대신 지문 방지 무광 도어를 선택하면 훨씬 고급스럽고 관리가 편합니다.",
+        tip2Title: "과도한 천장 조명 타공 줄이고 조도 집중하기",
+        tip2Desc: "천장 전체에 구멍을 뚫어 등을 촘촘히 박으면 어지럽습니다. 필요한 곳에만 조도를 모아주는 것이 세련된 연출법입니다.",
+        adviceTitle: "청소가 까다로운 틈새 장식 요소 피하기",
+        adviceDesc: "먼지가 쌓이기 쉬운 템바보드나 복잡한 요철 벽체는 포인트 한 곳에만 절제하여 사용하시는 것을 권장합니다.",
+        summaryTitle: "오래 봐도 질리지 않는 인테리어 3원칙",
         tips: [
-          { t: "벽과 바닥을 동일한 600각 타일로 통일", d: "경계선이 사라져 공간이 훨씬 정돈되고 넓어 보입니다." },
-          { t: "모서리 몰딩 없는 45도 졸리컷 마감", d: "군더더기 없는 고급스러운 선을 완성합니다." },
-          { t: "조명 거울로 은은한 페이스 라이팅 연출", d: "얼굴에 그림자 없이 따뜻한 무드를 만들어줍니다." }
+          { t: "반짝이는 유광 대신 은은한 무광 선택", d: "고급스러운 호텔처럼 차분하고 우아한 분위기를 유지합니다." },
+          { t: "천장 조명은 꼭 필요한 곳에만 절제", d: "시각적 피로감을 줄이고 깔끔한 천장 선을 유지할 수 있습니다." },
+          { t: "청소와 관리가 쉬운 단순한 마감선", d: "시간이 지나도 손이 덜 가고 한결같은 깨끗함을 지켜줍니다." }
         ],
-        chips: [{ name: "Stone Grey", hex: "#A8A59E" }, { name: "Sand Beige", hex: "#D4CEBE" }, { name: "Matte Nickel", hex: "#7D8082" }]
+        chips: [{ name: "Matte Beige", hex: "#DDD6C8" }, { name: "Quiet Wood", hex: "#9E8B75" }, { name: "Shadow Grey", hex: "#63605B" }]
+      },
+
+      // F&B 카페 테마들 (상업 전용)
+      cafe_bar: {
+        title: "오픈 첫 달 손님 2배 늘리는 카페 바 카운터 동선 설계",
+        desc: "바리스타가 편해야 음료가 빨리 나옵니다. 15~35평 매장에서 회전율과 감성을 동시에 잡는 바 설계 공식입니다.",
+        problemTitle: "인테리어는 예쁜데 왜 주문받고 음료 낼 때 동선이 꼬일까요?",
+        problemDesc: "머신, 그라인더, 제빙기, 픽업존의 위치가 일직선으로 정돈되지 않으면 동선이 겹쳐 음료 제조 시간이 2배로 늘어납니다.",
+        conceptTitle: "“바리스타의 움직임을 반으로 줄이는 삼각 동선”",
+        conceptDesc: "포스 주문에서 에스프레소 추출, 픽업대로 이어지는 흐름을 3걸음 안에서 끝낼 수 있도록 가로형 바 카운터를 최적화합니다.",
+        tip1Title: "바 카운터 상판 높이는 900~920mm 황금 규격",
+        tip1Desc: "바리스타가 허리를 숙이지 않고 탬핑과 서브를 할 수 있는 가장 편안한 상업용 높이입니다.",
+        tip2Title: "손님 시선 차단과 픽업 분리 파티션",
+        tip2Desc: "설거지 공간은 손님 시선보다 15cm 높인 턱으로 가려주고, 깔끔한 픽업 존만 노출해야 매장이 항상 단정해 보입니다.",
+        adviceTitle: "배수관 구배(기울기)와 전기 증설 사전 점검",
+        adviceDesc: "커피머신과 제빙기는 전력 소모가 큽니다. 착공 전 최소 15~20kW 단독 배선과 배수관 기울기를 반드시 확보하세요.",
+        summaryTitle: "성공하는 카페 바 카운터 3원칙",
+        tips: [
+          { t: "주문-추출-픽업 3걸음 일직선 동선", d: "러시 타임에도 음료 대기 시간을 획기적으로 줄여줍니다." },
+          { t: "설거지 씽크볼 시선 차단 단차 설계", d: "지저분한 집기가 손님 눈에 띄지 않아 매장이 청결합니다." },
+          { t: "상판 소재는 물과 열에 강한 세라믹 권장", d: "원목 바의 단점인 물얼룩과 커피 착색을 완벽히 방지합니다." }
+        ],
+        chips: [{ name: "Espresso Brown", hex: "#4A3B32" }, { name: "Stainless Satin", hex: "#A8A9AD" }, { name: "Warm Terra", hex: "#C28D75" }]
+      },
+      cafe_photo: {
+        title: "손님이 알아서 인스타에 올려주는 카페 포토존 연출법",
+        desc: "마케팅 비용 0원으로 SNS 바이럴을 일으키는 공간의 비밀! 테이블마다 사진이 잘 나오는 시선 처리 팁입니다.",
+        problemTitle: "비싼 가구를 채웠는데 왜 손님들이 사진을 안 찍을까요?",
+        problemDesc: "조명이 너무 어둡거나 벽면에 시선이 머무는 포인트(Focal Point)가 없으면 손님은 카메라를 켜지 않습니다.",
+        conceptTitle: "“커피잔을 내려놓는 순간 포토존이 되는 테이블”",
+        conceptDesc: "테이블 한가운데 떨어지는 은은한 펜던트 조명과 텍스처가 살아있는 벽체가 조화를 이룰 때 완벽한 컷이 완성됩니다.",
+        tip1Title: "테이블 상판 위 65~70cm 높이에 펜던트 조명 달기",
+        tip1Desc: "음료와 디저트에 그림자가 생기지 않고, 음식의 윤기와 색감을 가장 돋보이게 만드는 최적의 조명 높이입니다.",
+        tip2Title: "거울 셀카를 부르는 '전신 비정형 거울' 배치",
+        tip2Desc: "화장실 입구나 매장 코너에 식물과 함께 비정형 거울을 두면 손님들의 자연스러운 방문 인증샷 명소가 됩니다.",
+        adviceTitle: "배경이 되는 벽면은 러프한 미장 마감 추천",
+        adviceDesc: "매끄러운 페인트보다 질감이 살아있는 유럽 미장(스페셜 페인트)을 쓰면 사진 속 공간의 깊이감이 3배는 깊어집니다.",
+        summaryTitle: "바이럴 카페 포토존 3원칙",
+        tips: [
+          { t: "테이블 중심에 집중되는 스팟 조명", d: "디저트와 커피 사진이 먹음직스럽게 살아납니다." },
+          { t: "방문 인증을 부르는 감성 거울 포토존", d: "손님들이 자발적으로 스토리에 태그해 홍보해 줍니다." },
+          { t: "질감이 풍부한 유럽 미장 벽체 마감", d: "어느 각도에서 찍어도 고급스러운 배경이 되어줍니다." }
+        ],
+        chips: [{ name: "Cream Plaster", hex: "#ECE7DE" }, { name: "Olive Green", hex: "#7E8574" }, { name: "Brushed Brass", hex: "#C5A059" }]
+      },
+      cafe_light: {
+        title: "낮에는 따스한 카페, 저녁엔 와인바로 변신하는 조도 설계",
+        desc: "낮과 밤의 매출을 모두 잡는 하이브리드 F&B 공간의 비밀! 분위기를 180도 바꾸는 디밍 조명 공식입니다.",
+        problemTitle: "낮에는 예쁜데 저녁만 되면 왜 매장이 썰렁하고 촌스러울까요?",
+        problemDesc: "낮의 밝은 자연광에 맞춘 조명을 저녁에도 그대로 켜두면, 아늑함이 사라지고 차가운 분위기 때문에 술 손님이 들지 않습니다.",
+        conceptTitle: "“시간대에 따라 공간의 온도를 바꾸는 디밍 시스템”",
+        conceptDesc: "해 질 녘 스위치 하나로 전체 조도를 30%로 낮추고 테이블 위 핀조명만 살리면 매장이 순식간에 감성 바로 변신합니다.",
+        tip1Title: "모든 조명 라인은 조도 조절(디머) 스위치 분리",
+        tip1Desc: "천장 메인등과 벽등, 바 하부 간접등의 스위치를 따로 분리해야 저녁 시간에 필요한 무드만 켤 수 있습니다.",
+        tip2Title: "테이블마다 무선 충전식 미니 램프 배치",
+        tip2Desc: "전선 없이 테이블 위에 올려두는 무선 캔들 램프는 손님의 대화에 프라이빗한 몰입감을 선물합니다.",
+        adviceTitle: "색온도는 절대 섞지 말고 2700K~3000K 전구색 통일",
+        adviceDesc: "식음료 매장에서 하얀 형광등빛은 금물입니다. 무조건 따뜻한 노을빛 2700K 전구색으로 공간 전체를 감싸주세요.",
+        summaryTitle: "하이브리드 바 조명 3원칙",
+        tips: [
+          { t: "시간대별 디밍 스위치 분리 시공", d: "낮과 밤의 매장 분위기를 스위치 하나로 바꿀 수 있습니다." },
+          { t: "테이블 무선 미니 램프로 무드 극대화", d: "손님들의 머무는 시간과 추가 주문을 늘려줍니다." },
+          { t: "따뜻한 2700K 앰버 조명으로 통일", d: "와인과 안주가 가장 매력적으로 돋보이게 만듭니다." }
+        ],
+        chips: [{ name: "Amber 2700K", hex: "#F3DEBA" }, { name: "Wine Burgundy", hex: "#5C2223" }, { name: "Charcoal Dark", hex: "#222222" }]
+      },
+      cafe_texture: {
+        title: "인테리어 비용 아끼면서 고급스러움 살리는 미장 & 우드 공식",
+        desc: "비싼 대리석 대신 질감으로 승부하는 요즘 카페 트렌드! 감각적인 카페를 완성하는 자재 믹스매치 팁입니다.",
+        problemTitle: "화려한 타일과 대리석, 왜 카페에 쓰면 부담스럽고 차가울까요?",
+        problemDesc: "상업 공간은 관리가 쉬우면서도 손님이 머물 때 편안함을 느껴야 합니다. 반짝이는 유광 자재는 오히려 쉽게 질립니다.",
+        conceptTitle: "“자연스러운 흙의 질감과 거친 나뭇결의 온기”",
+        conceptDesc: "손때가 묻을수록 멋스러워지는 빈티지 우드와 부드러운 유럽 미장 벽체는 시간이 흘러도 가치가 유지됩니다.",
+        tip1Title: "바 카운터 전면은 샌드 플라스터 미장 마감",
+        tip1Desc: "손님의 발이 닿는 하부 15cm만 걸레받이를 두고 상부는 미장으로 덮으면 모던하면서도 유니크한 바가 완성됩니다.",
+        tip2Title: "원목 가구는 톤이 다른 오크와 월넛을 7:3으로 믹스",
+        tip2Desc: "한 가지 나무 색으로만 통일하면 지루합니다. 밝은 오크 바닥에 짙은 월넛 테이블을 포인트로 얹어보세요.",
+        adviceTitle: "테이블 상판 마감은 방수 무광 바니시 필수",
+        adviceDesc: "원목 테이블에 커피 물이 스며들면 얼룩이 남습니다. 촉감은 매트하면서 물은 튕겨내는 특수 세라믹 코팅을 권장합니다.",
+        summaryTitle: "질리지 않는 카페 자재 3원칙",
+        tips: [
+          { t: "빛을 부드럽게 흡수하는 무광 미장 벽체", d: "자연스러운 그림자가 생겨 공간이 차분해집니다." },
+          { t: "무게감을 잡아주는 다크 우드 포인트", d: "가벼워 보이지 않고 깊이 있는 브랜드 이미지를 만듭니다." },
+          { t: "커피 얼룩에 강한 내구성 코팅", d: "오래 영업해도 처음 인테리어 그대로의 깔끔함을 유지합니다." }
+        ],
+        chips: [{ name: "Sand Plaster", hex: "#D8CFBC" }, { name: "Vintage Teak", hex: "#7B5E43" }, { name: "Raw Concrete", hex: "#9E9D99" }]
+      },
+
+      // 뷰티 & 상업 쇼룸 테마들
+      beauty_face: {
+        title: "고객 얼굴에 그림자 안 생기는 뷰티살롱 조명 연출법",
+        desc: "미용실, 피부관리실, 메이크업샵 필수! 손님이 거울을 봤을 때 가장 예뻐 보이는 페이스 라이팅 공식입니다.",
+        problemTitle: "천장 조명 때문에 손님 얼굴에 눈 밑 다크서클이 생긴다면?",
+        problemDesc: "머리 바로 위에 달린 다운라이트는 이마, 코, 턱 밑에 짙은 그림자를 만들어 손님의 만족도를 떨어뜨립니다.",
+        conceptTitle: "“얼굴 정면에서 부드럽게 채워주는 무영 조명”",
+        conceptDesc: "거울 테두리에서 나오는 은은한 간접광이 얼굴 전체를 균일하게 밝혀주어 피부 톤을 화사하고 맑게 연출합니다.",
+        tip1Title: "경대 거울 뒤편 3면 간접 LED 바 매립",
+        tip1Desc: "빛이 벽에 반사되어 얼굴로 은은하게 돌아오기 때문에 눈부심 없이 완벽한 피부 보정 효과를 냅니다.",
+        tip2Title: "색온도는 자연광에 가장 가까운 3500K~4000K",
+        tip2Desc: "너무 노란 조명은 염색이나 메이크업 본래 색을 왜곡합니다. 햇살과 가장 유사한 뉴트럴 화이트를 추천합니다.",
+        adviceTitle: "샴푸실이나 베드존은 직접 조명 전면 배제",
+        adviceDesc: "누워서 시술받는 공간은 천장을 완전히 비우고, 발밑이나 선반 하부의 간접등만 켜야 고객이 편안하게 휴식합니다.",
+        summaryTitle: "뷰티살롱 페이스 라이팅 3원칙",
+        tips: [
+          { t: "거울 테두리 전면 무영 조명", d: "얼굴에 그림자가 지지 않아 시술 결과가 돋보입니다." },
+          { t: "색 왜곡 없는 3500K 자연광 세팅", d: "메이크업과 염색 컬러를 야외 햇빛 아래처럼 정확히 봅니다." },
+          { t: "베드존 시선 앞 눈부심 원천 차단", d: "누워있는 손님에게 최고급 호텔 스파 같은 안락함을 줍니다." }
+        ],
+        chips: [{ name: "Neutral 3500K", hex: "#F5EFE6" }, { name: "Rose Crema", hex: "#EBD8D0" }, { name: "Champagne Gold", hex: "#D4AF37" }]
+      },
+      beauty_traffic: {
+        title: "1인 뷰티살롱 15평, 답답하지 않게 가벽 분리하는 법",
+        desc: "시술 공간의 프라이빗함과 대기실의 개방감을 동시에! 좁은 매장을 2배 넓어 보이게 만드는 공간 분할 팁입니다.",
+        problemTitle: "천장까지 꽉 막힌 가벽, 왜 매장을 답답한 고시원처럼 만들까요?",
+        problemDesc: "방을 나누겠다고 천장 끝까지 석고보드 가벽을 치면 에어컨 바람도 막히고 매장이 좁아 터져 보입니다.",
+        conceptTitle: "“시선은 가리고 빛은 통과시키는 반투명 아치 가벽”",
+        conceptDesc: "유려한 곡선 아치 게이트와 반투명 모루유리를 활용하면 프라이버시는 지키면서도 시원한 개방감을 확보합니다.",
+        tip1Title: "가벽 높이를 2100mm로 낮춰 천장 라인 틔워주기",
+        tip1Desc: "가벽 위로 천장이 하나로 이어져 보이면 하나의 에어컨으로 매장 전체를 시원하게 냉방할 수 있습니다.",
+        tip2Title: "문 대신 패브릭 린넨 커튼 게이트 활용",
+        tip2Desc: "여닫이문이 차지하는 반경 1미터의 공간을 아낄 수 있고, 부드러운 패브릭이 뷰티살롱 특유의 아늑함을 더해줍니다.",
+        adviceTitle: "대기 공간과 시술 베드의 시선 차단 각도 계산",
+        adviceDesc: "손님이 들어오는 입구에서 시술 베드에 누워있는 다른 손님의 모습이 절대 정면으로 보이지 않도록 'ㄱ자' 꺾임 복도를 만드세요.",
+        summaryTitle: "1인 뷰티샵 가벽 분할 3원칙",
+        tips: [
+          { t: "에어컨 공기가 통하는 상부 오픈 가벽", d: "냉난방 비용을 아끼고 시각적 답답함을 없애줍니다." },
+          { t: "공간을 덜 차지하는 패브릭 아치 게이트", d: "문 열림 공간 낭비 없이 우아한 입구를 만듭니다." },
+          { t: "입구에서 시술 공간 시선 완벽 차단", d: "관리받는 고객에게 완벽한 심리적 안정감을 선사합니다." }
+        ],
+        chips: [{ name: "Pure Linen", hex: "#EDE8DF" }, { name: "Soft Taupe", hex: "#B3A594" }, { name: "Smoked Glass", hex: "#7E8287" }]
+      },
+      office_layout: {
+        title: "출근하고 싶어지는 30평대 미니멀 오피스 레이아웃",
+        desc: "답답한 파티션은 옛말! 집중 업무존과 편안한 카페형 라운지를 조화롭게 배치하는 현대 오피스 설계 가이드입니다.",
+        problemTitle: "벽으로 꽉 막힌 회의실과 빽빽한 책상, 왜 소통을 방해할까요?",
+        problemDesc: "일률적인 독서실형 배치는 직원들의 창의력을 떨어뜨리고 사무실을 삭막하게 만듭니다. 유연한 공간 분리가 필요합니다.",
+        conceptTitle: "“집중과 휴식이 공존하는 라운지형 스마트 오피스”",
+        conceptDesc: "카페 같은 대형 원목 테이블과 폰부스, 미팅룸을 분산 배치하여 직원들이 업무 성격에 맞춰 자리를 선택하게 합니다.",
+        tip1Title: "책상 간 통로 폭은 최소 110cm 이상 확보하기",
+        tip1Desc: "의자를 뒤로 빼고 다른 직원이 지나갈 때 부딪히지 않는 쾌적한 오피스 표준 규격입니다.",
+        tip2Title: "유리 파티션으로 개방감과 방음을 동시에 잡기",
+        tip2Desc: "불투명 벽체 대신 블랙 프레임 유리 칸막이를 쓰면 사무실이 2배로 넓어 보이며 회의 소음도 차단됩니다.",
+        adviceTitle: "눈의 피로를 덜어주는 간접 라인 조명 설계",
+        adviceDesc: "모니터에 빛이 반사되는 눈부신 직부등 대신 천장 바리솔이나 간접 라인 조명을 시공하면 장시간 근무 피로도가 반감됩니다.",
+        summaryTitle: "스마트 오피스 인테리어 3원칙",
+        tips: [
+          { t: "자유로운 소통을 돕는 카페형 라운지 존", d: "딱딱한 회의 대신 편안한 아이디어 교류를 촉진합니다." },
+          { t: "유리 칸막이를 통한 시각적 확장감", d: "좁은 평수 오피스도 탁 트인 개방감을 느끼게 만듭니다." },
+          { t: "눈부심 없는 모니터 최적화 라인 조명", d: "직원들의 시력 보호와 업무 집중도를 극대화합니다." }
+        ],
+        chips: [{ name: "Modern Grey", hex: "#E0DFDC" }, { name: "Matte Black", hex: "#2B2B2B" }, { name: "Warm Oak", hex: "#A88B6B" }]
+      },
+      commercial_display: {
+        title: "제품이 주인공이 되는 미니멀 쇼룸 디스플레이 공식",
+        desc: "인테리어가 제품을 가리면 안 됩니다! 브랜드 아이덴티티를 살리고 제품 구매 전환율을 높이는 쇼룸 집기 연출법입니다.",
+        problemTitle: "인테리어가 너무 화려해서 정작 파는 물건이 안 보인다면?",
+        problemDesc: "벽체와 바닥의 패턴이 과도하면 손님의 시선이 분산되어 상품에 집중하지 못합니다. 인테리어는 배경이어야 합니다.",
+        conceptTitle: "“군더더기를 덜어내고 상품에 빛을 모으는 여백”",
+        conceptDesc: "미니멀한 모노톤 배경 위에 정교한 집중 핀조명을 쏘아 마치 미술관 갤러리 작품처럼 상품의 가치를 극대화합니다.",
+        tip1Title: "디스플레이 매대 높이는 손이 가장 닿기 쉬운 850mm",
+        tip1Desc: "손님이 허리를 굽히지 않고 자연스럽게 제품을 만져보고 경험할 수 있는 골든 존 규격입니다.",
+        tip2Title: "레일 스팟 조명으로 상품마다 핀라이트 타게팅",
+        tip2Desc: "배경은 차분하게 가라앉히고 오직 전시된 제품에만 하이라이트 빔을 쏘아 시각적 주목도를 높이세요.",
+        adviceTitle: "마감재는 제품 색상을 흡수하지 않는 무채색 매트 톤",
+        adviceDesc: "베이지, 웜그레이 등 차분한 어스톤을 베이스로 깔아주어야 다양한 색상의 상품이 돋보입니다.",
+        summaryTitle: "성공하는 쇼룸 인테리어 3원칙",
+        tips: [
+          { t: "손이 먼저 가는 850mm 체험형 매대", d: "고객의 접촉을 유도해 실제 구매율을 높여줍니다." },
+          { t: "제품을 예술품처럼 비추는 핀라이트", d: "제품의 고급스러움과 디테일을 완벽히 살려냅니다." },
+          { t: "자극 없는 캔버스형 미니멀 배경", d: "브랜드가 보여주고자 하는 제품의 본질에 집중하게 합니다." }
+        ],
+        chips: [{ name: "Gallery White", hex: "#F6F5F3" }, { name: "Concrete Grey", hex: "#B5B3AE" }, { name: "Anodized Silver", hex: "#7A7C80" }]
       }
     };
 
     let activeCardData = {};
 
-    // Select Matrix Pill
-    function selectMatrixPill(group, value, el) {
-      matrixState[group] = value;
-      const parent = el.parentElement;
-      parent.querySelectorAll('.matrix-pill').forEach(btn => btn.classList.remove('active'));
-      el.classList.add('active');
+    // Category Change Handler
+    function handleCategoryChange(catKey) {
+      currentCategory = catKey;
+
+      // Update Category Tabs UI
+      const tabs = document.querySelectorAll('#categoryTabs .filter-pill');
+      tabs.forEach((tab, idx) => {
+        const keys = ['residential', 'cafe', 'commercial'];
+        if (keys[idx] === catKey) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+
+      renderDynamicFilters();
+    }
+
+    // Render Dependent Filters (Step 2 and Step 3)
+    function renderDynamicFilters() {
+      const catData = categoryDatabase[currentCategory];
+
+      // 1. Render Scales (Step 2)
+      const scaleContainer = document.getElementById('scaleButtonsContainer');
+      scaleContainer.innerHTML = '';
+      currentScale = catData.scales[0].id; // default to first
+
+      catData.scales.forEach((scale, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `filter-pill px-2 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-center truncate ${idx === 0 ? 'active' : ''}`;
+        btn.innerText = scale.label;
+        btn.onclick = () => {
+          scaleContainer.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentScale = scale.id;
+          updateCombinedTopicLabel();
+        };
+        scaleContainer.appendChild(btn);
+      });
+
+      // 2. Render Themes (Step 3) - Only relevant themes shown!
+      const themeContainer = document.getElementById('themeButtonsContainer');
+      themeContainer.innerHTML = '';
+      currentTheme = catData.themes[0].id; // default to first
+
+      catData.themes.forEach((theme, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `filter-pill px-2.5 py-1.5 rounded border border-white/10 bg-black/40 text-xs text-neutral-300 text-left truncate ${idx === 0 ? 'active' : ''}`;
+        btn.innerText = theme.label;
+        btn.title = theme.label;
+        btn.onclick = () => {
+          themeContainer.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentTheme = theme.id;
+          updateCombinedTopicLabel();
+        };
+        themeContainer.appendChild(btn);
+      });
+
       updateCombinedTopicLabel();
     }
 
-    // Update Combined Topic Title in UI
+    // Update Combined Topic Label
     function updateCombinedTopicLabel() {
-      const sp = matrixLabels.space[matrixState.space];
-      const sc = matrixLabels.scale[matrixState.scale];
-      const th = matrixLabels.theme[matrixState.theme];
-      const combined = `${sc} ${sp} | ${th}`;
+      const catData = categoryDatabase[currentCategory];
+      const scaleObj = catData.scales.find(s => s.id === currentScale) || catData.scales[0];
+      const themeObj = catData.themes.find(t => t.id === currentTheme) || catData.themes[0];
+
+      const combined = `${scaleObj.label} | ${themeObj.label.replace(/^[^\s]+\s/, '')}`;
       document.getElementById('combinedTopicTitle').innerText = combined;
     }
 
-    // Randomize Matrix Combination (Slot machine)
-    function randomizeMatrixCombination() {
-      const spaces = Object.keys(matrixLabels.space);
-      const scales = Object.keys(matrixLabels.scale);
-      const themes = Object.keys(matrixLabels.theme);
+    // Randomize Matching Topic (Always logically matched!)
+    function randomizeMatchingTopic() {
+      const catKeys = Object.keys(categoryDatabase);
+      const randCat = catKeys[Math.floor(Math.random() * catKeys.length)];
+      handleCategoryChange(randCat);
 
-      const rSpace = spaces[Math.floor(Math.random() * spaces.length)];
-      const rScale = scales[Math.floor(Math.random() * scales.length)];
-      const rTheme = themes[Math.floor(Math.random() * themes.length)];
+      const catData = categoryDatabase[randCat];
+      const randScale = catData.scales[Math.floor(Math.random() * catData.scales.length)];
+      const randTheme = catData.themes[Math.floor(Math.random() * catData.themes.length)];
 
-      // Update UI active buttons
-      setButtonActive('matrixSpaceButtons', rSpace);
-      setButtonActive('matrixScaleButtons', rScale);
-      setButtonActive('matrixTopicButtons', rTheme);
+      currentScale = randScale.id;
+      currentTheme = randTheme.id;
 
-      matrixState = { space: rSpace, scale: rScale, theme: rTheme };
-      updateCombinedTopicLabel();
-      showCustomToast("🎲 새로운 꿀조합이 선택되었습니다! [8장 즉시 완성]을 눌러보세요.");
-    }
-
-    function setButtonActive(containerId, value) {
-      const container = document.getElementById(containerId);
-      const buttons = container.querySelectorAll('.matrix-pill');
-      buttons.forEach(btn => {
-        if (btn.getAttribute('onclick').includes(`'${value}'`)) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
+      // Update button active state
+      const scaleBtns = document.getElementById('scaleButtonsContainer').querySelectorAll('.filter-pill');
+      scaleBtns.forEach(b => {
+        if (b.innerText === randScale.label) b.classList.add('active');
+        else b.classList.remove('active');
       });
+
+      const themeBtns = document.getElementById('themeButtonsContainer').querySelectorAll('.filter-pill');
+      themeBtns.forEach(b => {
+        if (b.innerText.includes(randTheme.label.replace(/^[^\s]+\s/, ''))) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+
+      updateCombinedTopicLabel();
+      showCustomToast("🎲 꼭 맞는 추천 꿀조합이 선택되었습니다! [8장 즉시 완성]을 눌러보세요.");
     }
 
-    // Apply Matrix Cardnews
-    async function applyMatrixCardnews() {
+    // Apply Cardnews Generation
+    async function applyCardnewsGeneration() {
       const apiKey = localStorage.getItem('bastudio_gemini_key') || "";
-      const sp = matrixLabels.space[matrixState.space];
-      const sc = matrixLabels.scale[matrixState.scale];
-      const th = matrixLabels.theme[matrixState.theme];
-      const combinedTopic = `${sc} ${sp} 대상 ${th}`;
+      const catData = categoryDatabase[currentCategory];
+      const scaleObj = catData.scales.find(s => s.id === currentScale) || catData.scales[0];
+      const themeObj = catData.themes.find(t => t.id === currentTheme) || catData.themes[0];
+
+      const combinedTopic = `${catData.label} ${scaleObj.label} 대상 ${themeObj.label.replace(/^[^\s]+\s/, '')}`;
 
       const overlay = document.getElementById('loadingOverlay');
       const overlayText = document.getElementById('loadingOverlayText');
@@ -1007,15 +1264,16 @@
       if (apiKey) {
         try {
           const prompt = `당신은 프리미엄 인테리어 디자인 스튜디오 '비에이스튜디오 (BA STUDIO)'의 수석 공간 디자이너입니다.
-주제: "${combinedTopic}"
-이 주제로 인스타그램 카드뉴스 8장 분량의 가이드를 작성하세요.
+공간 카테고리: "${catData.label}"
+대상 및 상황: "${scaleObj.label}"
+핵심 가이드 주제: "${themeObj.label}"
 절대 '연색성', '룩스', '조도', '메지', '조인트' 같은 어려운 기술 용어는 쓰지 말고 쉬운 일상어로 작성하세요.
 브랜드명: '비에이스튜디오', 영문 'BA STUDIO', 인스타그램 '@bastudio_seoul' (전화번호 제외).
 
 [반환 형식: 순수 JSON]:
 {
   "topic": "${combinedTopic}",
-  "tag": "DESIGN GUIDE",
+  "tag": "${catData.label.toUpperCase()}",
   "subTag": "BA STUDIO SOLUTION",
   "title": "호기심을 자극하는 메인 헤드라인 (30자 내외)",
   "desc": "표지 서브 설명 2줄",
@@ -1054,30 +1312,30 @@
           if (rawText) {
             rawText = rawText.replace(/```json|```/g, '').trim();
             const parsed = JSON.parse(rawText);
-            renderCardnewsToDOM(parsed, matrixState.space, matrixState.theme);
+            renderCardnewsToDOM(parsed, themeObj.photoKey);
             overlay.classList.remove('active');
             showCustomToast(`🎉 Gemini AI가 "${combinedTopic}" 가이드를 완성했습니다!`);
             return;
           }
         } catch (err) {
-          console.warn("Gemini Error, falling back to smart blueprint:", err);
+          console.warn("Gemini Error, falling back to blueprint:", err);
         }
       }
 
-      // 2. High Quality Smart Blueprint Engine (100% Reliable & Instant)
+      // 2. High Quality Smart Blueprint (100% Reliable, Matching & Instant)
       setTimeout(() => {
-        const blueprint = matrixContentDatabase[matrixState.theme] || matrixContentDatabase.lighting;
+        const blueprint = detailedContentDatabase[currentTheme] || detailedContentDatabase.lighting;
         const customData = JSON.parse(JSON.stringify(blueprint));
         customData.topic = combinedTopic;
-        customData.title = `${sc} ${sp}: ${blueprint.title}`;
-        renderCardnewsToDOM(customData, matrixState.space, matrixState.theme);
+        customData.title = `${scaleObj.label} | ${blueprint.title}`;
+        renderCardnewsToDOM(customData, themeObj.photoKey);
         overlay.classList.remove('active');
         showCustomToast(`✨ "${combinedTopic}" 8장 완성이 완료되었습니다!`);
       }, 300);
     }
 
-    // Render Data & Photos to DOM
-    function renderCardnewsToDOM(data, spaceKey, themeKey) {
+    // Render Data to DOM
+    function renderCardnewsToDOM(data, photoKey) {
       activeCardData = data;
 
       // Slide 1
@@ -1125,8 +1383,7 @@
         document.getElementById('tip3Desc').innerText = data.tips[2].d;
       }
 
-      // Apply Exact Photos by space or theme
-      const photoKey = (photoLibraries[spaceKey] ? spaceKey : (photoLibraries[themeKey] ? themeKey : 'minimal'));
+      // Apply Exact Matching Photos
       applyPhotoLibrary(photoKey);
     }
 
@@ -1143,31 +1400,25 @@
       document.getElementById('img-8').src = set.img8;
     }
 
-    // Freeform Input Generator
-    function handleFreeformGenerate() {
+    // Freeform Custom Input
+    function handleCustomInputGenerate() {
       const input = document.getElementById('freeformInput').value.trim();
       if (!input) {
         showCustomToast("키워드를 입력해 주세요 (예: 성수동 브런치 카페)");
         return;
       }
       const lower = input.toLowerCase();
-      if (lower.includes('카페') || lower.includes('상업') || lower.includes('디저트')) {
-        matrixState.space = 'cafe';
-      } else if (lower.includes('주방') || lower.includes('싱크') || lower.includes('아일랜드')) {
-        matrixState.space = 'kitchen';
-      } else if (lower.includes('욕실') || lower.includes('화장실') || lower.includes('타일')) {
-        matrixState.space = 'bath';
-      } else if (lower.includes('뷰티') || lower.includes('살롱') || lower.includes('에스테틱')) {
-        matrixState.space = 'beauty';
+      if (lower.includes('카페') || lower.includes('베이커리') || lower.includes('식당') || lower.includes('커피')) {
+        handleCategoryChange('cafe');
+      } else if (lower.includes('뷰티') || lower.includes('살롱') || lower.includes('오피스') || lower.includes('쇼룸')) {
+        handleCategoryChange('commercial');
       } else {
-        matrixState.space = 'apt';
+        handleCategoryChange('residential');
       }
-      setButtonActive('matrixSpaceButtons', matrixState.space);
-      updateCombinedTopicLabel();
-      applyMatrixCardnews();
+      applyCardnewsGeneration();
     }
 
-    // Navigation & Slide Deck Deck
+    // Slide Deck Navigation
     const slideDeckMeta = [
       { id: 1, title: '표지 & 핵심 타이틀', tag: '대표 1컷', en: 'COVER' },
       { id: 2, title: '흔한 실수 & 문제 진단', tag: '2분할 비교', en: 'PROBLEM' },
@@ -1299,10 +1550,10 @@ ${desc}
 공간은 단순한 구조를 넘어 일상의 감도를 결정합니다.
 나만의 주거·상업 공간 인테리어를 고민 중이시라면 지금 이 피드를 저장(📌)해두고 참고해 보세요!
 
-🏷️ 공간 설계 및 디자인 상담 신청:
+🏷️️ 공간 설계 및 디자인 상담 신청:
 인스타그램 프로필 링크 클릭 (@bastudio_seoul)
 
-#비에이스튜디오 #BASTUDIO #인테리어가이드 #인테리어팁 #아파트인테리어 #카페인테리어 #상업공간인테리어 #조명인테리어 #공간디자인 #인테리어체크리스트`;
+#비에이스튜디오 #BASTUDIO #인테리어가이드 #인테리어팁 #아파트인테리어 #카페인테리어 #상업공간인테리어 #공간디자인 #인테리어체크리스트`;
 
       const tempTextArea = document.createElement('textarea');
       tempTextArea.value = caption;
@@ -1330,7 +1581,7 @@ ${desc}
       try {
         let clean = input.replace(/```json|```/g, '').trim();
         const parsed = JSON.parse(clean);
-        renderCardnewsToDOM(parsed, 'minimal', 'lighting');
+        renderCardnewsToDOM(parsed, 'minimal');
         closeJsonModal();
         showCustomToast("🎉 JSON 데이터가 8장 슬라이드에 성공적으로 적용되었습니다!");
       } catch (e) {
@@ -1350,7 +1601,7 @@ ${desc}
         showCustomToast("✅ Gemini API Key가 저장되었습니다! 실시간 AI 작성이 활성화됩니다.");
       } else {
         localStorage.removeItem('bastudio_gemini_key');
-        showCustomToast("스마트 매트릭스 엔진 모드로 전환되었습니다.");
+        showCustomToast("스마트 매칭 엔진 모드로 전환되었습니다.");
       }
       closeApiModal();
     }
@@ -1405,8 +1656,8 @@ ${desc}
     // Window Init
     window.onload = function() {
       initSlideNav();
-      updateCombinedTopicLabel();
-      applyMatrixCardnews();
+      renderDynamicFilters();
+      applyCardnewsGeneration();
     };
   </script>
 </body>
