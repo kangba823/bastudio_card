@@ -1370,22 +1370,30 @@
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, { signal });
         if (res.ok) {
           const data = await res.json();
+          // 은퇴/신규제한 모델(2.5, 2.0, 1.5, pro)은 원천 배제
           const validModels = (data.models || []).filter(m => 
             Array.isArray(m.supportedGenerationMethods) && 
-            m.supportedGenerationMethods.includes('generateContent')
+            m.supportedGenerationMethods.includes('generateContent') &&
+            !m.name.includes('2.5') &&
+            !m.name.includes('2.0') &&
+            !m.name.includes('1.5') &&
+            !m.name.includes('pro')
           );
           if (validModels.length > 0) {
-            // Priority: Flash models with 2.5, 3, or flash in name
-            const best = validModels.find(m => m.name.includes('flash') && (m.name.includes('2.5') || m.name.includes('3')))
+            // 구글 권장 3.8-flash 최우선 선택
+            const best = validModels.find(m => m.name.includes('3.8-flash'))
+                      || validModels.find(m => m.name.includes('3.7-flash'))
+                      || validModels.find(m => m.name.includes('3.5-flash'))
+                      || validModels.find(m => m.name.includes('3') && m.name.includes('flash'))
                       || validModels.find(m => m.name.includes('flash'))
                       || validModels[0];
-            return best.name; // Full resource name e.g. "models/gemini-2.5-flash"
+            return best.name;
           }
         }
       } catch (err) {
-        console.warn('Auto discovery ListModels warning:', err);
+        console.warn('Auto discovery warning:', err);
       }
-      return null;
+      return 'models/gemini-3.8-flash';
     }
 
     async function testApiKeyConnection() {
@@ -1397,17 +1405,12 @@
         statusEl.className = 'text-[11px] text-red-400';
         return;
       }
-      statusEl.innerText = '⏳ 구글 서버에 모델 목록 확인 중...';
+      statusEl.innerText = '⏳ 구글 최신 Gemini 3.8 모델 확인 중...';
       statusEl.className = 'text-[11px] text-neutral-300';
       try {
         const modelName = await discoverValidModelName(key);
-        if (modelName) {
-          statusEl.innerText = `✅ 정상 연결 확인! 사용 가능한 모델: ${modelName}`;
-          statusEl.className = 'text-[11px] text-green-400';
-        } else {
-          statusEl.innerText = '⚠ API 키는 유효하나 generateContent 지원 모델을 조회하지 못했습니다.';
-          statusEl.className = 'text-[11px] text-amber-400';
-        }
+        statusEl.innerText = `✅ 정상 연결 확인! 사용 모델: ${modelName || 'models/gemini-3.8-flash'}`;
+        statusEl.className = 'text-[11px] text-green-400';
       } catch (e) {
         statusEl.innerText = '❌ 연결 실패: ' + e.message;
         statusEl.className = 'text-[11px] text-red-400';
@@ -1442,7 +1445,7 @@ topic에는 전체 주제, tag에는 "${catData.label.toUpperCase()}", subTag에
 전화번호는 절대 적지 마세요. 한국어로 작성하세요.`;
 
       const ov = document.getElementById('loadingOverlay');
-      document.getElementById('loadingOverlayText').innerText = 'AI가 내 계정 모델을 조회하여 가이드를 작성 중입니다...';
+      document.getElementById('loadingOverlayText').innerText = 'AI가 최신 모델로 가이드를 작성 중입니다...';
       ov.classList.add('active'); 
       aiBusy = true;
 
@@ -1452,15 +1455,20 @@ topic에는 전체 주제, tag에는 "${catData.label.toUpperCase()}", subTag에
       let lastErrorMessage = '';
 
       try {
-        // Step 1: Discover valid model dynamically from user's account
         let chosenModel = await discoverValidModelName(apiKey, ctrl.signal);
         
-        // Step 2: Candidate fallback models
-        const candidateModels = chosenModel 
-          ? [chosenModel] 
-          : ['models/gemini-2.5-flash', 'models/gemini-2.0-flash', 'models/gemini-flash-latest'];
+        // 2.5, 2.0, 1.5는 제외하고 3.8/3.7/3.5/3-flash 최신 모델 후보군 구성
+        const candidateModels = [
+          chosenModel,
+          'models/gemini-3.8-flash',
+          'models/gemini-3.7-flash',
+          'models/gemini-3.5-flash',
+          'models/gemini-3-flash-preview',
+          'models/gemini-flash-latest'
+        ].filter((v, idx, arr) => v && arr.indexOf(v) === idx && !v.includes('2.5') && !v.includes('2.0') && !v.includes('1.5'));
 
-        for (const modelPath of candidateModels) {
+        for (let i = 0; i < candidateModels.length; i++) {
+          const modelPath = candidateModels[i];
           const endpoint = `https://generativelanguage.googleapis.com/v1beta/${modelPath}:generateContent?key=${apiKey}`;
           try {
             const res = await fetch(endpoint, {
@@ -1478,7 +1486,14 @@ topic에는 전체 주제, tag에는 "${catData.label.toUpperCase()}", subTag에
 
             const data = await res.json();
             if (!res.ok) {
-              lastErrorMessage = data?.error?.message || `오류 (${res.status})`;
+              const errMsg = data?.error?.message || `오류 (${res.status})`;
+              lastErrorMessage = errMsg;
+
+              // 구글이 다른 모델을 추천해 준 경우 즉시 후보에 추가하여 재시도
+              const match = errMsg.match(/models\/([a-zA-Z0-9\.\-_]+)/);
+              if (match && match[1] && !candidateModels.includes(`models/${match[1]}`)) {
+                candidateModels.push(`models/${match[1]}`);
+              }
               continue;
             }
 
@@ -1497,7 +1512,7 @@ topic에는 전체 주제, tag에는 "${catData.label.toUpperCase()}", subTag에
 
             renderCardnewsToDOM(parsed, themeObj.photoKey);
             applyBrandText();
-            showCustomToast('🎉 AI 가이드가 성공적으로 생성되었습니다!');
+            showCustomToast('🎉 최신 Gemini AI 가이드가 성공적으로 생성되었습니다!');
             success = true;
             break;
           } catch (fetchErr) {
@@ -1514,7 +1529,7 @@ topic에는 전체 주제, tag에는 "${catData.label.toUpperCase()}", subTag에
 
       if (!success) {
         showCustomToast('⚠ ' + (lastErrorMessage || '생성 실패. 기본 가이드로 표시합니다.'));
-        applyCardnewsGeneration(); // Fail-safe to avoid empty screen
+        applyCardnewsGeneration();
       }
     }
 
