@@ -53,7 +53,6 @@
       word-break: keep-all;
       overflow-wrap: break-word;
     }
-    /* Photo zone interactions */
     .photo-zone {
       position: relative;
       cursor: pointer;
@@ -73,7 +72,6 @@
       font-weight: 600;
       z-index: 20;
     }
-    /* Guide Overlay */
     .guide-active .photo-zone {
       outline: 2px dashed #B08968 !important;
       outline-offset: -3px;
@@ -84,7 +82,6 @@
     .guide-active .guide-tag {
       display: flex;
     }
-    /* Pill Buttons */
     .filter-pill {
       cursor: pointer;
       transition: all 0.15s ease;
@@ -96,7 +93,6 @@
       font-weight: 700;
       box-shadow: 0 0 10px rgba(176, 137, 104, 0.35);
     }
-    /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -121,7 +117,6 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased select-none">
 
-  <!-- Top Navigation Header -->
   <header class="border-b border-white/10 bg-[#171717] px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40">
     <div class="flex items-center gap-3">
       <div class="w-8 h-8 rounded-full bg-studio-accent/20 border border-studio-accent flex items-center justify-center text-studio-accent font-serif text-lg font-bold">
@@ -132,55 +127,44 @@
           <h1 class="brand-logo text-base sm:text-lg font-bold tracking-widest text-white uppercase">BA STUDIO</h1>
           <span class="text-[10px] px-2 py-0.5 rounded bg-white/10 text-neutral-300 font-medium">비에이스튜디오</span>
         </div>
-        <p class="text-[10px] text-studio-muted">Interior & Space Design | 인테리어 가이드 카드뉴스 스튜디오</p>
+        <p class="text-[10px] text-studio-muted">Interior & Space Design | 인테리어 가이드 카드뉴스 AI</p>
       </div>
     </div>
 
     <!-- Action Tools -->
     <div class="flex items-center flex-wrap gap-2 text-xs">
-      <!-- Photo Guide Toggle -->
       <button id="toggleGuideBtn" class="px-2.5 py-1.5 rounded border border-white/20 text-neutral-300 bg-white/5 hover:bg-white/10 flex items-center gap-1.5 transition">
         <span class="w-2 h-2 rounded-full bg-studio-accent"></span>
         <span id="guideStatusText">사진 가이드: OFF</span>
       </button>
 
-      <!-- Aspect Ratio Switcher -->
       <div class="bg-black/50 rounded p-0.5 border border-white/10 flex">
         <button id="ratio1to1" class="px-2.5 py-1 rounded text-neutral-400 hover:text-white font-medium text-[11px]">1:1 정방형</button>
         <button id="ratio4to5" class="px-2.5 py-1 rounded bg-studio-accent text-white font-semibold text-[11px] shadow">4:5 세로형</button>
       </div>
 
-      <!-- Settings: AI Studio JSON Import -->
       <button onclick="openJsonModal()" class="px-3 py-1.5 rounded border border-white/20 text-neutral-200 bg-white/5 hover:bg-white/15 font-medium flex items-center gap-1.5 transition">
         <span>📥</span> AI JSON 붙여넣기
       </button>
 
-      <!-- Settings: Gemini API Key -->
       <button onclick="openApiModal()" class="px-3 py-1.5 rounded border border-studio-accent/60 text-studio-accent bg-studio-accent/10 hover:bg-studio-accent/20 font-medium flex items-center gap-1.5 transition">
         <span>⚙️</span> API 설정
       </button>
 
-      <!-- Copy Instagram Caption -->
       <button onclick="copyInstagramCaption()" class="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white font-medium flex items-center gap-1.5 transition">
         <span>📋</span> 인스타 본문 복사
       </button>
 
-      <!-- Batch Download 8 Slides ZIP -->
       <button id="exportAllBtn" onclick="exportAllSlidesZip()" class="px-3.5 py-1.5 rounded bg-studio-accent hover:bg-studio-accentHover text-white font-semibold flex items-center gap-1.5 shadow transition">
         <span>💾</span> 8장 전체 다운로드 (ZIP)
       </button>
     </div>
   </header>
 
-  <!-- Main Workspace -->
   <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
-
-    <!-- Left Sidebar: Dependent Category Filtering -->
     <aside class="w-full lg:w-[430px] border-b lg:border-b-0 lg:border-r border-white/10 bg-[#161616] p-4 flex flex-col gap-4 overflow-y-auto max-h-[50vh] lg:max-h-[calc(100vh-58px)]">
 
-      <!-- ============================================== -->
-      <!-- SMART DEPENDENT FILTER BUILDER (연동 필터 시스템) -->
-      <!-- ============================================== -->
+      <!-- SMART DEPENDENT FILTER BUILDER -->
       <div class="bg-[#1F1F1F] p-4 rounded-xl border border-white/10 space-y-4 shadow-sm">
         <div class="flex items-center justify-between pb-1 border-b border-white/5">
           <div class="flex items-center gap-1.5">
@@ -192,7 +176,7 @@
           </button>
         </div>
 
-        <!-- Step 1: 공간 대분류 (주거 / F&B카페 / 상업·쇼룸) -->
+        <!-- Step 1: 공간 대분류 -->
         <div class="space-y-1.5">
           <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
             <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">1</span>
@@ -211,7 +195,7 @@
           </div>
         </div>
 
-        <!-- Step 2: 평형 / 대상 상황 (1단계에 따라 자동 변경) -->
+        <!-- Step 2: 평형 / 대상 상황 -->
         <div class="space-y-1.5">
           <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
             <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">2</span>
@@ -222,7 +206,7 @@
           </div>
         </div>
 
-        <!-- Step 3: 핵심 가이드 테마 (1단계에 100% 매칭되는 테마만 표시) -->
+        <!-- Step 3: 핵심 가이드 테마 -->
         <div class="space-y-1.5">
           <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
             <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">3</span>
@@ -258,7 +242,7 @@
         </div>
       </div>
 
-      <!-- Slide Deck Navigation (8 Slides) -->
+      <!-- Slide Deck Navigation -->
       <div class="space-y-2">
         <div class="flex justify-between items-center px-1">
           <h3 class="text-xs font-bold text-neutral-300 uppercase tracking-wider">슬라이드 구성 (총 8장)</h3>
@@ -282,10 +266,7 @@
       </div>
     </aside>
 
-    <!-- Center Preview Stage -->
     <section class="flex-1 bg-[#0a0a0a] flex items-center justify-center p-4 lg:p-8 overflow-auto">
-      
-      <!-- Slide Viewport (540x675 for 4:5, 540x540 for 1:1) -->
       <div id="slideViewport" class="relative transition-all duration-300 shadow-2xl rounded-lg overflow-hidden bg-white text-neutral-900 w-[540px] h-[675px] shrink-0">
         
         <!-- ========================================== -->
@@ -293,14 +274,13 @@
         <!-- ========================================== -->
         <div id="slide-1" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-cream">
           <div class="photo-zone absolute inset-0 z-0 overflow-hidden" onclick="handlePhotoClick(1, 'img-1')">
-            <img id="img-1" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover">
+            <img id="img-1" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/35"></div>
             <div class="guide-tag absolute top-4 right-4 bg-black/80 backdrop-blur border border-studio-accent text-studio-accent text-[11px] px-3 py-1 rounded-full items-center gap-1.5 pointer-events-none">
               [대표 전경 컷]
             </div>
           </div>
 
-          <!-- Top Brand Header -->
           <div class="relative z-10 flex items-center justify-between text-white border-b border-white/20 pb-3">
             <div class="flex items-center gap-2">
               <span class="brand-logo text-xl font-bold tracking-widest uppercase">BA STUDIO</span>
@@ -309,7 +289,6 @@
             <span class="text-xs text-white/80 font-mono tracking-widest">01 / 08</span>
           </div>
 
-          <!-- Title Area -->
           <div class="relative z-10 text-white space-y-3 pb-2">
             <div class="inline-block px-3 py-1 bg-white/20 backdrop-blur rounded text-xs font-semibold tracking-wider uppercase text-white">
               <span id="slide1SubTag">INTERIOR SOLUTION</span>
@@ -343,17 +322,17 @@
             </h3>
           </div>
 
-          <!-- 2-Split Comparison Photo Zone -->
+          <!-- Dynamic 2-Split Comparison Photo Zone -->
           <div class="grid grid-cols-2 gap-3 my-3 flex-1">
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200 flex flex-col" onclick="handlePhotoClick(2, 'img-2a')">
-              <img id="img-2a" src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
-              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs font-medium text-center break-keep">
+              <img id="img-2a" src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
+              <div id="slide2LabelA" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs font-medium text-center break-keep">
                 흔한 실수: 눈부신 천장등 하나만 켜기
               </div>
             </div>
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200 flex flex-col" onclick="handlePhotoClick(2, 'img-2b')">
-              <img id="img-2b" src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
-              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs font-medium text-center break-keep">
+              <img id="img-2b" src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
+              <div id="slide2LabelB" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs font-medium text-center break-keep">
                 이상적인 무드: 시선보다 낮은 간접 조명
               </div>
             </div>
@@ -379,8 +358,8 @@
           </div>
 
           <div class="photo-zone relative h-52 rounded-lg overflow-hidden my-2 bg-neutral-200" onclick="handlePhotoClick(3, 'img-3')">
-            <img id="img-3" src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover">
-            <div class="guide-tag absolute top-3 left-3 bg-black/80 backdrop-blur text-studio-accent text-[11px] px-3 py-1 rounded-full items-center gap-1.5 pointer-events-none">
+            <img id="img-3" src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
+            <div id="slide3GuideTag" class="guide-tag absolute top-3 left-3 bg-black/80 backdrop-blur text-studio-accent text-[11px] px-3 py-1 rounded-full items-center gap-1.5 pointer-events-none">
               [따뜻한 톤앤매너 컷]
             </div>
           </div>
@@ -440,21 +419,21 @@
           </div>
 
           <div class="photo-zone relative flex-1 my-3 rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(4, 'img-4')">
-            <img id="img-4" src="https://images.unsplash.com/photo-1540518614846-7ede433c4ef4?auto=format&fit=crop&w=1000&q=80" class="w-full h-full object-cover">
-            <div class="absolute bottom-3 left-3 bg-white/95 backdrop-blur px-3 py-2 rounded-lg shadow-md border border-black/5 text-neutral-800 max-w-[280px]">
+            <img id="img-4" src="https://images.unsplash.com/photo-1540518614846-7ede433c4ef4?auto=format&fit=crop&w=1000&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
+            <div class="absolute bottom-3 left-3 bg-white/95 backdrop-blur px-3 py-2 rounded-lg shadow-md border border-black/5 text-neutral-800 max-w-[300px]">
               <span class="text-[10px] uppercase tracking-wider text-studio-accent font-bold block">Key Point</span>
-              <p id="slide4Point" class="text-xs font-medium break-keep">커튼 박스 간접등 하나만 켜도 저녁 시간 거실 무드가 180도 달라집니다.</p>
+              <p id="slide4Point" contenteditable="true" class="text-xs font-medium break-keep">커튼 박스 간접등 하나만 켜도 저녁 시간 거실 무드가 180도 달라집니다.</p>
             </div>
           </div>
 
           <div class="text-xs text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
-            <span>INDIRECT LIGHTING GUIDE</span>
+            <span id="slide4FooterTag">PRACTICAL SOLUTION</span>
             <span class="font-mono">04 / 08</span>
           </div>
         </div>
 
         <!-- ========================================== -->
-        <!-- SLIDE 5: TIP 02 (두 번째 솔루션 - 높낮이) -->
+        <!-- SLIDE 5: TIP 02 (두 번째 솔루션 - 높낮이/동선) -->
         <!-- ========================================== -->
         <div id="slide-5" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-cream hidden">
           <div class="flex items-center justify-between border-b border-neutral-300 pb-3">
@@ -472,15 +451,15 @@
           </div>
 
           <div class="photo-zone relative flex-1 my-3 rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(5, 'img-5')">
-            <img id="img-5" src="https://images.unsplash.com/photo-1517991104123-1d56a6e81ed9?auto=format&fit=crop&w=1000&q=80" class="w-full h-full object-cover">
-            <div class="absolute bottom-3 right-3 bg-black/85 backdrop-blur text-white px-3 py-2 rounded-lg text-xs break-keep max-w-[260px]">
+            <img id="img-5" src="https://images.unsplash.com/photo-1517991104123-1d56a6e81ed9?auto=format&fit=crop&w=1000&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
+            <div class="absolute bottom-3 right-3 bg-black/85 backdrop-blur text-white px-3 py-2 rounded-lg text-xs break-keep max-w-[280px]">
               <span class="text-studio-accent font-bold block text-[10px]">DESIGN ADVICE</span>
-              소파 옆 코너에 장스탠드를 두면 죽은 공간이 가장 머물고 싶은 자리가 됩니다.
+              <p id="slide5Point" contenteditable="true">소파 옆 코너에 장스탠드를 두면 죽은 공간이 가장 머물고 싶은 자리가 됩니다.</p>
             </div>
           </div>
 
           <div class="text-xs text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
-            <span>LAYERED LIGHTING SOLUTION</span>
+            <span id="slide5FooterTag">LAYOUT & LIGHTING</span>
             <span class="font-mono">05 / 08</span>
           </div>
         </div>
@@ -505,14 +484,14 @@
 
           <div class="grid grid-cols-2 gap-3 my-2 flex-1">
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(6, 'img-6a')">
-              <img id="img-6a" src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
-              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs text-center font-medium break-keep">
+              <img id="img-6a" src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
+              <div id="slide6LabelA" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs text-center font-medium break-keep">
                 마감재의 결이 살아나는 따뜻한 빛
               </div>
             </div>
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(6, 'img-6b')">
-              <img id="img-6b" src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
-              <div class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs text-center font-medium break-keep">
+              <img id="img-6b" src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
+              <div id="slide6LabelB" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs text-center font-medium break-keep">
                 식탁 펜던트는 3000K 전구색 필수
               </div>
             </div>
@@ -524,7 +503,7 @@
           </div>
 
           <div class="text-xs text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
-            <span>LIGHTING DONTS & DOS</span>
+            <span>DETAIL CHECKPOINT</span>
             <span class="font-mono">06 / 08</span>
           </div>
         </div>
@@ -543,7 +522,7 @@
             <h3 id="slide7Title" contenteditable="true" class="break-keep text-xl font-bold text-neutral-900 mt-1">
               실패 없는 호텔 감성 조명 3원칙
             </h3>
-            <p class="text-xs text-neutral-500 mt-0.5">나중에 조명 바꿀 때 꺼내보려면 지금 저장(북마크)해 두세요!</p>
+            <p class="text-xs text-neutral-500 mt-0.5">나중에 인테리어할 때 꺼내보려면 지금 저장(북마크)해 두세요!</p>
           </div>
 
           <!-- 3 Steps Cards -->
@@ -584,7 +563,7 @@
         <!-- ========================================== -->
         <div id="slide-8" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-charcoal text-white hidden">
           <div class="photo-zone absolute inset-0 z-0 overflow-hidden" onclick="handlePhotoClick(8, 'img-8')">
-            <img id="img-8" src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover filter brightness-[0.35]">
+            <img id="img-8" src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover filter brightness-[0.35]">
             <div class="guide-tag absolute top-4 right-4 bg-black/80 backdrop-blur text-studio-accent text-[11px] px-3 py-1 rounded-full items-center gap-1.5 pointer-events-none">
               [야경 or 감성 오브제 컷]
             </div>
@@ -596,11 +575,11 @@
           </div>
 
           <div class="relative z-10 text-center space-y-4 px-4 my-auto">
-            <h3 contenteditable="true" class="break-keep text-xl sm:text-2xl font-bold leading-relaxed text-white">
+            <h3 id="slide8Slogan" contenteditable="true" class="break-keep text-xl sm:text-2xl font-bold leading-relaxed text-white">
               머물수록 가치가 느껴지는 공간,<br>
               <span class="text-studio-accent">비에이스튜디오</span>와 함께 완성하세요.
             </h3>
-            <p contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-300 leading-relaxed max-w-sm mx-auto">
+            <p id="slide8Desc" contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-300 leading-relaxed max-w-sm mx-auto">
               주거와 상업 공간의 본질을 고민하고, 고객의 일상과 취향에 맞춘 1:1 맞춤 공간 디자인을 제안합니다.
             </p>
 
@@ -622,7 +601,6 @@
         </div>
 
       </div>
-
     </section>
   </main>
 
@@ -686,14 +664,20 @@
   </div>
 
   <script>
-    // --- Application State ---
     let currentSlideIndex = 1;
     let isGuideActive = false;
     let targetImgElement = null;
 
-    // Strict Structured Data Hierarchy (절대 다른 카테고리와 섞이지 않는 구조)
+    // Guaranteed High-Quality Unsplash Fallbacks (Never broken / No X boxes)
+    const reliableFallbackImage = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80";
+
+    function handleImageError(imgEl) {
+      imgEl.onerror = null; // prevent infinite loops
+      imgEl.src = reliableFallbackImage;
+    }
+
+    // Strict Structured Hierarchy
     const categoryDatabase = {
-      // 1. 주거 공간
       residential: {
         label: "아파트·주거",
         scales: [
@@ -710,7 +694,6 @@
           { id: 'mistake', label: '⚠️ 디자이너가 피하는 주거 유행', photoKey: 'minimal' }
         ]
       },
-      // 2. F&B 카페 & 베이커리
       cafe: {
         label: "F&B 카페·식당",
         scales: [
@@ -719,13 +702,12 @@
           { id: 'large_cafe', label: '50평 이상 대형 베이커리' }
         ],
         themes: [
-          { id: 'cafe_bar', label: '☕ 회전율 높이는 바 카운터 동선', photoKey: 'cafe' },
-          { id: 'cafe_photo', label: '📸 사진 찍고 싶어지는 포토존 법칙', photoKey: 'cafe' },
-          { id: 'cafe_light', label: '🍷 분위기 살리는 저녁 무드 핀조명', photoKey: 'lighting' },
-          { id: 'cafe_texture', label: '🧱 러프한 미장 & 원목 바 인테리어', photoKey: 'cafe' }
+          { id: 'cafe_bar', label: '☕ 회전율 높이는 바 카운터 동선', photoKey: 'cafe_bar' },
+          { id: 'cafe_photo', label: '📸 사진 찍고 싶어지는 포토존 법칙', photoKey: 'cafe_photo' },
+          { id: 'cafe_light', label: '🍷 분위기 살리는 저녁 무드 핀조명', photoKey: 'cafe_light' },
+          { id: 'cafe_texture', label: '🧱 러프한 미장 & 원목 바 인테리어', photoKey: 'cafe_texture' }
         ]
       },
-      // 3. 뷰티 살롱 & 상업 쇼룸
       commercial: {
         label: "뷰티·상업쇼룸",
         scales: [
@@ -734,30 +716,29 @@
           { id: 'office_space', label: '30~50평 프리미엄 오피스' }
         ],
         themes: [
-          { id: 'beauty_face', label: '✨ 셀카 잘 나오는 페이스 라이팅', photoKey: 'beauty' },
-          { id: 'beauty_traffic', label: '🚪 고객 동선 완벽 분리 가벽 설계', photoKey: 'beauty' },
-          { id: 'office_layout', label: '💼 집중과 쉼이 있는 라운지 오피스', photoKey: 'office' },
-          { id: 'commercial_display', label: '🏛️ 제품이 돋보이는 미니멀 집기', photoKey: 'minimal' }
+          { id: 'beauty_face', label: '✨ 셀카 잘 나오는 페이스 라이팅', photoKey: 'beauty_face' },
+          { id: 'beauty_traffic', label: '🚪 고객 동선 완벽 분리 가벽 설계', photoKey: 'beauty_traffic' },
+          { id: 'office_layout', label: '💼 집중과 쉼이 있는 라운지 오피스', photoKey: 'office_layout' },
+          { id: 'commercial_display', label: '🏛️ 제품이 돋보이는 미니멀 집기', photoKey: 'commercial_display' }
         ]
       }
     };
 
-    // Current Selection
     let currentCategory = 'residential';
     let currentScale = 'small_apt';
     let currentTheme = 'lighting';
 
-    // 8 Theme Photo Sets (100% Curated Unsplash IDs)
+    // Curated high-res, verified photos per theme (Checked for stability)
     const photoLibraries = {
       lighting: {
         img1: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80",
         img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
         img2b: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80",
         img3: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80",
-        img4: "https://images.unsplash.com/photo-1540518614846-7ede433c4ef4?auto=format&fit=crop&w=1000&q=80",
+        img4: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1000&q=80",
         img5: "https://images.unsplash.com/photo-1517991104123-1d56a6e81ed9?auto=format&fit=crop&w=1000&q=80",
         img6a: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80",
-        img6b: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80",
         img8: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80"
       },
       kitchen: {
@@ -771,16 +752,16 @@
         img6b: "https://images.unsplash.com/photo-1556911073-38141963c9e0?auto=format&fit=crop&w=600&q=80",
         img8: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
       },
-      cafe: {
-        img1: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80",
-        img2a: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80",
-        img2b: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=600&q=80",
-        img3: "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=80",
-        img4: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=1000&q=80",
-        img5: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=80",
-        img6a: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80",
-        img6b: "https://images.unsplash.com/photo-1509785307050-d4066910ec1e?auto=format&fit=crop&w=600&q=80",
-        img8: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80"
+      storage: {
+        img1: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80"
       },
       bath: {
         img1: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80",
@@ -793,28 +774,6 @@
         img6b: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=600&q=80",
         img8: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
       },
-      storage: {
-        img1: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80",
-        img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
-        img2b: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=600&q=80",
-        img3: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80",
-        img4: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80",
-        img5: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
-        img6a: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80",
-        img6b: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80",
-        img8: "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80"
-      },
-      beauty: {
-        img1: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80",
-        img2a: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=80",
-        img2b: "https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?auto=format&fit=crop&w=600&q=80",
-        img3: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80",
-        img4: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1000&q=80",
-        img5: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1000&q=80",
-        img6a: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=600&q=80",
-        img6b: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=600&q=80",
-        img8: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80"
-      },
       minimal: {
         img1: "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80",
         img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
@@ -826,7 +785,73 @@
         img6b: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=600&q=80",
         img8: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80"
       },
-      office: {
+      cafe_bar: {
+        img1: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1509785307050-d4066910ec1e?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80"
+      },
+      cafe_photo: {
+        img1: "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1509785307050-d4066910ec1e?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80"
+      },
+      cafe_light: {
+        img1: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1509785307050-d4066910ec1e?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80"
+      },
+      cafe_texture: {
+        img1: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1509785307050-d4066910ec1e?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80"
+      },
+      beauty_face: {
+        img1: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80"
+      },
+      beauty_traffic: {
+        img1: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80"
+      },
+      office_layout: {
         img1: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
         img2a: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=600&q=80",
         img2b: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=600&q=80",
@@ -836,25 +861,42 @@
         img6a: "https://images.unsplash.com/photo-1517502884422-41eaead166d4?auto=format&fit=crop&w=600&q=80",
         img6b: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80",
         img8: "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1200&q=80"
+      },
+      commercial_display: {
+        img1: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80",
+        img2a: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1517502884422-41eaead166d4?auto=format&fit=crop&w=600&q=80",
+        img8: "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1200&q=80"
       }
     };
 
-    // Rich Topic-Specific Content Blueprints
+    // Full cohesive content blueprints: All slide 1-8 labels, captions, callouts included
     const detailedContentDatabase = {
-      // 주거 테마들
       lighting: {
         title: "비싼 가구 없이 5성급 호텔 분위기 내는 조명 공식",
         desc: "형광등 하나로 집 분위기를 망치고 계신가요? 디자이너가 알려주는 실패 없는 3000K 조명 배치 팁을 공개합니다.",
         problemTitle: "예쁜 가구를 샀는데 왜 우리 집은 카페처럼 아늑하지 않을까?",
         problemDesc: "많은 분들이 가구에만 신경 쓰고 공간의 인상을 결정하는 '빛의 높낮이와 색감'을 놓치고 있습니다. 천장 한가운데 달린 메인등 하나만 끄셔도 공간의 깊이가 달라집니다.",
+        label2a: "흔한 실수: 눈부신 천장등 하나만 켜기",
+        label2b: "이상적인 무드: 시선보다 낮은 간접 조명",
         conceptTitle: "“호텔 같은 무드의 시작: 3000K 전구색 통일”",
-        conceptDesc: "파랗고 차가운 형광등빛 대신, 노을처럼 따뜻하고 편안한 전구색(3000K)을 공간 전체의 기준 조명으로 통일하세요. 눈의 피로감이 줄고 공간에 온기가 돕니다.",
+        conceptDesc: "파랗고 차가운 형광등빛 대신, 노을처럼 따뜻하고 편안한 전구색(3000K)을 공간 전체의 기준 조명으로 통일하세요. 눈의 피로감이 줄고 온기가 돕니다.",
         tip1Title: "빛을 벽과 바닥에 튕겨주세요: 간접 조명의 마법",
         tip1Desc: "조명이 눈에 직접 닿으면 눈이 부시고 피로해집니다. 커튼 박스나 선반 뒤에 숨겨진 은은한 빛이 벽면을 타고 흐르도록 연출하세요.",
+        tip1Point: "커튼 박스 간접등 하나만 켜도 저녁 시간 거실 무드가 180도 달라집니다.",
         tip2Title: "빛의 높낮이를 분산하는 '3단 배치 공식'",
         tip2Desc: "호텔 로비나 고급 카페는 천장만 밝지 않습니다. 높은 조명, 허리 높이 플로어 스탠드, 바닥 단스탠드로 높낮이를 나눠보세요.",
+        tip2Point: "소파 옆 코너에 장스탠드를 두면 죽은 공간이 가장 머물고 싶은 자리가 됩니다.",
         adviceTitle: "절대 피해야 할 실수: 색온도 섞지 않기",
         adviceDesc: "하얀 형광등(주광색)과 노란 무드등(전구색)을 한 공간에서 동시에 켜면 공간이 산만하고 촌스러워집니다. 하나로 통일해 주세요.",
+        label6a: "마감재의 결이 살아나는 따뜻한 빛",
+        label6b: "식탁 펜던트는 3000K 전구색 필수",
+        adviceNote: "식탁 위 펜던트 조명은 음식 색감을 가장 먹음직스럽게 돋보이게 만듭니다.",
         summaryTitle: "실패 없는 호텔 감성 조명 3원칙",
         tips: [
           { t: "형광등 끄고 3000K 전구색으로 통일하기", d: "눈이 편안하고 공간 전체에 따뜻한 노을빛 온기를 채워줍니다." },
@@ -868,14 +910,21 @@
         desc: "벽만 보고 요리하던 답답한 주방은 그만! 가족과 마주 보며 요리하는 대면형 구조 설계 노하우를 정리했습니다.",
         problemTitle: "구축 아파트, 과연 대면형 주방이 들어갈 수 있을까요?",
         problemDesc: "기존 'ㄱ자' 싱크대는 공간을 가로막고 가족과의 소통을 단절시킵니다. 하지만 통로 규격만 제대로 잡으면 작은 평수도 충분히 가능합니다.",
+        label2a: "답답한 벽을 바라보는 기존 ㄱ자 주방",
+        label2b: "거실을 마주 보는 오픈형 아일랜드",
         conceptTitle: "“식탁과 아일랜드를 하나로 묶는 콤팩트 동선”",
-        conceptDesc: "식탁을 따로 두지 않고 아일랜드와 T자형으로 결합하면 낭비되는 공간 없이 효율적인 동선을 만들 수 있습니다.",
+        conceptDesc: "식탁을 따로 두지 않고 아일랜드와 T자형으로 결합하면 낭비되는 공간 없이 효율적인 주방-거실 일체형 동선을 완성합니다.",
         tip1Title: "아일랜드와 싱크대 사이 최적 통로 폭은 90~100cm",
         tip1Desc: "서랍을 열고 두 사람이 엇갈려 지나가기에 가장 편안한 황금 치수입니다. 너무 좁으면 요리할 때 불편합니다.",
-        tip2Title: "후드 배관이 멀다면 탄소필터 후드 활용하기",
-        tip2Desc: "환기구 위치 때문에 아일랜드 위치를 고민하셨다면, 배관 연결 없이도 냄새를 잡아주는 탄소필터형 아일랜드 후드가 정답입니다.",
+        tip1Point: "통로 폭 90cm를 확보하면 양쪽 서랍이 동시에 열려도 걸림이 없습니다.",
+        tip2Title: "후드 배관이 멀다면 탄소필터 아일랜드 후드 활용",
+        tip2Desc: "환기구 위치 때문에 아일랜드 위치를 고민하셨다면, 배관 노출 없이도 냄새와 기름을 흡착하는 탄소필터 후드가 정답입니다.",
+        tip2Point: "천장 배관 공사 없이도 원하는 곳에 아일랜드 쿡탑 배치가 가능합니다.",
         adviceTitle: "상부장을 과감히 덜어내어 시각적 개방감 확보하기",
         adviceDesc: "아일랜드 하부에 서랍형 수납을 넉넉히 짜넣고, 전면 벽체는 상부장 없이 타일만 깔끔하게 마감하면 주방이 2배 넓어 보입니다.",
+        label6a: "상부장 없는 미니멀 타일 벽체 마감",
+        label6b: "냄새 걱정 없는 탄소필터 아일랜드 후드",
+        adviceNote: "아일랜드 하부를 깊은 2단 서랍으로 채우면 상부장 이상의 수납이 가능합니다.",
         summaryTitle: "작은 집 대면형 주방 완성 3원칙",
         tips: [
           { t: "식탁 겸용 아일랜드 일체형 설계", d: "식탁 자리를 아껴 거실을 훨씬 넓게 쓸 수 있습니다." },
@@ -889,14 +938,21 @@
         desc: "짐이 밖으로 나와 어수선했던 거실과 침실을 호텔처럼 정돈하는 빌트인 붙박이장 설계 노하우입니다.",
         problemTitle: "수납장을 사다 놓을수록 왜 집은 더 좁고 답답해질까요?",
         problemDesc: "기성 가구는 가구 윗공간과 옆공간에 죽은 공간이 생겨 먼지만 쌓이고 시야를 산만하게 만듭니다. 벽체처럼 정돈된 일체형 수납이 필요합니다.",
+        label2a: "기성 가구로 생기는 먼지 틈새와 단차",
+        label2b: "벽처럼 매립된 무몰딩 빌트인 수납",
         conceptTitle: "“벽체처럼 느껴지는 무몰딩 무손잡이 수납장”",
         conceptDesc: "천장 끝까지 빈틈없이 채우고 푸시도어로 손잡이를 없애면 수납장이 가구가 아니라 하나의 깔끔한 벽처럼 인식됩니다.",
         tip1Title: "서랍과 선반의 내부 비율은 6:4로 구성하기",
         tip1Desc: "깊은 선반은 안쪽 물건을 꺼내기 어렵습니다. 허리 아래쪽은 무조건 서랍형으로 구성해야 수납 효율이 2배 올라갑니다.",
+        tip1Point: "허리 아래 인출식 서랍은 허리를 굽히지 않고 물건을 꺼낼 수 있습니다.",
         tip2Title: "침대 헤드보드 뒤편 히든 수납월 활용하기",
         tip2Desc: "침대 머리맡 벽면에 얇은 수납장을 짜 넣으면 협탁 없이도 조명, 핸드폰 충전기, 책을 완벽히 매립할 수 있습니다.",
+        tip2Point: "협탁 자리를 아껴 안방 동선이 한결 여유로워집니다.",
         adviceTitle: "도어 색상은 벽지 색상과 톤온톤으로 맞추기",
         adviceDesc: "붙박이장 도어를 벽지 색보다 어둡게 하면 방이 좁아 보입니다. 벽체와 가장 유사한 매트 화이트나 웜크림을 추천합니다.",
+        label6a: "벽지와 하나로 이어지는 매트 도어",
+        label6b: "돌출 없는 히든 푸시 캐치 마감",
+        adviceNote: "도어 마감재 광택을 없앤 매트 표면은 지문이 남지 않고 눈부심이 없습니다.",
         summaryTitle: "미니멀 수납 인테리어 3원칙",
         tips: [
           { t: "천장 끝까지 채우는 무몰딩 빌트인", d: "먼지 쌓이는 틈새 없이 벽면 일체형으로 깔끔합니다." },
@@ -910,14 +966,21 @@
         desc: "플라스틱 재료분리대 없이 타일과 타일이 깔끔하게 만나는 졸리컷 시공! 실패 없이 완성하는 핵심 팁입니다.",
         problemTitle: "모서리 은색 몰딩, 왜 욕실을 촌스럽게 만들까요?",
         problemDesc: "은색 스테인리스 몰딩은 타일의 고급스러운 결을 끊어놓습니다. 타일 단면을 45도로 깎아 맞추는 졸리컷이 호텔 욕실의 핵심입니다.",
+        label2a: "은색 재료분리대로 끊긴 타일 모서리",
+        label2b: "45도 정밀 가공으로 맞물린 졸리컷",
         conceptTitle: "“선이 사라지는 미니멀 욕실의 완성”",
         conceptDesc: "바닥과 벽체를 같은 600각 포세린 타일로 일체감 있게 감싸면 좁은 욕실도 2배로 넓어 보이는 시각적 확장을 만듭니다.",
         tip1Title: "타일은 흡수율이 낮은 '포세린 타일' 필수 선택",
         tip1Desc: "일반 도기질 타일은 모서리를 깎으면 속살이 깨집니다. 단단하고 물을 흡수하지 않는 포세린 타일이어야 졸리컷이 가능합니다.",
+        tip1Point: "포세린 타일은 물때가 깊숙이 스며들지 않아 청소가 매우 간편합니다.",
         tip2Title: "물때가 잘 타지 않는 에폭시 줄눈으로 마감하기",
         tip2Desc: "백시멘트 대신 방수와 내구성이 뛰어난 에폭시 계열 줄눈을 쓰면 몇 년이 지나도 곰팡이 걱정 없이 깨끗합니다.",
+        tip2Point: "에폭시 줄눈은 타일 색상과 정확히 일치시켜 선을 지워줄 수 있습니다.",
         adviceTitle: "수전과 악세사리는 무광 니켈로 일체감 주기",
         adviceDesc: "번쩍이는 유광 크롬 대신 은은한 무광 니켈(새틴) 수전을 고르면 물얼룩이 덜 보이고 한층 차분한 호텔 무드가 완성됩니다.",
+        label6a: "물얼룩에 강한 무광 새틴 니켈 수전",
+        label6b: "젠다이와 샤워부스 일체형 졸리컷 선",
+        adviceNote: "샤워 파티션은 프레임리스 투명 강화유리로 마감해야 타일 결이 살아납니다.",
         summaryTitle: "호텔식 욕실 완성 체크리스트",
         tips: [
           { t: "벽과 바닥을 동일한 600각 타일로 통일", d: "경계선이 사라져 공간이 훨씬 정돈되고 넓어 보입니다." },
@@ -931,14 +994,21 @@
         desc: "병원처럼 차가운 올화이트 대신, 따뜻한 온기와 여백이 감도는 새로운 미니멀 공간을 만드는 비결을 소개합니다.",
         problemTitle: "인스타 보고 올화이트로 맞췄는데 왜 차갑고 피곤할까요?",
         problemDesc: "벽, 바닥, 가구까지 온통 새하얗기만 하면 빛이 난반사되어 눈이 쉽게 피로해집니다. 이제는 부드러운 크림과 베이지의 온기가 필요한 때입니다.",
+        label2a: "빛이 반사되어 피로한 차가운 올화이트",
+        label2b: "원목과 크림톤이 어우러진 웜미니멀",
         conceptTitle: "“크리미한 벽체와 오크 원목의 편안한 조화”",
         conceptDesc: "완전한 흰색 대신 미세한 베이지가 감도는 도장과 자연스러운 나뭇결의 마루를 매칭하면 집에 들어서는 순간 안도감이 듭니다.",
         tip1Title: "벽체 컬러는 쨍한 백색 대신 '소프트 크림' 선택하기",
         tip1Desc: "자연광을 받았을 때 은은하게 빛을 머금는 크림 톤 벽체는 공간을 훨씬 넓고 포근하게 만들어줍니다.",
+        tip1Point: "소프트 크림 벽체는 아침 햇살을 부드럽게 흡수해 아늑함을 극대화합니다.",
         tip2Title: "차가운 철제 대신 원목과 패브릭으로 질감 더하기",
         tip2Desc: "부클레 패브릭 소파나 자연스러운 원목 식탁을 배치하면 미니멀하면서도 썰렁하지 않은 균형을 잡을 수 있습니다.",
+        tip2Point: "패브릭 소파와 원목 테이블은 공간의 무게중심을 안정감 있게 잡아줍니다.",
         adviceTitle: "기존 가구와 조화롭게 믹스하는 톤 맞춤 팁",
         adviceDesc: "기존 가구가 흰색이라도 러그나 커튼을 베이지·어스톤으로 깔아주면 자연스럽게 웜 미니멀 무드로 바꿀 수 있습니다.",
+        label6a: "질감이 살아있는 부클레 패브릭",
+        label6b: "나뭇결이 은은한 내추럴 오크 마감",
+        adviceNote: "커튼은 쨍한 화이트 대신 린넨 조직감이 살아있는 베이지 쉬폰을 추천합니다.",
         summaryTitle: "실패 없는 웜 미니멀 인테리어 3원칙",
         tips: [
           { t: "쨍한 백색 대신 소프트 베이지 베이스", d: "눈의 피로를 덜어주고 아침 햇살을 가장 따뜻하게 품어냅니다." },
@@ -947,42 +1017,26 @@
         ],
         chips: [{ name: "Soft Cream", hex: "#F3EDE2" }, { name: "Natural Oak", hex: "#C4A482" }, { name: "Muted Greige", hex: "#9E978E" }]
       },
-      mistake: {
-        title: "디자이너는 자기 집에 절대 안 쓰는 유행 인테리어 3가지",
-        desc: "유행이라고 무작정 따라 했다가 1년 뒤 후회하는 디테일들! 10년이 지나도 질리지 않는 공간의 기본기를 알려드립니다.",
-        problemTitle: "잡지나 핀터레스트에서 본 예쁜 유행, 왜 살면서 후회할까요?",
-        problemDesc: "사진 찍기엔 화려해 보이지만, 청소가 어렵거나 빛 반사가 심해 일상생활에서 큰 스트레스를 주는 유행 요소들이 있습니다.",
-        conceptTitle: "“화려한 장식보다 선과 여백의 단정함”",
-        conceptDesc: "유행을 타는 포인트 자재를 덜어내고, 벽과 문선의 라인을 정갈하게 맞추는 데 투자할 때 시간이 지나도 가치 있는 공간이 됩니다.",
-        tip1Title: "유광 하이그로시 대신 차분한 '무광 매트' 마감",
-        tip1Desc: "지문과 기름때가 번들거리는 유광 대신 지문 방지 무광 도어를 선택하면 훨씬 고급스럽고 관리가 편합니다.",
-        tip2Title: "과도한 천장 조명 타공 줄이고 조도 집중하기",
-        tip2Desc: "천장 전체에 구멍을 뚫어 등을 촘촘히 박으면 어지럽습니다. 필요한 곳에만 조도를 모아주는 것이 세련된 연출법입니다.",
-        adviceTitle: "청소가 까다로운 틈새 장식 요소 피하기",
-        adviceDesc: "먼지가 쌓이기 쉬운 템바보드나 복잡한 요철 벽체는 포인트 한 곳에만 절제하여 사용하시는 것을 권장합니다.",
-        summaryTitle: "오래 봐도 질리지 않는 인테리어 3원칙",
-        tips: [
-          { t: "반짝이는 유광 대신 은은한 무광 선택", d: "고급스러운 호텔처럼 차분하고 우아한 분위기를 유지합니다." },
-          { t: "천장 조명은 꼭 필요한 곳에만 절제", d: "시각적 피로감을 줄이고 깔끔한 천장 선을 유지할 수 있습니다." },
-          { t: "청소와 관리가 쉬운 단순한 마감선", d: "시간이 지나도 손이 덜 가고 한결같은 깨끗함을 지켜줍니다." }
-        ],
-        chips: [{ name: "Matte Beige", hex: "#DDD6C8" }, { name: "Quiet Wood", hex: "#9E8B75" }, { name: "Shadow Grey", hex: "#63605B" }]
-      },
-
-      // F&B 카페 테마들 (상업 전용)
       cafe_bar: {
         title: "오픈 첫 달 손님 2배 늘리는 카페 바 카운터 동선 설계",
         desc: "바리스타가 편해야 음료가 빨리 나옵니다. 15~35평 매장에서 회전율과 감성을 동시에 잡는 바 설계 공식입니다.",
         problemTitle: "인테리어는 예쁜데 왜 주문받고 음료 낼 때 동선이 꼬일까요?",
-        problemDesc: "머신, 그라인더, 제빙기, 픽업존의 위치가 일직선으로 정돈되지 않으면 동선이 겹쳐 음료 제조 시간이 2배로 늘어납니다.",
+        problemDesc: "머신, 그라인더, 제빙기, 픽업존의 위치가 일직선으로 정돈되지 않으면 바리스타 동선이 겹쳐 음료 제조 시간이 2배로 늘어납니다.",
+        label2a: "제빙기와 머신 동선이 꼬인 비좁은 바",
+        label2b: "주문-추출-픽업 3걸음 일직선 오픈 바",
         conceptTitle: "“바리스타의 움직임을 반으로 줄이는 삼각 동선”",
         conceptDesc: "포스 주문에서 에스프레소 추출, 픽업대로 이어지는 흐름을 3걸음 안에서 끝낼 수 있도록 가로형 바 카운터를 최적화합니다.",
         tip1Title: "바 카운터 상판 높이는 900~920mm 황금 규격",
         tip1Desc: "바리스타가 허리를 숙이지 않고 탬핑과 서브를 할 수 있는 가장 편안한 상업용 높이입니다.",
+        tip1Point: "900mm 상판 높이는 하루 종일 서 있는 바리스타의 손목과 허리 피로를 최소화합니다.",
         tip2Title: "손님 시선 차단과 픽업 분리 파티션",
         tip2Desc: "설거지 공간은 손님 시선보다 15cm 높인 턱으로 가려주고, 깔끔한 픽업 존만 노출해야 매장이 항상 단정해 보입니다.",
+        tip2Point: "설거지 공간을 살짝 가려주면 매장의 첫인상이 호텔 라운지처럼 정돈됩니다.",
         adviceTitle: "배수관 구배(기울기)와 전기 증설 사전 점검",
         adviceDesc: "커피머신과 제빙기는 전력 소모가 큽니다. 착공 전 최소 15~20kW 단독 배선과 배수관 기울기를 반드시 확보하세요.",
+        label6a: "커피 얼룩에 강한 세라믹 바 상판",
+        label6b: "포스-머신-픽업 일직선 워크플로우",
+        adviceNote: "바 상판은 원목 대신 커피와 우유 얼룩이 배지 않는 무광 포세린 세라믹을 권장합니다.",
         summaryTitle: "성공하는 카페 바 카운터 3원칙",
         tips: [
           { t: "주문-추출-픽업 3걸음 일직선 동선", d: "러시 타임에도 음료 대기 시간을 획기적으로 줄여줍니다." },
@@ -996,14 +1050,21 @@
         desc: "마케팅 비용 0원으로 SNS 바이럴을 일으키는 공간의 비밀! 테이블마다 사진이 잘 나오는 시선 처리 팁입니다.",
         problemTitle: "비싼 가구를 채웠는데 왜 손님들이 사진을 안 찍을까요?",
         problemDesc: "조명이 너무 어둡거나 벽면에 시선이 머무는 포인트(Focal Point)가 없으면 손님은 카메라를 켜지 않습니다.",
+        label2a: "시선이 분산되는 밋밋한 흰 벽과 테이블",
+        label2b: "펜던트 핀조명이 떨어지는 감성 포토존",
         conceptTitle: "“커피잔을 내려놓는 순간 포토존이 되는 테이블”",
         conceptDesc: "테이블 한가운데 떨어지는 은은한 펜던트 조명과 텍스처가 살아있는 벽체가 조화를 이룰 때 완벽한 컷이 완성됩니다.",
         tip1Title: "테이블 상판 위 65~70cm 높이에 펜던트 조명 달기",
         tip1Desc: "음료와 디저트에 그림자가 생기지 않고, 음식의 윤기와 색감을 가장 돋보이게 만드는 최적의 조명 높이입니다.",
+        tip1Point: "상판 위 65cm 펜던트는 손님의 얼굴에는 부드러운 역광, 디저트엔 스팟 조명을 줍니다.",
         tip2Title: "거울 셀카를 부르는 '전신 비정형 거울' 배치",
         tip2Desc: "화장실 입구나 매장 코너에 식물과 함께 비정형 거울을 두면 손님들의 자연스러운 방문 인증샷 명소가 됩니다.",
+        tip2Point: "비정형 거울 포토존은 인스타 스토리 방문 태그를 유도하는 1등 공신입니다.",
         adviceTitle: "배경이 되는 벽면은 러프한 미장 마감 추천",
         adviceDesc: "매끄러운 페인트보다 질감이 살아있는 유럽 미장(스페셜 페인트)을 쓰면 사진 속 공간의 깊이감이 3배는 깊어집니다.",
+        label6a: "자연스러운 그림자가 생기는 유럽 미장 벽",
+        label6b: "디저트 색감을 살리는 3000K 스팟 펜던트",
+        adviceNote: "거울 테두리에 은은한 후면 간접등을 넣으면 거울 셀카의 피부 톤이 화사해집니다.",
         summaryTitle: "바이럴 카페 포토존 3원칙",
         tips: [
           { t: "테이블 중심에 집중되는 스팟 조명", d: "디저트와 커피 사진이 먹음직스럽게 살아납니다." },
@@ -1017,14 +1078,21 @@
         desc: "낮과 밤의 매출을 모두 잡는 하이브리드 F&B 공간의 비밀! 분위기를 180도 바꾸는 디밍 조명 공식입니다.",
         problemTitle: "낮에는 예쁜데 저녁만 되면 왜 매장이 썰렁하고 촌스러울까요?",
         problemDesc: "낮의 밝은 자연광에 맞춘 조명을 저녁에도 그대로 켜두면, 아늑함이 사라지고 차가운 분위기 때문에 술 손님이 들지 않습니다.",
+        label2a: "저녁 시간 술맛을 떨어뜨리는 밝은 메인등",
+        label2b: "조도를 30%로 낮춘 무드 핀조명 연출",
         conceptTitle: "“시간대에 따라 공간의 온도를 바꾸는 디밍 시스템”",
         conceptDesc: "해 질 녘 스위치 하나로 전체 조도를 30%로 낮추고 테이블 위 핀조명만 살리면 매장이 순식간에 감성 바로 변신합니다.",
         tip1Title: "모든 조명 라인은 조도 조절(디머) 스위치 분리",
         tip1Desc: "천장 메인등과 벽등, 바 하부 간접등의 스위치를 따로 분리해야 저녁 시간에 필요한 무드만 켤 수 있습니다.",
+        tip1Point: "스위치 분리 시공은 낮과 밤의 매장 콘셉트를 1초 만에 전환하는 마법입니다.",
         tip2Title: "테이블마다 무선 충전식 미니 램프 배치",
         tip2Desc: "전선 없이 테이블 위에 올려두는 무선 캔들 램프는 손님의 대화에 프라이빗한 몰입감을 선물합니다.",
+        tip2Point: "무선 미니 램프는 손님의 체류 시간을 늘리고 와인 추가 주문을 유도합니다.",
         adviceTitle: "색온도는 절대 섞지 말고 2700K~3000K 전구색 통일",
         adviceDesc: "식음료 매장에서 하얀 형광등빛은 금물입니다. 무조건 따뜻한 노을빛 2700K 전구색으로 공간 전체를 감싸주세요.",
+        label6a: "와인잔에 비치는 따뜻한 2700K 앰버 조명",
+        label6b: "테이블 몰입도를 높이는 무선 충전 램프",
+        adviceNote: "벽면을 타고 흐르는 하부 간접등은 매장이 훨씬 넓어 보이는 착시를 줍니다.",
         summaryTitle: "하이브리드 바 조명 3원칙",
         tips: [
           { t: "시간대별 디밍 스위치 분리 시공", d: "낮과 밤의 매장 분위기를 스위치 하나로 바꿀 수 있습니다." },
@@ -1038,14 +1106,21 @@
         desc: "비싼 대리석 대신 질감으로 승부하는 요즘 카페 트렌드! 감각적인 카페를 완성하는 자재 믹스매치 팁입니다.",
         problemTitle: "화려한 타일과 대리석, 왜 카페에 쓰면 부담스럽고 차가울까요?",
         problemDesc: "상업 공간은 관리가 쉬우면서도 손님이 머물 때 편안함을 느껴야 합니다. 반짝이는 유광 자재는 오히려 쉽게 질립니다.",
+        label2a: "빛 반사가 심하고 차가운 유광 대리석",
+        label2b: "빛을 차분하게 흡수하는 러프한 미장과 원목",
         conceptTitle: "“자연스러운 흙의 질감과 거친 나뭇결의 온기”",
         conceptDesc: "손때가 묻을수록 멋스러워지는 빈티지 우드와 부드러운 유럽 미장 벽체는 시간이 흘러도 가치가 유지됩니다.",
         tip1Title: "바 카운터 전면은 샌드 플라스터 미장 마감",
         tip1Desc: "손님의 발이 닿는 하부 15cm만 걸레받이를 두고 상부는 미장으로 덮으면 모던하면서도 유니크한 바가 완성됩니다.",
+        tip1Point: "미장 벽체는 손때가 타도 빈티지한 멋으로 자연스럽게 어우러집니다.",
         tip2Title: "원목 가구는 톤이 다른 오크와 월넛을 7:3으로 믹스",
         tip2Desc: "한 가지 나무 색으로만 통일하면 지루합니다. 밝은 오크 바닥에 짙은 월넛 테이블을 포인트로 얹어보세요.",
+        tip2Point: "다크 월넛 테이블 포인트는 매장에 깊이 있는 무게감을 부여합니다.",
         adviceTitle: "테이블 상판 마감은 방수 무광 바니시 필수",
         adviceDesc: "원목 테이블에 커피 물이 스며들면 얼룩이 남습니다. 촉감은 매트하면서 물은 튕겨내는 특수 세라믹 코팅을 권장합니다.",
+        label6a: "결이 살아있는 내추럴 원목 상판",
+        label6b: "자연광 그림자가 예쁜 유럽 미장 벽",
+        adviceNote: "무광 나노 코팅을 거친 원목은 물티슈로 닦아도 변색 없이 오래 유지됩니다.",
         summaryTitle: "질리지 않는 카페 자재 3원칙",
         tips: [
           { t: "빛을 부드럽게 흡수하는 무광 미장 벽체", d: "자연스러운 그림자가 생겨 공간이 차분해집니다." },
@@ -1054,21 +1129,26 @@
         ],
         chips: [{ name: "Sand Plaster", hex: "#D8CFBC" }, { name: "Vintage Teak", hex: "#7B5E43" }, { name: "Raw Concrete", hex: "#9E9D99" }]
       },
-
-      // 뷰티 & 상업 쇼룸 테마들
       beauty_face: {
         title: "고객 얼굴에 그림자 안 생기는 뷰티살롱 조명 연출법",
         desc: "미용실, 피부관리실, 메이크업샵 필수! 손님이 거울을 봤을 때 가장 예뻐 보이는 페이스 라이팅 공식입니다.",
         problemTitle: "천장 조명 때문에 손님 얼굴에 눈 밑 다크서클이 생긴다면?",
         problemDesc: "머리 바로 위에 달린 다운라이트는 이마, 코, 턱 밑에 짙은 그림자를 만들어 손님의 만족도를 떨어뜨립니다.",
+        label2a: "정수리 바로 위 조명으로 생긴 짙은 얼굴 그림자",
+        label2b: "거울 3면 간접광으로 채운 화사한 페이스 라이팅",
         conceptTitle: "“얼굴 정면에서 부드럽게 채워주는 무영 조명”",
         conceptDesc: "거울 테두리에서 나오는 은은한 간접광이 얼굴 전체를 균일하게 밝혀주어 피부 톤을 화사하고 맑게 연출합니다.",
         tip1Title: "경대 거울 뒤편 3면 간접 LED 바 매립",
         tip1Desc: "빛이 벽에 반사되어 얼굴로 은은하게 돌아오기 때문에 눈부심 없이 완벽한 피부 보정 효과를 냅니다.",
+        tip1Point: "거울 뒤 간접광은 고객의 눈부심을 없애고 턱 밑 그림자를 완벽히 지워줍니다.",
         tip2Title: "색온도는 자연광에 가장 가까운 3500K~4000K",
         tip2Desc: "너무 노란 조명은 염색이나 메이크업 본래 색을 왜곡합니다. 햇살과 가장 유사한 뉴트럴 화이트를 추천합니다.",
+        tip2Point: "3500K 조명 아래에서 손님이 거울을 볼 때 시술 만족도가 가장 높습니다.",
         adviceTitle: "샴푸실이나 베드존은 직접 조명 전면 배제",
         adviceDesc: "누워서 시술받는 공간은 천장을 완전히 비우고, 발밑이나 선반 하부의 간접등만 켜야 고객이 편안하게 휴식합니다.",
+        label6a: "얼굴 왜곡 없는 뉴트럴 3500K 거울 조명",
+        label6b: "눈부심 없는 베드존 발밑 간접등",
+        adviceNote: "경대 거울은 왜곡 없는 은경 5T 이상 무프레임 제품을 사용해야 선명합니다.",
         summaryTitle: "뷰티살롱 페이스 라이팅 3원칙",
         tips: [
           { t: "거울 테두리 전면 무영 조명", d: "얼굴에 그림자가 지지 않아 시술 결과가 돋보입니다." },
@@ -1082,14 +1162,21 @@
         desc: "시술 공간의 프라이빗함과 대기실의 개방감을 동시에! 좁은 매장을 2배 넓어 보이게 만드는 공간 분할 팁입니다.",
         problemTitle: "천장까지 꽉 막힌 가벽, 왜 매장을 답답한 고시원처럼 만들까요?",
         problemDesc: "방을 나누겠다고 천장 끝까지 석고보드 가벽을 치면 에어컨 바람도 막히고 매장이 좁아 터져 보입니다.",
+        label2a: "천장까지 막혀 에어컨 바람이 끊긴 가벽",
+        label2b: "상부가 열려 개방감을 주는 아치형 가벽",
         conceptTitle: "“시선은 가리고 빛은 통과시키는 반투명 아치 가벽”",
         conceptDesc: "유려한 곡선 아치 게이트와 반투명 모루유리를 활용하면 프라이버시는 지키면서도 시원한 개방감을 확보합니다.",
         tip1Title: "가벽 높이를 2100mm로 낮춰 천장 라인 틔워주기",
         tip1Desc: "가벽 위로 천장이 하나로 이어져 보이면 하나의 에어컨으로 매장 전체를 시원하게 냉방할 수 있습니다.",
+        tip1Point: "천장 라인을 틔우면 냉난방 전기세를 아끼고 매장이 2배 넓어 보입니다.",
         tip2Title: "문 대신 패브릭 린넨 커튼 게이트 활용",
         tip2Desc: "여닫이문이 차지하는 반경 1미터의 공간을 아낄 수 있고, 부드러운 패브릭이 뷰티살롱 특유의 아늑함을 더해줍니다.",
+        tip2Point: "패브릭 게이트는 문 열림 반경의 죽는 공간을 완벽히 살려줍니다.",
         adviceTitle: "대기 공간과 시술 베드의 시선 차단 각도 계산",
         adviceDesc: "손님이 들어오는 입구에서 시술 베드에 누워있는 다른 손님의 모습이 절대 정면으로 보이지 않도록 'ㄱ자' 꺾임 복도를 만드세요.",
+        label6a: "빛만 은은하게 통과시키는 모루유리 가벽",
+        label6b: "공간 낭비 없는 린넨 패브릭 아치 도어",
+        adviceNote: "입구와 시술 베드 사이에 화분을 두면 자연스러운 시선 차단벽이 됩니다.",
         summaryTitle: "1인 뷰티샵 가벽 분할 3원칙",
         tips: [
           { t: "에어컨 공기가 통하는 상부 오픈 가벽", d: "냉난방 비용을 아끼고 시각적 답답함을 없애줍니다." },
@@ -1103,14 +1190,21 @@
         desc: "답답한 파티션은 옛말! 집중 업무존과 편안한 카페형 라운지를 조화롭게 배치하는 현대 오피스 설계 가이드입니다.",
         problemTitle: "벽으로 꽉 막힌 회의실과 빽빽한 책상, 왜 소통을 방해할까요?",
         problemDesc: "일률적인 독서실형 배치는 직원들의 창의력을 떨어뜨리고 사무실을 삭막하게 만듭니다. 유연한 공간 분리가 필요합니다.",
+        label2a: "답답한 회색 파티션으로 꽉 막힌 기존 사무실",
+        label2b: "유리 파티션과 라운지가 결합된 오픈 오피스",
         conceptTitle: "“집중과 휴식이 공존하는 라운지형 스마트 오피스”",
         conceptDesc: "카페 같은 대형 원목 테이블과 폰부스, 미팅룸을 분산 배치하여 직원들이 업무 성격에 맞춰 자리를 선택하게 합니다.",
         tip1Title: "책상 간 통로 폭은 최소 110cm 이상 확보하기",
         tip1Desc: "의자를 뒤로 빼고 다른 직원이 지나갈 때 부딪히지 않는 쾌적한 오피스 표준 규격입니다.",
+        tip1Point: "통로 폭 110cm는 사무실 내 이동 시 직원 간 불필요한 충돌을 막아줍니다.",
         tip2Title: "유리 파티션으로 개방감과 방음을 동시에 잡기",
         tip2Desc: "불투명 벽체 대신 블랙 프레임 유리 칸막이를 쓰면 사무실이 2배로 넓어 보이며 회의 소음도 차단됩니다.",
+        tip2Point: "유리 칸막이는 빛을 사무실 깊숙한 곳까지 전달해 쾌적함을 유지합니다.",
         adviceTitle: "눈의 피로를 덜어주는 간접 라인 조명 설계",
         adviceDesc: "모니터에 빛이 반사되는 눈부신 직부등 대신 천장 바리솔이나 간접 라인 조명을 시공하면 장시간 근무 피로도가 반감됩니다.",
+        label6a: "모니터 반사가 없는 간접 라인 조명",
+        label6b: "소통을 촉진하는 카페형 대형 미팅 테이블",
+        adviceNote: "회의실 유리벽에는 시선 높이에 불투명 에칭 시트를 부착해 프라이버시를 지켜주세요.",
         summaryTitle: "스마트 오피스 인테리어 3원칙",
         tips: [
           { t: "자유로운 소통을 돕는 카페형 라운지 존", d: "딱딱한 회의 대신 편안한 아이디어 교류를 촉진합니다." },
@@ -1124,14 +1218,21 @@
         desc: "인테리어가 제품을 가리면 안 됩니다! 브랜드 아이덴티티를 살리고 제품 구매 전환율을 높이는 쇼룸 집기 연출법입니다.",
         problemTitle: "인테리어가 너무 화려해서 정작 파는 물건이 안 보인다면?",
         problemDesc: "벽체와 바닥의 패턴이 과도하면 손님의 시선이 분산되어 상품에 집중하지 못합니다. 인테리어는 배경이어야 합니다.",
+        label2a: "화려한 벽지 패턴에 묻혀버린 전시 상품",
+        label2b: "무채색 배경에 핀조명으로 강조된 상품 쇼케이스",
         conceptTitle: "“군더더기를 덜어내고 상품에 빛을 모으는 여백”",
         conceptDesc: "미니멀한 모노톤 배경 위에 정교한 집중 핀조명을 쏘아 마치 미술관 갤러리 작품처럼 상품의 가치를 극대화합니다.",
         tip1Title: "디스플레이 매대 높이는 손이 가장 닿기 쉬운 850mm",
         tip1Desc: "손님이 허리를 굽히지 않고 자연스럽게 제품을 만져보고 경험할 수 있는 골든 존 규격입니다.",
+        tip1Point: "850mm 매대 높이는 고객의 제품 터치와 구매 전환을 30% 높여줍니다.",
         tip2Title: "레일 스팟 조명으로 상품마다 핀라이트 타게팅",
         tip2Desc: "배경은 차분하게 가라앉히고 오직 전시된 제품에만 하이라이트 빔을 쏘아 시각적 주목도를 높이세요.",
+        tip2Point: "스팟 핀조명은 상품의 광택과 디테일을 예술품처럼 돋보이게 만듭니다.",
         adviceTitle: "마감재는 제품 색상을 흡수하지 않는 무채색 매트 톤",
         adviceDesc: "베이지, 웜그레이 등 차분한 어스톤을 베이스로 깔아주어야 다양한 색상의 상품이 돋보입니다.",
+        label6a: "제품에만 시선이 꽂히는 갤러리형 핀조명",
+        label6b: "자연스러운 손길을 유도하는 850mm 체험 매대",
+        adviceNote: "쇼룸 바닥재는 관리가 편하고 이음매가 없는 에폭시 라이닝이나 마이크로시멘트를 권장합니다.",
         summaryTitle: "성공하는 쇼룸 인테리어 3원칙",
         tips: [
           { t: "손이 먼저 가는 850mm 체험형 매대", d: "고객의 접촉을 유도해 실제 구매율을 높여줍니다." },
@@ -1144,32 +1245,24 @@
 
     let activeCardData = {};
 
-    // Category Change Handler
     function handleCategoryChange(catKey) {
       currentCategory = catKey;
-
-      // Update Category Tabs UI
       const tabs = document.querySelectorAll('#categoryTabs .filter-pill');
       tabs.forEach((tab, idx) => {
         const keys = ['residential', 'cafe', 'commercial'];
-        if (keys[idx] === catKey) {
-          tab.classList.add('active');
-        } else {
-          tab.classList.remove('active');
-        }
+        if (keys[idx] === catKey) tab.classList.add('active');
+        else tab.classList.remove('active');
       });
-
       renderDynamicFilters();
     }
 
-    // Render Dependent Filters (Step 2 and Step 3)
     function renderDynamicFilters() {
       const catData = categoryDatabase[currentCategory];
 
       // 1. Render Scales (Step 2)
       const scaleContainer = document.getElementById('scaleButtonsContainer');
       scaleContainer.innerHTML = '';
-      currentScale = catData.scales[0].id; // default to first
+      currentScale = catData.scales[0].id;
 
       catData.scales.forEach((scale, idx) => {
         const btn = document.createElement('button');
@@ -1184,10 +1277,10 @@
         scaleContainer.appendChild(btn);
       });
 
-      // 2. Render Themes (Step 3) - Only relevant themes shown!
+      // 2. Render Themes (Step 3)
       const themeContainer = document.getElementById('themeButtonsContainer');
       themeContainer.innerHTML = '';
-      currentTheme = catData.themes[0].id; // default to first
+      currentTheme = catData.themes[0].id;
 
       catData.themes.forEach((theme, idx) => {
         const btn = document.createElement('button');
@@ -1206,7 +1299,6 @@
       updateCombinedTopicLabel();
     }
 
-    // Update Combined Topic Label
     function updateCombinedTopicLabel() {
       const catData = categoryDatabase[currentCategory];
       const scaleObj = catData.scales.find(s => s.id === currentScale) || catData.scales[0];
@@ -1216,7 +1308,6 @@
       document.getElementById('combinedTopicTitle').innerText = combined;
     }
 
-    // Randomize Matching Topic (Always logically matched!)
     function randomizeMatchingTopic() {
       const catKeys = Object.keys(categoryDatabase);
       const randCat = catKeys[Math.floor(Math.random() * catKeys.length)];
@@ -1229,7 +1320,6 @@
       currentScale = randScale.id;
       currentTheme = randTheme.id;
 
-      // Update button active state
       const scaleBtns = document.getElementById('scaleButtonsContainer').querySelectorAll('.filter-pill');
       scaleBtns.forEach(b => {
         if (b.innerText === randScale.label) b.classList.add('active');
@@ -1243,10 +1333,9 @@
       });
 
       updateCombinedTopicLabel();
-      showCustomToast("🎲 꼭 맞는 추천 꿀조합이 선택되었습니다! [8장 즉시 완성]을 눌러보세요.");
+      showCustomToast("🎲 추천 꿀조합이 선택되었습니다! [선택한 주제로 8장 완성]을 눌러보세요.");
     }
 
-    // Apply Cardnews Generation
     async function applyCardnewsGeneration() {
       const apiKey = localStorage.getItem('bastudio_gemini_key') || "";
       const catData = categoryDatabase[currentCategory];
@@ -1279,14 +1368,21 @@
   "desc": "표지 서브 설명 2줄",
   "problemTitle": "인테리어 시 겪는 실수와 고민",
   "problemDesc": "디자이너 진단 2줄",
+  "label2a": "슬라이드2 흔한 실수 사진 캡션 1줄",
+  "label2b": "슬라이드2 이상적 무드 사진 캡션 1줄",
   "conceptTitle": "공간 무드 핵심 슬로건",
   "conceptDesc": "따뜻함과 질감 설명 2줄",
   "tip1Title": "첫 번째 실전 디테일 솔루션 제목",
   "tip1Desc": "설명 2줄",
+  "tip1Point": "슬라이드4 핵심 말풍선 1줄 요약",
   "tip2Title": "두 번째 실전 솔루션 제목",
   "tip2Desc": "설명 2줄",
+  "tip2Point": "슬라이드5 디자이너 조언 1줄 요약",
   "adviceTitle": "디자이너 실무 팁 및 주의점",
   "adviceDesc": "실무 조언 2줄",
+  "label6a": "슬라이드6 디테일A 사진 캡션",
+  "label6b": "슬라이드6 디테일B 사진 캡션",
+  "adviceNote": "슬라이드6 하단 디자이너 조언 1줄",
   "summaryTitle": "실패 없는 인테리어 핵심 3원칙",
   "tips": [
     { "t": "원칙 1 제목", "d": "1줄 요약" },
@@ -1322,7 +1418,7 @@
         }
       }
 
-      // 2. High Quality Smart Blueprint (100% Reliable, Matching & Instant)
+      // 2. High Quality Smart Blueprint (100% Cohesive Context & Instant)
       setTimeout(() => {
         const blueprint = detailedContentDatabase[currentTheme] || detailedContentDatabase.lighting;
         const customData = JSON.parse(JSON.stringify(blueprint));
@@ -1331,10 +1427,9 @@
         renderCardnewsToDOM(customData, themeObj.photoKey);
         overlay.classList.remove('active');
         showCustomToast(`✨ "${combinedTopic}" 8장 완성이 완료되었습니다!`);
-      }, 300);
+      }, 250);
     }
 
-    // Render Data to DOM
     function renderCardnewsToDOM(data, photoKey) {
       activeCardData = data;
 
@@ -1347,6 +1442,8 @@
       // Slide 2
       document.getElementById('slide2Title').innerText = data.problemTitle || '인테리어 시 가장 후회하는 포인트';
       document.getElementById('slide2Desc').innerText = data.problemDesc || '';
+      document.getElementById('slide2LabelA').innerText = data.label2a || '흔한 실수 사례';
+      document.getElementById('slide2LabelB').innerText = data.label2b || '이상적인 시공 솔루션';
 
       // Slide 3
       document.getElementById('slide3Title').innerText = data.conceptTitle || '';
@@ -1363,14 +1460,19 @@
       // Slide 4
       document.getElementById('slide4Title').innerText = data.tip1Title || '';
       document.getElementById('slide4Desc').innerText = data.tip1Desc || '';
+      document.getElementById('slide4Point').innerText = data.tip1Point || '디자이너의 실전 디테일 솔루션';
 
       // Slide 5
       document.getElementById('slide5Title').innerText = data.tip2Title || '';
       document.getElementById('slide5Desc').innerText = data.tip2Desc || '';
+      document.getElementById('slide5Point').innerText = data.tip2Point || '공간의 깊이를 살리는 레이아웃 팁';
 
       // Slide 6
       document.getElementById('slide6Title').innerText = data.adviceTitle || '';
       document.getElementById('slide6Desc').innerText = data.adviceDesc || '';
+      document.getElementById('slide6LabelA').innerText = data.label6a || '정교한 마감 디테일';
+      document.getElementById('slide6LabelB').innerText = data.label6b || '톤과 질감의 조화';
+      document.getElementById('slide6Note').innerText = data.adviceNote || '작은 디테일의 차이가 공간의 완성도를 결정합니다.';
 
       // Slide 7
       document.getElementById('slide7Title').innerText = data.summaryTitle || '실패 없는 인테리어 핵심 3원칙';
@@ -1383,24 +1485,30 @@
         document.getElementById('tip3Desc').innerText = data.tips[2].d;
       }
 
-      // Apply Exact Matching Photos
+      // Apply Exact Matching Photos with Safe Verification
       applyPhotoLibrary(photoKey);
     }
 
     function applyPhotoLibrary(key) {
       const set = photoLibraries[key] || photoLibraries.minimal;
-      document.getElementById('img-1').src = set.img1;
-      document.getElementById('img-2a').src = set.img2a;
-      document.getElementById('img-2b').src = set.img2b;
-      document.getElementById('img-3').src = set.img3;
-      document.getElementById('img-4').src = set.img4;
-      document.getElementById('img-5').src = set.img5;
-      document.getElementById('img-6a').src = set.img6a;
-      document.getElementById('img-6b').src = set.img6b;
-      document.getElementById('img-8').src = set.img8;
+      setImageSafe('img-1', set.img1);
+      setImageSafe('img-2a', set.img2a);
+      setImageSafe('img-2b', set.img2b);
+      setImageSafe('img-3', set.img3);
+      setImageSafe('img-4', set.img4);
+      setImageSafe('img-5', set.img5);
+      setImageSafe('img-6a', set.img6a);
+      setImageSafe('img-6b', set.img6b);
+      setImageSafe('img-8', set.img8);
     }
 
-    // Freeform Custom Input
+    function setImageSafe(elementId, url) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.src = url || reliableFallbackImage;
+      }
+    }
+
     function handleCustomInputGenerate() {
       const input = document.getElementById('freeformInput').value.trim();
       if (!input) {
@@ -1418,7 +1526,6 @@
       applyCardnewsGeneration();
     }
 
-    // Slide Deck Navigation
     const slideDeckMeta = [
       { id: 1, title: '표지 & 핵심 타이틀', tag: '대표 1컷', en: 'COVER' },
       { id: 2, title: '흔한 실수 & 문제 진단', tag: '2분할 비교', en: 'PROBLEM' },
@@ -1479,7 +1586,6 @@
       }
     }
 
-    // Photo Replacement Handler (Local file)
     function handlePhotoClick(slideNum, imgId) {
       targetImgElement = document.getElementById(imgId);
       document.getElementById('imageFileInput').click();
@@ -1496,7 +1602,6 @@
       }
     });
 
-    // Ratio Switchers (1:1 and 4:5)
     document.getElementById('ratio1to1').addEventListener('click', function() {
       const vp = document.getElementById('slideViewport');
       vp.style.width = '540px';
@@ -1513,7 +1618,6 @@
       document.getElementById('ratio1to1').className = "px-2.5 py-1 rounded text-neutral-400 hover:text-white font-medium text-[11px]";
     });
 
-    // Guide Overlay Toggle
     document.getElementById('toggleGuideBtn').addEventListener('click', function() {
       isGuideActive = !isGuideActive;
       const vp = document.getElementById('slideViewport');
@@ -1529,7 +1633,6 @@
       }
     });
 
-    // Copy Instagram Caption
     function copyInstagramCaption() {
       const topic = activeCardData.title || activeCardData.topic || "비에이스튜디오 공간 디자인 가이드";
       const desc = activeCardData.desc || '';
@@ -1550,7 +1653,7 @@ ${desc}
 공간은 단순한 구조를 넘어 일상의 감도를 결정합니다.
 나만의 주거·상업 공간 인테리어를 고민 중이시라면 지금 이 피드를 저장(📌)해두고 참고해 보세요!
 
-🏷️️ 공간 설계 및 디자인 상담 신청:
+🏷 공간 설계 및 디자인 상담 신청:
 인스타그램 프로필 링크 클릭 (@bastudio_seoul)
 
 #비에이스튜디오 #BASTUDIO #인테리어가이드 #인테리어팁 #아파트인테리어 #카페인테리어 #상업공간인테리어 #공간디자인 #인테리어체크리스트`;
@@ -1572,7 +1675,6 @@ ${desc}
       setTimeout(() => toast.remove(), 4000);
     }
 
-    // Modal Handlers
     function openJsonModal() { document.getElementById('jsonModal').classList.remove('hidden'); }
     function closeJsonModal() { document.getElementById('jsonModal').classList.add('hidden'); }
     function applyDirectJson() {
@@ -1606,7 +1708,6 @@ ${desc}
       closeApiModal();
     }
 
-    // 8-Slide High Resolution ZIP Batch Download
     async function exportAllSlidesZip() {
       const exportBtn = document.getElementById('exportAllBtn');
       const overlay = document.getElementById('loadingOverlay');
@@ -1628,7 +1729,7 @@ ${desc}
 
           const slideEl = document.getElementById(`slide-${i}`);
           const canvas = await html2canvas(slideEl, {
-            scale: 2, // High resolution (1080px width)
+            scale: 2,
             useCORS: true,
             allowTaint: true,
             backgroundColor: null
@@ -1653,7 +1754,6 @@ ${desc}
       }
     }
 
-    // Window Init
     window.onload = function() {
       initSlideNav();
       renderDynamicFilters();
