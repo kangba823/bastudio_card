@@ -21,14 +21,14 @@
         extend: {
           colors: {
             studio: {
-              cream: '#FBFBF9',
-              stone: '#F3F1EC',
-              sand: '#E8E5DD',
+              cream: '#FAF8F5',
+              stone: '#F2EFE9',
+              sand: '#E5E0D5',
               charcoal: '#1A1A1A',
               dark: '#111111',
               accent: '#B08968',
               accentHover: '#967151',
-              muted: '#99948D',
+              muted: '#8C857B',
             }
           },
           fontFamily: {
@@ -40,8 +40,13 @@
     }
   </script>
   <style>
+    * {
+      word-break: keep-all !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+    }
     body {
-      font-family: 'Noto Sans KR', sans-serif;
+      font-family: 'Noto Sans KR', -apple-system, sans-serif;
       background-color: #121212;
       color: #ECEBE8;
     }
@@ -49,14 +54,17 @@
       font-family: 'Cormorant Garamond', serif;
       letter-spacing: 0.18em;
     }
-    .break-keep {
-      word-break: keep-all;
-      overflow-wrap: break-word;
-    }
     .photo-zone {
       position: relative;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: opacity 0.2s ease;
+      background-color: #242424;
+    }
+    .photo-zone img {
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .photo-zone:hover img {
+      transform: scale(1.02);
     }
     .photo-zone:hover::after {
       content: '📷 클릭하여 내 사진으로 교체';
@@ -91,7 +99,7 @@
       color: #ffffff !important;
       border-color: #B08968 !important;
       font-weight: 700;
-      box-shadow: 0 0 10px rgba(176, 137, 104, 0.35);
+      box-shadow: 0 2px 8px rgba(176, 137, 104, 0.4);
     }
     ::-webkit-scrollbar {
       width: 6px;
@@ -127,7 +135,7 @@
           <h1 class="brand-logo text-base sm:text-lg font-bold tracking-widest text-white uppercase">BA STUDIO</h1>
           <span class="text-[10px] px-2 py-0.5 rounded bg-white/10 text-neutral-300 font-medium">비에이스튜디오</span>
         </div>
-        <p class="text-[10px] text-studio-muted">Interior & Space Design | 인테리어 가이드 카드뉴스 AI</p>
+        <p class="text-[10px] text-studio-muted">Interior & Space Design | 8장 가이드 카드뉴스 AI</p>
       </div>
     </div>
 
@@ -171,16 +179,16 @@
             <span class="text-base">🎯</span>
             <h3 class="text-xs font-bold text-white uppercase tracking-wider">공간 맞춤 가이드 빌더</h3>
           </div>
-          <button onclick="randomizeMatchingTopic()" class="text-xs text-studio-accent hover:text-white font-medium flex items-center gap-1 transition px-2.5 py-1 rounded bg-studio-accent/15 border border-studio-accent/30 shadow-sm">
+          <button onclick="randomizeMatchingTopic()" class="text-xs text-studio-accent hover:text-white font-semibold flex items-center gap-1 transition px-2.5 py-1 rounded bg-studio-accent/15 border border-studio-accent/30 shadow-sm">
             <span>🎲</span> 추천 꿀조합
           </button>
         </div>
 
         <!-- Step 1: 공간 대분류 -->
         <div class="space-y-1.5">
-          <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
+          <label class="text-[11px] font-semibold text-neutral-400 flex items-center gap-1">
             <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">1</span>
-            공간 대분류 선택:
+            공간 대분류 선택 (즉시 연동):
           </label>
           <div class="grid grid-cols-3 gap-1.5" id="categoryTabs">
             <button class="filter-pill active px-2 py-2 rounded-lg border border-white/10 bg-black/40 text-xs text-neutral-300 text-center font-medium" onclick="handleCategoryChange('residential')">
@@ -197,7 +205,7 @@
 
         <!-- Step 2: 평형 / 대상 상황 -->
         <div class="space-y-1.5">
-          <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
+          <label class="text-[11px] font-semibold text-neutral-400 flex items-center gap-1">
             <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">2</span>
             대상 평수 / 상황:
           </label>
@@ -208,9 +216,9 @@
 
         <!-- Step 3: 핵심 가이드 테마 -->
         <div class="space-y-1.5">
-          <label class="text-[11px] font-semibold text-neutral-400 block flex items-center gap-1">
+          <label class="text-[11px] font-semibold text-neutral-400 flex items-center gap-1">
             <span class="w-4 h-4 rounded-full bg-studio-accent/20 text-studio-accent text-[10px] flex items-center justify-center font-bold">3</span>
-            핵심 가이드 테마 (100% 맞춤 연동):
+            핵심 가이드 테마 (사진 & 글 100% 매칭):
           </label>
           <div class="grid grid-cols-2 gap-1.5" id="themeButtonsContainer">
             <!-- Dynamic Buttons rendered based on category -->
@@ -220,21 +228,21 @@
         <!-- Action: 완성된 조합 생성 버튼 -->
         <div class="pt-2 border-t border-white/10 space-y-2">
           <div class="p-2.5 bg-black/60 rounded-lg border border-studio-accent/30 text-xs">
-            <span class="text-studio-accent font-semibold block text-[10px] uppercase">현재 선택된 완성 주제:</span>
-            <p id="combinedTopicTitle" class="text-white font-bold text-xs mt-0.5 truncate break-keep">
+            <span class="text-studio-accent font-semibold block text-[10px] uppercase">현재 선택된 가이드:</span>
+            <p id="combinedTopicTitle" class="text-white font-bold text-xs mt-0.5 truncate">
               20평대 신혼집 | 실패 없는 3000K 호텔 감성 조명 공식
             </p>
           </div>
 
           <button id="generateMatrixBtn" onclick="applyCardnewsGeneration()" class="w-full py-2.5 bg-studio-accent hover:bg-studio-accentHover text-white text-xs font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg transition">
             <span>✨</span>
-            <span id="genBtnText">선택한 주제로 8장 즉시 완성</span>
+            <span id="genBtnText">선택한 주제로 8장 새로고침</span>
           </button>
         </div>
 
         <!-- Freeform Custom Keyword Input -->
         <div class="pt-2 border-t border-white/5 flex gap-2 items-center">
-          <input type="text" id="freeformInput" placeholder="직접 키워드 입력 (예: 성수동 30평 브런치 카페)" 
+          <input type="text" id="freeformInput" placeholder="직접 키워드 입력 (예: 성수동 브런치 카페)" 
                  class="flex-1 bg-black/40 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-studio-accent placeholder-neutral-500">
           <button onclick="handleCustomInputGenerate()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 text-xs font-medium shrink-0 transition">
             적용
@@ -246,7 +254,7 @@
       <div class="space-y-2">
         <div class="flex justify-between items-center px-1">
           <h3 class="text-xs font-bold text-neutral-300 uppercase tracking-wider">슬라이드 구성 (총 8장)</h3>
-          <span class="text-xs text-studio-accent">클릭하여 슬라이드 이동</span>
+          <span class="text-xs text-studio-accent font-medium">클릭하여 슬라이드 이동</span>
         </div>
         <nav class="space-y-1.5" id="slideNav">
           <!-- 8 Slide Navigation Items -->
@@ -258,10 +266,10 @@
         <p class="font-semibold text-studio-cream flex items-center gap-1.5">
           <span>💡</span> 비에이스튜디오 카드뉴스 운영 팁
         </p>
-        <ul class="space-y-1 text-xs text-neutral-400 pl-3 list-disc leading-relaxed break-keep">
-          <li><strong>사진 교체:</strong> 화면 속 사진을 클릭하면 내 컴퓨터 파일로 즉시 바뀝니다.</li>
+        <ul class="space-y-1 text-xs text-neutral-400 pl-3 list-disc leading-relaxed">
+          <li><strong>실시간 자동 연동:</strong> 위쪽 1, 2, 3번 버튼을 누르면 즉시 8장의 사진과 글이 100% 매칭되어 바뀝니다.</li>
+          <li><strong>사진 교체:</strong> 화면 속 사진을 클릭하면 내 컴퓨터 파일로 즉시 교체됩니다.</li>
           <li><strong>문구 직접 수정:</strong> 슬라이드 위 글씨는 마우스로 클릭하여 바로 편집 가능합니다.</li>
-          <li><strong>인스타 업로드:</strong> 상단 [인스타 본문 복사]를 누르고 [8장 전체 다운로드]하면 3분 만에 피드 업로드 준비 완료!</li>
         </ul>
       </div>
     </aside>
@@ -269,12 +277,10 @@
     <section class="flex-1 bg-[#0a0a0a] flex items-center justify-center p-4 lg:p-8 overflow-auto">
       <div id="slideViewport" class="relative transition-all duration-300 shadow-2xl rounded-lg overflow-hidden bg-white text-neutral-900 w-[540px] h-[675px] shrink-0">
         
-        <!-- ========================================== -->
-        <!-- SLIDE 1: COVER (표지 & 타이틀) -->
-        <!-- ========================================== -->
+        <!-- SLIDE 1: COVER -->
         <div id="slide-1" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-cream">
           <div class="photo-zone absolute inset-0 z-0 overflow-hidden" onclick="handlePhotoClick(1, 'img-1')">
-            <img id="img-1" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
+            <img id="img-1" src="" onerror="handleImageError(this)" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/35"></div>
             <div class="guide-tag absolute top-4 right-4 bg-black/80 backdrop-blur border border-studio-accent text-studio-accent text-[11px] px-3 py-1 rounded-full items-center gap-1.5 pointer-events-none">
               [대표 전경 컷]
@@ -293,10 +299,10 @@
             <div class="inline-block px-3 py-1 bg-white/20 backdrop-blur rounded text-xs font-semibold tracking-wider uppercase text-white">
               <span id="slide1SubTag">INTERIOR SOLUTION</span>
             </div>
-            <h2 id="slide1Title" contenteditable="true" class="break-keep text-2xl sm:text-3xl font-extrabold leading-snug text-white drop-shadow-md">
+            <h2 id="slide1Title" contenteditable="true" class="text-2xl sm:text-3xl font-extrabold leading-snug text-white drop-shadow-md">
               비싼 가구 없이 5성급 호텔 분위기 내는 조명 공식
             </h2>
-            <p id="slide1Desc" contenteditable="true" class="break-keep text-sm text-neutral-200 font-light leading-relaxed max-w-md drop-shadow">
+            <p id="slide1Desc" contenteditable="true" class="text-sm text-neutral-200 font-light leading-relaxed max-w-md drop-shadow">
               형광등 하나로 집 분위기를 망치고 계신가요? 디자이너가 알려주는 실패 없는 3000K 조명 배치 팁을 공개합니다.
             </p>
             <div class="pt-3 flex items-center justify-between text-xs tracking-wider text-neutral-300 border-t border-white/20">
@@ -306,9 +312,7 @@
           </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- SLIDE 2: PROBLEM (흔한 실수 & 고민 진단) -->
-        <!-- ========================================== -->
+        <!-- SLIDE 2: PROBLEM -->
         <div id="slide-2" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-cream hidden">
           <div class="flex items-center justify-between border-b border-neutral-300 pb-3">
             <span class="text-xs font-bold text-studio-accent tracking-widest uppercase">02 / PROBLEM & CHECK</span>
@@ -317,7 +321,7 @@
 
           <div class="space-y-1">
             <span class="text-xs font-bold text-studio-accent uppercase tracking-wider">이런 고민 해보셨나요?</span>
-            <h3 id="slide2Title" contenteditable="true" class="break-keep text-xl font-bold text-neutral-900 leading-snug">
+            <h3 id="slide2Title" contenteditable="true" class="text-xl font-bold text-neutral-900 leading-snug">
               예쁜 가구를 샀는데 왜 우리 집은 카페처럼 아늑하지 않을까?
             </h3>
           </div>
@@ -325,20 +329,20 @@
           <!-- Dynamic 2-Split Comparison Photo Zone -->
           <div class="grid grid-cols-2 gap-3 my-3 flex-1">
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200 flex flex-col" onclick="handlePhotoClick(2, 'img-2a')">
-              <img id="img-2a" src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
-              <div id="slide2LabelA" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs font-medium text-center break-keep">
+              <img id="img-2a" src="" onerror="handleImageError(this)" class="w-full h-full object-cover">
+              <div id="slide2LabelA" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs font-medium text-center">
                 흔한 실수: 눈부신 천장등 하나만 켜기
               </div>
             </div>
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200 flex flex-col" onclick="handlePhotoClick(2, 'img-2b')">
-              <img id="img-2b" src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
-              <div id="slide2LabelB" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs font-medium text-center break-keep">
+              <img id="img-2b" src="" onerror="handleImageError(this)" class="w-full h-full object-cover">
+              <div id="slide2LabelB" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs font-medium text-center">
                 이상적인 무드: 시선보다 낮은 간접 조명
               </div>
             </div>
           </div>
 
-          <div class="bg-studio-stone/90 p-3.5 rounded-lg border border-neutral-300 text-xs sm:text-sm text-neutral-700 leading-relaxed break-keep">
+          <div class="bg-studio-stone/90 p-3.5 rounded-lg border border-neutral-300 text-xs sm:text-sm text-neutral-700 leading-relaxed">
             <span class="font-bold text-neutral-900">디자이너의 진단:</span> <span id="slide2Desc" contenteditable="true">많은 분들이 가구에만 신경 쓰고 공간의 인상을 결정하는 '빛의 높낮이와 색감'을 놓치고 있습니다. 천장 한가운데 달린 메인등 하나만 끄셔도 공간의 깊이가 달라집니다.</span>
           </div>
 
@@ -348,9 +352,7 @@
           </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- SLIDE 3: CONCEPT & PALETTE (컨셉과 무드) -->
-        <!-- ========================================== -->
+        <!-- SLIDE 3: CONCEPT & PALETTE -->
         <div id="slide-3" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-cream hidden">
           <div class="flex items-center justify-between border-b border-neutral-300 pb-3">
             <span class="text-xs font-bold text-studio-accent tracking-widest uppercase">03 / MOOD & PALETTE</span>
@@ -358,7 +360,7 @@
           </div>
 
           <div class="photo-zone relative h-52 rounded-lg overflow-hidden my-2 bg-neutral-200" onclick="handlePhotoClick(3, 'img-3')">
-            <img id="img-3" src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
+            <img id="img-3" src="" onerror="handleImageError(this)" class="w-full h-full object-cover">
             <div id="slide3GuideTag" class="guide-tag absolute top-3 left-3 bg-black/80 backdrop-blur text-studio-accent text-[11px] px-3 py-1 rounded-full items-center gap-1.5 pointer-events-none">
               [따뜻한 톤앤매너 컷]
             </div>
@@ -366,11 +368,11 @@
 
           <div class="space-y-3">
             <div>
-              <h3 id="slide3Title" contenteditable="true" class="break-keep text-lg font-bold text-neutral-900">
+              <h3 id="slide3Title" contenteditable="true" class="text-lg font-bold text-neutral-900">
                 “호텔 같은 무드의 시작: 3000K 전구색 통일”
               </h3>
-              <p id="slide3Desc" contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
-                파랗고 차가운 형광등빛 대신, 노을처럼 따뜻하고 편안한 전구색(3000K)을 공간 전체의 기준 조명으로 통일하세요. 눈의 피로감이 줄고 공간에 온기가 돕니다.
+              <p id="slide3Desc" contenteditable="true" class="text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
+                파랗고 차가운 형광등빛 대신, 노을처럼 따뜻하고 편안한 전구색(3000K)을 공간 전체의 기준 조명으로 통일하세요. 눈의 피로감이 줄고 온기가 돕니다.
               </p>
             </div>
 
@@ -400,9 +402,7 @@
           </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- SLIDE 4: TIP 01 (첫 번째 솔루션) -->
-        <!-- ========================================== -->
+        <!-- SLIDE 4: TIP 01 -->
         <div id="slide-4" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-cream hidden">
           <div class="flex items-center justify-between border-b border-neutral-300 pb-3">
             <span class="text-xs font-bold text-studio-accent tracking-widest uppercase">04 / PRACTICAL TIP 01</span>
@@ -410,19 +410,19 @@
           </div>
 
           <div>
-            <h3 id="slide4Title" contenteditable="true" class="break-keep text-xl font-bold text-neutral-900 leading-snug">
+            <h3 id="slide4Title" contenteditable="true" class="text-xl font-bold text-neutral-900 leading-snug">
               빛을 벽과 바닥에 튕겨주세요: 간접 조명의 마법
             </h3>
-            <p id="slide4Desc" contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
+            <p id="slide4Desc" contenteditable="true" class="text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
               조명이 눈에 직접 닿으면 눈이 부시고 피로해집니다. 커튼 박스나 선반 뒤에 숨겨진 은은한 빛이 벽면을 타고 흐르도록 연출하세요.
             </p>
           </div>
 
           <div class="photo-zone relative flex-1 my-3 rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(4, 'img-4')">
-            <img id="img-4" src="https://images.unsplash.com/photo-1540518614846-7ede433c4ef4?auto=format&fit=crop&w=1000&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
+            <img id="img-4" src="" onerror="handleImageError(this)" class="w-full h-full object-cover">
             <div class="absolute bottom-3 left-3 bg-white/95 backdrop-blur px-3 py-2 rounded-lg shadow-md border border-black/5 text-neutral-800 max-w-[300px]">
               <span class="text-[10px] uppercase tracking-wider text-studio-accent font-bold block">Key Point</span>
-              <p id="slide4Point" contenteditable="true" class="text-xs font-medium break-keep">커튼 박스 간접등 하나만 켜도 저녁 시간 거실 무드가 180도 달라집니다.</p>
+              <p id="slide4Point" contenteditable="true" class="text-xs font-medium">커튼 박스 간접등 하나만 켜도 저녁 시간 거실 무드가 180도 달라집니다.</p>
             </div>
           </div>
 
@@ -432,9 +432,7 @@
           </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- SLIDE 5: TIP 02 (두 번째 솔루션 - 높낮이/동선) -->
-        <!-- ========================================== -->
+        <!-- SLIDE 5: TIP 02 -->
         <div id="slide-5" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-cream hidden">
           <div class="flex items-center justify-between border-b border-neutral-300 pb-3">
             <span class="text-xs font-bold text-studio-accent tracking-widest uppercase">05 / PRACTICAL TIP 02</span>
@@ -442,17 +440,17 @@
           </div>
 
           <div>
-            <h3 id="slide5Title" contenteditable="true" class="break-keep text-xl font-bold text-neutral-900 leading-snug">
+            <h3 id="slide5Title" contenteditable="true" class="text-xl font-bold text-neutral-900 leading-snug">
               빛의 높낮이를 분산하는 '3단 배치 공식'
             </h3>
-            <p id="slide5Desc" contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
+            <p id="slide5Desc" contenteditable="true" class="text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
               호텔 로비나 고급 카페는 천장만 밝지 않습니다. 높은 조명, 허리 높이 플로어 스탠드, 바닥 단스탠드로 높낮이를 나눠보세요.
             </p>
           </div>
 
           <div class="photo-zone relative flex-1 my-3 rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(5, 'img-5')">
-            <img id="img-5" src="https://images.unsplash.com/photo-1517991104123-1d56a6e81ed9?auto=format&fit=crop&w=1000&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
-            <div class="absolute bottom-3 right-3 bg-black/85 backdrop-blur text-white px-3 py-2 rounded-lg text-xs break-keep max-w-[280px]">
+            <img id="img-5" src="" onerror="handleImageError(this)" class="w-full h-full object-cover">
+            <div class="absolute bottom-3 right-3 bg-black/85 backdrop-blur text-white px-3 py-2 rounded-lg text-xs max-w-[280px]">
               <span class="text-studio-accent font-bold block text-[10px]">DESIGN ADVICE</span>
               <p id="slide5Point" contenteditable="true">소파 옆 코너에 장스탠드를 두면 죽은 공간이 가장 머물고 싶은 자리가 됩니다.</p>
             </div>
@@ -464,9 +462,7 @@
           </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- SLIDE 6: DETAIL ADVICE (디테일과 주의점) -->
-        <!-- ========================================== -->
+        <!-- SLIDE 6: DETAIL ADVICE -->
         <div id="slide-6" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-cream hidden">
           <div class="flex items-center justify-between border-b border-neutral-300 pb-3">
             <span class="text-xs font-bold text-studio-accent tracking-widest uppercase">06 / DETAIL & WARNING</span>
@@ -474,24 +470,24 @@
           </div>
 
           <div>
-            <h3 id="slide6Title" contenteditable="true" class="break-keep text-xl font-bold text-neutral-900 leading-snug">
+            <h3 id="slide6Title" contenteditable="true" class="text-xl font-bold text-neutral-900 leading-snug">
               절대 피해야 할 실수: 색온도 섞지 않기
             </h3>
-            <p id="slide6Desc" contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
+            <p id="slide6Desc" contenteditable="true" class="text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
               하얀 형광등(주광색)과 노란 무드등(전구색)을 한 공간에서 동시에 켜면 공간이 산만하고 촌스러워집니다. 하나로 통일해 주세요.
             </p>
           </div>
 
           <div class="grid grid-cols-2 gap-3 my-2 flex-1">
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(6, 'img-6a')">
-              <img id="img-6a" src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
-              <div id="slide6LabelA" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs text-center font-medium break-keep">
+              <img id="img-6a" src="" onerror="handleImageError(this)" class="w-full h-full object-cover">
+              <div id="slide6LabelA" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs text-center font-medium">
                 마감재의 결이 살아나는 따뜻한 빛
               </div>
             </div>
             <div class="photo-zone relative rounded-lg overflow-hidden bg-neutral-200" onclick="handlePhotoClick(6, 'img-6b')">
-              <img id="img-6b" src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover">
-              <div id="slide6LabelB" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs text-center font-medium break-keep">
+              <img id="img-6b" src="" onerror="handleImageError(this)" class="w-full h-full object-cover">
+              <div id="slide6LabelB" contenteditable="true" class="absolute bottom-0 inset-x-0 bg-black/75 p-2 text-white text-xs text-center font-medium">
                 식탁 펜던트는 3000K 전구색 필수
               </div>
             </div>
@@ -499,7 +495,7 @@
 
           <div class="bg-white p-3 rounded-lg border border-neutral-200 text-xs sm:text-sm text-neutral-700 flex items-center gap-2.5 shadow-sm">
             <span class="w-2.5 h-2.5 rounded-full bg-studio-accent shrink-0"></span>
-            <span id="slide6Note" contenteditable="true" class="break-keep font-medium">식탁 위 펜던트 조명은 음식 색감을 가장 먹음직스럽게 돋보이게 만듭니다.</span>
+            <span id="slide6Note" contenteditable="true" class="font-medium">식탁 위 펜던트 조명은 음식 색감을 가장 먹음직스럽게 돋보이게 만듭니다.</span>
           </div>
 
           <div class="text-xs text-neutral-400 flex justify-between items-center pt-2 border-t border-neutral-200">
@@ -508,9 +504,7 @@
           </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- SLIDE 7: SUMMARY & TIPS (저장 유도 3원칙) -->
-        <!-- ========================================== -->
+        <!-- SLIDE 7: SUMMARY & TIPS -->
         <div id="slide-7" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-cream hidden">
           <div class="flex items-center justify-between border-b border-neutral-300 pb-3">
             <span class="text-xs font-bold text-studio-accent tracking-widest uppercase">07 / SUMMARY & CHECKLIST</span>
@@ -519,7 +513,7 @@
 
           <div class="text-center my-1">
             <span class="text-xs font-bold text-studio-accent uppercase tracking-widest">Saved for Inspiration</span>
-            <h3 id="slide7Title" contenteditable="true" class="break-keep text-xl font-bold text-neutral-900 mt-1">
+            <h3 id="slide7Title" contenteditable="true" class="text-xl font-bold text-neutral-900 mt-1">
               실패 없는 호텔 감성 조명 3원칙
             </h3>
             <p class="text-xs text-neutral-500 mt-0.5">나중에 인테리어할 때 꺼내보려면 지금 저장(북마크)해 두세요!</p>
@@ -531,7 +525,7 @@
               <span class="w-7 h-7 rounded-full bg-studio-stone text-studio-accent font-bold text-xs flex items-center justify-center shrink-0">01</span>
               <div>
                 <h4 id="tip1Title" contenteditable="true" class="text-xs sm:text-sm font-bold text-neutral-900">형광등 끄고 3000K 전구색으로 통일하기</h4>
-                <p id="tip1Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-1 leading-snug">눈이 편안하고 공간 전체에 따뜻한 노을빛 온기를 채워줍니다.</p>
+                <p id="tip1Desc" contenteditable="true" class="text-xs text-neutral-600 mt-1 leading-snug">눈이 편안하고 공간 전체에 따뜻한 노을빛 온기를 채워줍니다.</p>
               </div>
             </div>
 
@@ -539,7 +533,7 @@
               <span class="w-7 h-7 rounded-full bg-studio-stone text-studio-accent font-bold text-xs flex items-center justify-center shrink-0">02</span>
               <div>
                 <h4 id="tip2Title" contenteditable="true" class="text-xs sm:text-sm font-bold text-neutral-900">시선보다 낮은 플로어 램프 활용하기</h4>
-                <p id="tip2Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-1 leading-snug">빛의 높낮이를 분산시켜 밋밋했던 방에 입체적인 깊이감을 만듭니다.</p>
+                <p id="tip2Desc" contenteditable="true" class="text-xs text-neutral-600 mt-1 leading-snug">빛의 높낮이를 분산시켜 밋밋했던 방에 입체적인 깊이감을 만듭니다.</p>
               </div>
             </div>
 
@@ -547,7 +541,7 @@
               <span class="w-7 h-7 rounded-full bg-studio-stone text-studio-accent font-bold text-xs flex items-center justify-center shrink-0">03</span>
               <div>
                 <h4 id="tip3Title" contenteditable="true" class="text-xs sm:text-sm font-bold text-neutral-900">벽면과 커튼에 빛을 은은하게 튕기기</h4>
-                <p id="tip3Desc" contenteditable="true" class="break-keep text-xs text-neutral-600 mt-1 leading-snug">눈부심 없이 호텔 객실처럼 아늑하고 편안한 분위기를 완성합니다.</p>
+                <p id="tip3Desc" contenteditable="true" class="text-xs text-neutral-600 mt-1 leading-snug">눈부심 없이 호텔 객실처럼 아늑하고 편안한 분위기를 완성합니다.</p>
               </div>
             </div>
           </div>
@@ -558,12 +552,10 @@
           </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- SLIDE 8: OUTRO (상담 신청 및 공식 계정) -->
-        <!-- ========================================== -->
+        <!-- SLIDE 8: OUTRO -->
         <div id="slide-8" class="slide-content w-full h-full relative flex flex-col justify-between p-8 bg-studio-charcoal text-white hidden">
           <div class="photo-zone absolute inset-0 z-0 overflow-hidden" onclick="handlePhotoClick(8, 'img-8')">
-            <img id="img-8" src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80" onerror="handleImageError(this)" class="w-full h-full object-cover filter brightness-[0.35]">
+            <img id="img-8" src="" onerror="handleImageError(this)" class="w-full h-full object-cover filter brightness-[0.35]">
             <div class="guide-tag absolute top-4 right-4 bg-black/80 backdrop-blur text-studio-accent text-[11px] px-3 py-1 rounded-full items-center gap-1.5 pointer-events-none">
               [야경 or 감성 오브제 컷]
             </div>
@@ -575,11 +567,11 @@
           </div>
 
           <div class="relative z-10 text-center space-y-4 px-4 my-auto">
-            <h3 id="slide8Slogan" contenteditable="true" class="break-keep text-xl sm:text-2xl font-bold leading-relaxed text-white">
+            <h3 id="slide8Slogan" contenteditable="true" class="text-xl sm:text-2xl font-bold leading-relaxed text-white">
               머물수록 가치가 느껴지는 공간,<br>
               <span class="text-studio-accent">비에이스튜디오</span>와 함께 완성하세요.
             </h3>
-            <p id="slide8Desc" contenteditable="true" class="break-keep text-xs sm:text-sm text-neutral-300 leading-relaxed max-w-sm mx-auto">
+            <p id="slide8Desc" contenteditable="true" class="text-xs sm:text-sm text-neutral-300 leading-relaxed max-w-sm mx-auto">
               주거와 상업 공간의 본질을 고민하고, 고객의 일상과 취향에 맞춘 1:1 맞춤 공간 디자인을 제안합니다.
             </p>
 
@@ -604,7 +596,7 @@
     </section>
   </main>
 
-  <!-- Hidden Image File Input -->
+  <!-- Hidden File Input for Image Replacement -->
   <input type="file" id="imageFileInput" accept="image/*" class="hidden">
 
   <!-- Loading Overlay -->
@@ -613,7 +605,7 @@
     <p id="loadingOverlayText" class="text-sm font-semibold tracking-wide">비에이스튜디오 가이드 생성 중...</p>
   </div>
 
-  <!-- AI Studio JSON Modal -->
+  <!-- AI JSON Modal -->
   <div id="jsonModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-[#1C1C1C] border border-white/15 rounded-xl max-w-lg w-full p-6 text-white space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-white/10 pb-3">
@@ -672,7 +664,7 @@
     const reliableFallbackImage = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80";
 
     function handleImageError(imgEl) {
-      imgEl.onerror = null; // prevent infinite loops
+      imgEl.onerror = null;
       imgEl.src = reliableFallbackImage;
     }
 
@@ -690,8 +682,7 @@
           { id: 'kitchen', label: '🍳 대면형 아일랜드 주방', photoKey: 'kitchen' },
           { id: 'storage', label: '📦 무몰딩 빌트인 수납 극대화', photoKey: 'storage' },
           { id: 'bath', label: '🛁 호텔식 600각 졸리컷 욕실', photoKey: 'bath' },
-          { id: 'minimal', label: '🪵 질리지 않는 웜 미니멀 우드', photoKey: 'minimal' },
-          { id: 'mistake', label: '⚠️ 디자이너가 피하는 주거 유행', photoKey: 'minimal' }
+          { id: 'minimal', label: '🪵 질리지 않는 웜 미니멀 우드', photoKey: 'minimal' }
         ]
       },
       cafe: {
@@ -728,14 +719,14 @@
     let currentScale = 'small_apt';
     let currentTheme = 'lighting';
 
-    // Curated high-res, verified photos per theme (Checked for stability)
+    // Curated 100% verified, visual-distinct photo libraries per theme
     const photoLibraries = {
       lighting: {
         img1: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80",
         img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
         img2b: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80",
         img3: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80",
-        img4: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1000&q=80",
+        img4: "https://images.unsplash.com/photo-1540518614846-7ede433c4ef4?auto=format&fit=crop&w=1000&q=80",
         img5: "https://images.unsplash.com/photo-1517991104123-1d56a6e81ed9?auto=format&fit=crop&w=1000&q=80",
         img6a: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80",
         img6b: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80",
@@ -743,42 +734,42 @@
       },
       kitchen: {
         img1: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
-        img2a: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=600&q=80",
+        img2a: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=600&q=80",
         img2b: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=600&q=80",
         img3: "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1200&q=80",
         img4: "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1000&q=80",
-        img5: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?auto=format&fit=crop&w=1000&q=80",
         img6a: "https://images.unsplash.com/photo-1556912167-f556f1f39fdf?auto=format&fit=crop&w=600&q=80",
         img6b: "https://images.unsplash.com/photo-1556911073-38141963c9e0?auto=format&fit=crop&w=600&q=80",
         img8: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
       },
       storage: {
         img1: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80",
-        img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
+        img2a: "https://images.unsplash.com/photo-1558997519-83ea9252def8?auto=format&fit=crop&w=600&q=80",
         img2b: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=600&q=80",
         img3: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80",
         img4: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80",
         img5: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
-        img6a: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80",
-        img6b: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80",
+        img6a: "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=600&q=80",
+        img6b: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=600&q=80",
         img8: "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80"
       },
       bath: {
         img1: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80",
         img2a: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80",
-        img2b: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=600&q=80",
-        img3: "https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80",
-        img4: "https://images.unsplash.com/photo-1604014237800-1c9102c219da?auto=format&fit=crop&w=1000&q=80",
-        img5: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1000&q=80",
-        img6a: "https://images.unsplash.com/photo-1584622781564-1d987f7333c1?auto=format&fit=crop&w=600&q=80",
+        img2b: "https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1604014237800-1c9102c219da?auto=format&fit=crop&w=1200&q=80",
+        img4: "https://images.unsplash.com/photo-1584622781564-1d987f7333c1?auto=format&fit=crop&w=1000&q=80",
+        img5: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1000&q=80",
+        img6a: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80",
         img6b: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=600&q=80",
         img8: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
       },
       minimal: {
         img1: "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80",
         img2a: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
-        img2b: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
-        img3: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=80",
+        img2b: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=600&q=80",
+        img3: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
         img4: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
         img5: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1000&q=80",
         img6a: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=600&q=80",
@@ -875,7 +866,6 @@
       }
     };
 
-    // Full cohesive content blueprints: All slide 1-8 labels, captions, callouts included
     const detailedContentDatabase = {
       lighting: {
         title: "비싼 가구 없이 5성급 호텔 분위기 내는 조명 공식",
@@ -1248,12 +1238,14 @@
     function handleCategoryChange(catKey) {
       currentCategory = catKey;
       const tabs = document.querySelectorAll('#categoryTabs .filter-pill');
+      const keys = ['residential', 'cafe', 'commercial'];
       tabs.forEach((tab, idx) => {
-        const keys = ['residential', 'cafe', 'commercial'];
         if (keys[idx] === catKey) tab.classList.add('active');
         else tab.classList.remove('active');
       });
       renderDynamicFilters();
+      // Instantly generate and apply without extra button click
+      applyCardnewsGeneration();
     }
 
     function renderDynamicFilters() {
@@ -1273,6 +1265,7 @@
           btn.classList.add('active');
           currentScale = scale.id;
           updateCombinedTopicLabel();
+          applyCardnewsGeneration();
         };
         scaleContainer.appendChild(btn);
       });
@@ -1292,6 +1285,7 @@
           btn.classList.add('active');
           currentTheme = theme.id;
           updateCombinedTopicLabel();
+          applyCardnewsGeneration();
         };
         themeContainer.appendChild(btn);
       });
@@ -1311,11 +1305,20 @@
     function randomizeMatchingTopic() {
       const catKeys = Object.keys(categoryDatabase);
       const randCat = catKeys[Math.floor(Math.random() * catKeys.length)];
-      handleCategoryChange(randCat);
+      currentCategory = randCat;
+
+      const tabs = document.querySelectorAll('#categoryTabs .filter-pill');
+      const keys = ['residential', 'cafe', 'commercial'];
+      tabs.forEach((tab, idx) => {
+        if (keys[idx] === randCat) tab.classList.add('active');
+        else tab.classList.remove('active');
+      });
 
       const catData = categoryDatabase[randCat];
       const randScale = catData.scales[Math.floor(Math.random() * catData.scales.length)];
       const randTheme = catData.themes[Math.floor(Math.random() * catData.themes.length)];
+
+      renderDynamicFilters();
 
       currentScale = randScale.id;
       currentTheme = randTheme.id;
@@ -1333,7 +1336,8 @@
       });
 
       updateCombinedTopicLabel();
-      showCustomToast("🎲 추천 꿀조합이 선택되었습니다! [선택한 주제로 8장 완성]을 눌러보세요.");
+      applyCardnewsGeneration();
+      showCustomToast("🎲 추천 꿀조합으로 카드뉴스가 실시간 완성되었습니다!");
     }
 
     async function applyCardnewsGeneration() {
@@ -1344,14 +1348,14 @@
 
       const combinedTopic = `${catData.label} ${scaleObj.label} 대상 ${themeObj.label.replace(/^[^\s]+\s/, '')}`;
 
-      const overlay = document.getElementById('loadingOverlay');
-      const overlayText = document.getElementById('loadingOverlayText');
-      overlayText.innerText = `비에이스튜디오 가이드 "${combinedTopic}" 작성 중...`;
-      overlay.classList.add('active');
-
       // 1. Try Gemini API if key is present
       if (apiKey) {
         try {
+          const overlay = document.getElementById('loadingOverlay');
+          const overlayText = document.getElementById('loadingOverlayText');
+          overlayText.innerText = `Gemini AI가 "${combinedTopic}" 가이드를 작성 중입니다...`;
+          overlay.classList.add('active');
+
           const prompt = `당신은 프리미엄 인테리어 디자인 스튜디오 '비에이스튜디오 (BA STUDIO)'의 수석 공간 디자이너입니다.
 공간 카테고리: "${catData.label}"
 대상 및 상황: "${scaleObj.label}"
@@ -1415,19 +1419,16 @@
           }
         } catch (err) {
           console.warn("Gemini Error, falling back to blueprint:", err);
+          document.getElementById('loadingOverlay').classList.remove('active');
         }
       }
 
-      // 2. High Quality Smart Blueprint (100% Cohesive Context & Instant)
-      setTimeout(() => {
-        const blueprint = detailedContentDatabase[currentTheme] || detailedContentDatabase.lighting;
-        const customData = JSON.parse(JSON.stringify(blueprint));
-        customData.topic = combinedTopic;
-        customData.title = `${scaleObj.label} | ${blueprint.title}`;
-        renderCardnewsToDOM(customData, themeObj.photoKey);
-        overlay.classList.remove('active');
-        showCustomToast(`✨ "${combinedTopic}" 8장 완성이 완료되었습니다!`);
-      }, 250);
+      // 2. High Quality Smart Blueprint (Instant 100% Cohesive Context)
+      const blueprint = detailedContentDatabase[currentTheme] || detailedContentDatabase.lighting;
+      const customData = JSON.parse(JSON.stringify(blueprint));
+      customData.topic = combinedTopic;
+      customData.title = `${scaleObj.label} | ${blueprint.title}`;
+      renderCardnewsToDOM(customData, themeObj.photoKey);
     }
 
     function renderCardnewsToDOM(data, photoKey) {
@@ -1490,7 +1491,7 @@
     }
 
     function applyPhotoLibrary(key) {
-      const set = photoLibraries[key] || photoLibraries.minimal;
+      const set = photoLibraries[key] || photoLibraries.lighting;
       setImageSafe('img-1', set.img1);
       setImageSafe('img-2a', set.img2a);
       setImageSafe('img-2b', set.img2b);
@@ -1523,7 +1524,6 @@
       } else {
         handleCategoryChange('residential');
       }
-      applyCardnewsGeneration();
     }
 
     const slideDeckMeta = [
@@ -1624,7 +1624,7 @@
       const text = document.getElementById('guideStatusText');
       if (isGuideActive) {
         vp.classList.add('guide-active');
-        text.innerText = "📸 가이드: ON";
+        text.innerText = "📸 사진 가이드: ON";
         this.className = "px-2.5 py-1.5 rounded border border-studio-accent text-studio-accent bg-studio-accent/15 flex items-center gap-1.5 transition";
       } else {
         vp.classList.remove('guide-active');
@@ -1669,10 +1669,10 @@ ${desc}
 
     function showCustomToast(msg) {
       const toast = document.createElement('div');
-      toast.className = "fixed bottom-8 right-8 bg-studio-accent text-white px-5 py-3 rounded-lg shadow-2xl z-50 text-xs font-semibold flex items-center gap-2 max-w-sm break-keep";
+      toast.className = "fixed bottom-8 right-8 bg-studio-accent text-white px-5 py-3 rounded-lg shadow-2xl z-50 text-xs font-semibold flex items-center gap-2 max-w-sm";
       toast.innerHTML = `<span>ℹ️</span> <span>${msg}</span>`;
       document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 4000);
+      setTimeout(() => toast.remove(), 3500);
     }
 
     function openJsonModal() { document.getElementById('jsonModal').classList.remove('hidden'); }
@@ -1725,7 +1725,7 @@ ${desc}
         for (let i = 1; i <= 8; i++) {
           switchSlide(i);
           overlayText.innerText = `8개 슬라이드를 고화질 이미지(ZIP)로 묶는 중입니다 (${i}/8)...`;
-          await new Promise(r => setTimeout(r, 250));
+          await new Promise(r => setTimeout(r, 200));
 
           const slideEl = document.getElementById(`slide-${i}`);
           const canvas = await html2canvas(slideEl, {
